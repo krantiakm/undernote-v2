@@ -1,425 +1,670 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles,
-  Plane,
   BookOpen,
+  Plane,
   Ticket,
   Smartphone,
-  Check,
-  Edit3,
-  Trash2,
-  Mic,
-  Plus,
-  Download,
+  ChevronRight,
   X,
-  ShieldCheck,
+  Edit3,
+  Check,
+  Share2,
+  Compass,
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
+import { LookbookTile } from '@/types';
 import { AppShell } from '@/components/shell/AppShell';
 
-interface ContextPreference {
-  id: string;
-  category: string;
-  text: string;
-  confirmed: boolean;
-}
-
-interface CurrentIntent {
-  id: string;
-  title: string;
-  meta: string;
-  status: 'active' | 'done';
-}
-
 export default function MePage() {
-  const { showToast } = useApp();
+  const { persona, showToast, updatePersona } = useApp();
 
-  // What lasts state
-  const [lastingPreferences, setLastingPreferences] = useState<ContextPreference[]>([
-    {
-      id: 'travel',
-      category: 'Travel',
-      text: 'You strongly prefer direct flights when travelling with family.',
-      confirmed: true,
-    },
-    {
-      id: 'books',
-      category: 'Books & ideas',
-      text: 'You repeatedly return to architecture, systems thinking and monographs.',
-      confirmed: true,
-    },
-    {
-      id: 'events',
-      category: 'Live events',
-      text: 'You tend to prefer smaller acoustic performances over large amplified venues.',
-      confirmed: true,
-    },
-    {
-      id: 'devices',
-      category: 'Devices',
-      text: 'Compact size and clean software matter more to you than maximum screen size.',
-      confirmed: true,
-    },
-  ]);
+  const [isFullPortraitOpen, setIsFullPortraitOpen] = useState(false);
+  const [selectedTile, setSelectedTile] = useState<LookbookTile | null>(null);
+  const [isEditingNarrative, setIsEditingNarrative] = useState(false);
+  const [editedNarrativeText, setEditedNarrativeText] = useState(
+    persona.lifeNarrative.openingSummary
+  );
+  const [copiedPassport, setCopiedPassport] = useState(false);
 
-  // Right now state
-  const [currentIntents, setCurrentIntents] = useState<CurrentIntent[]>([
-    {
-      id: '1',
-      title: 'Planning a family break',
-      meta: 'Targeting direct flight destinations with calm beaches',
-      status: 'active',
-    },
-    {
-      id: '2',
-      title: 'Watching the price of a compact phone',
-      meta: 'Under 6.3" display · waiting for price drop below target',
-      status: 'active',
-    },
-    {
-      id: '3',
-      title: 'Looking for something to do this weekend',
-      meta: 'Intimate acoustic music or new dinner opening',
-      status: 'active',
-    },
-  ]);
+  // Calibration state for selected tile
+  const [editedTendency, setEditedTendency] = useState('');
+  const [editedFocus, setEditedFocus] = useState('');
 
-  // Tell Undernote modal state
-  const [isTellModalOpen, setIsTellModalOpen] = useState(false);
-  const [newInputText, setNewInputText] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
+  // Contextual Chapter Edit State in Monograph
+  const [editingChapterId, setEditingChapterId] = useState<string | null>(null);
+  const [editedChapterBody, setEditedChapterBody] = useState('');
 
-  // Edit item state
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editedText, setEditedText] = useState('');
+  const handleStartEditChapter = (chapterId: string, currentBody: string) => {
+    if (editingChapterId === chapterId) {
+      setEditingChapterId(null);
+      setEditedChapterBody('');
+    } else {
+      setEditingChapterId(chapterId);
+      setEditedChapterBody(currentBody);
+    }
+  };
 
-  const handleToggleConfirm = (id: string) => {
-    setLastingPreferences((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, confirmed: !item.confirmed } : item
-      )
+  const handleSaveChapterEdit = (chapterId: string) => {
+    const updatedChapters = persona.lifeNarrative.chapters.map((ch) =>
+      ch.id === chapterId ? { ...ch, body: editedChapterBody } : ch
     );
-    showToast('Preference confirmed');
-  };
-
-  const handleRemoveLasting = (id: string) => {
-    setLastingPreferences((prev) => prev.filter((item) => item.id !== id));
-    showToast('Preference removed from your context');
-  };
-
-  const handleStartEdit = (id: string, text: string) => {
-    setEditingId(id);
-    setEditedText(text);
-  };
-
-  const handleSaveEdit = (id: string) => {
-    setLastingPreferences((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, text: editedText } : item))
-    );
-    setEditingId(null);
-    showToast('Preference updated');
-  };
-
-  const handleToggleIntentDone = (id: string) => {
-    setCurrentIntents((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, status: item.status === 'active' ? 'done' : 'active' }
-          : item
-      )
-    );
-    showToast('Intent updated');
-  };
-
-  const handleAddContext = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newInputText.trim()) return;
-
-    setLastingPreferences((prev) => [
-      ...prev,
-      {
-        id: `custom-${Date.now()}`,
-        category: 'New thought',
-        text: newInputText.trim(),
-        confirmed: true,
+    updatePersona({
+      lifeNarrative: {
+        ...persona.lifeNarrative,
+        chapters: updatedChapters,
       },
-    ]);
-
-    setNewInputText('');
-    setIsTellModalOpen(false);
-    showToast('Added to your Undernote context');
+    });
+    setEditingChapterId(null);
+    setEditedChapterBody('');
+    showToast('Contextual chapter correction saved');
   };
 
-  const handleExportContext = () => {
-    const markdownContent = `# My Undernote Context\n\n## What Lasts\n${lastingPreferences
-      .map((p) => `- **${p.category}**: ${p.text}`)
-      .join('\n')}\n\n## Right Now\n${currentIntents
-      .map((i) => `- ${i.title}: ${i.meta} (${i.status})`)
-      .join('\n')}`;
+  const handleOpenTile = (tile: LookbookTile) => {
+    setSelectedTile(tile);
+    setEditedTendency(tile.enduringTendency);
+    setEditedFocus(tile.currentFocus);
+  };
 
-    const blob = new Blob([markdownContent], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `undernote_context_${Date.now()}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast('Context exported as Markdown');
+  const handleSaveCalibration = () => {
+    if (!selectedTile) return;
+    const updatedTiles = persona.lookbookTiles.map((t) =>
+      t.domain === selectedTile.domain
+        ? { ...t, enduringTendency: editedTendency, currentFocus: editedFocus }
+        : t
+    );
+    updatePersona({ lookbookTiles: updatedTiles });
+    setSelectedTile(null);
+    showToast(`Calibrated ${selectedTile.title} horizons`);
+  };
+
+  const handleSaveNarrativeEdit = () => {
+    updatePersona({
+      lifeNarrative: {
+        ...persona.lifeNarrative,
+        openingSummary: editedNarrativeText,
+      },
+    });
+    setIsEditingNarrative(false);
+    showToast('Life narrative updated');
+  };
+
+  const handleCopyPassport = () => {
+    const text = `# Undernote Life Lookbook (${persona.locationAnchor})
+"${persona.lifeNarrative.manifestoHeadline}"
+
+${persona.lifeNarrative.openingSummary}
+
+## Core Enduring Tendencies (Longer Horizons):
+${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.title}: ${t.enduringTendency}`).join('\n')}
+
+## Current Focus (Shorter Horizons):
+${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFocus}`).join('\n')}
+`;
+
+    navigator.clipboard.writeText(text);
+    setCopiedPassport(true);
+    showToast('Aesthetic Passport copied to clipboard');
+    setTimeout(() => setCopiedPassport(false), 3000);
+  };
+
+  const getBadgeText = (domain: string) => {
+    switch (domain) {
+      case 'travel':
+        return 'Strict Non-Stop Flights';
+      case 'books':
+        return 'Archival Hardcover Only';
+      case 'events':
+        return '100% Unamplified Sound';
+      case 'shopping':
+        return 'Single-Handed <6.3"';
+      default:
+        return 'Core Tendency';
+    }
   };
 
   return (
     <AppShell>
-      <div className="flex-1 flex flex-col bg-brand-ivory p-4 space-y-6 pb-16">
-        
-        {/* Header per Section 20 */}
-        <div className="pt-2 space-y-1">
-          <div className="flex items-center justify-between">
-            <h1 className="font-serif text-3xl font-bold tracking-tight text-brand-ink">
-              Me
-            </h1>
-            <button
-              onClick={() => setIsTellModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-deep-green text-white text-xs font-bold shadow-xs hover:bg-[#162B25] transition-all active:scale-95"
-            >
-              <Plus size={13} />
-              <span>Tell Undernote</span>
-            </button>
-          </div>
-          <p className="text-sm text-brand-ink/80 font-medium">
-            What Undernote understands about you.
-          </p>
-          <p className="text-xs text-brand-ink/60">
-            Correct anything, remove anything or tell Undernote something new.
-          </p>
+      <div className="flex-1 flex flex-col bg-[#F7F3EC] px-3.5 pt-2 pb-24 space-y-6 text-brand-ink antialiased">
+        {/* 1. EDITORIAL LOOKBOOK HEADER (EXACTLY LIKE THE CEREAL SPREAD) */}
+        <div className="text-center pt-3 pb-1 space-y-2">
+        {/* Large Haute Serif Monogram */}
+        <div className="font-serif text-6xl text-brand-deep-green font-normal tracking-tight leading-none">
+          K
         </div>
 
-        {/* Section 1: What lasts per Section 20 */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="font-serif text-lg font-bold text-brand-ink">
-              What lasts
-            </h2>
-            <span className="text-[10px] font-mono text-stone-400">
-              Enduring tendencies
-            </span>
-          </div>
+        {/* Master Headline */}
+        <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink leading-tight">
+          The Mindful<br />Craftsperson
+        </h1>
 
-          <div className="space-y-2.5">
-            {lastingPreferences.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 rounded-2xl bg-white border border-brand-warm-stone/50 shadow-xs space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase font-bold text-brand-deep-green tracking-wider">
-                    {item.category}
-                  </span>
-                  {item.confirmed && (
-                    <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100 px-2 py-0.2 rounded-full">
-                      ✓ Active
-                    </span>
-                  )}
-                </div>
+        {/* Serif Italic Subtitle */}
+        <p className="font-serif italic text-sm sm:text-base text-brand-ink/75 max-w-xs mx-auto">
+          A life defined by what is kept out
+        </p>
 
-                {editingId === item.id ? (
-                  <div className="space-y-2 pt-1">
-                    <textarea
-                      rows={3}
-                      value={editedText}
-                      onChange={(e) => setEditedText(e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-brand-warm-stone bg-[#F7F3EC] text-xs font-sans"
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className="px-3 py-1 text-xs border border-stone-300 rounded-lg text-stone-600"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => handleSaveEdit(item.id)}
-                        className="px-3 py-1 text-xs bg-brand-deep-green text-white rounded-lg font-medium"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-xs sm:text-sm text-brand-ink font-sans leading-relaxed">
-                    {item.text}
-                  </p>
-                )}
-
-                {editingId !== item.id && (
-                  <div className="flex items-center gap-2 pt-1 border-t border-brand-warm-stone/30 text-xs">
-                    <button
-                      onClick={() => handleToggleConfirm(item.id)}
-                      className="text-stone-600 hover:text-brand-deep-green font-medium"
-                    >
-                      {item.confirmed ? "That's right" : 'Confirm'}
-                    </button>
-                    <span className="text-stone-300">•</span>
-                    <button
-                      onClick={() => handleStartEdit(item.id, item.text)}
-                      className="text-stone-600 hover:text-brand-ink font-medium"
-                    >
-                      Edit
-                    </button>
-                    <span className="text-stone-300">•</span>
-                    <button
-                      onClick={() => handleRemoveLasting(item.id)}
-                      className="text-rose-600 hover:text-rose-800 font-medium"
-                    >
-                      Not anymore
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+        <div className="text-[10px] font-mono tracking-widest uppercase text-brand-ink/40 pt-0.5">
+          {persona.locationAnchor} · Sovereign Profile
         </div>
-
-        {/* Section 2: Right now per Section 20 */}
-        <div className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
-            <h2 className="font-serif text-lg font-bold text-brand-ink">
-              Right now
-            </h2>
-            <span className="text-[10px] font-mono text-stone-400">
-              Active projects &amp; interests
-            </span>
-          </div>
-
-          <div className="space-y-2.5">
-            {currentIntents.map((intent) => (
-              <div
-                key={intent.id}
-                className="p-4 rounded-2xl bg-white border border-brand-warm-stone/50 shadow-xs space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <h4 className="font-serif font-bold text-sm text-brand-ink">
-                    {intent.title}
-                  </h4>
-                  <span
-                    className={`text-[10px] font-mono px-2 py-0.2 rounded-full ${
-                      intent.status === 'done'
-                        ? 'bg-stone-100 text-stone-500'
-                        : 'bg-amber-100 text-amber-800 font-bold'
-                    }`}
-                  >
-                    {intent.status === 'done' ? 'Completed' : 'Watching'}
-                  </span>
-                </div>
-
-                <p className="text-xs text-brand-ink/70 font-sans">
-                  {intent.meta}
-                </p>
-
-                <div className="flex items-center gap-2 pt-1 border-t border-brand-warm-stone/30 text-xs">
-                  <button
-                    onClick={() => handleToggleIntentDone(intent.id)}
-                    className="text-stone-600 hover:text-brand-deep-green font-medium"
-                  >
-                    {intent.status === 'done' ? 'Reactivate' : 'Done'}
-                  </button>
-                  <span className="text-stone-300">•</span>
-                  <span className="text-stone-600 font-medium">Keep watching</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Bottom Actions per Section 20 */}
-        <div className="pt-4 border-t border-brand-warm-stone/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-          <button
-            onClick={() => setIsTellModalOpen(true)}
-            className="text-brand-deep-green font-bold hover:underline"
-          >
-            Import more context
-          </button>
-          <button
-            onClick={handleExportContext}
-            className="inline-flex items-center gap-1.5 text-stone-600 hover:text-brand-ink font-medium"
-          >
-            <Download size={13} />
-            <span>Export my context</span>
-          </button>
-        </div>
-
       </div>
 
-      {/* Tell Undernote Modal */}
-      <AnimatePresence>
-        {isTellModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+      {/* 2. OVERALL LIFE NARRATIVE FEATURE: OPEN MAGAZINE COVER */}
+      <motion.div
+        whileTap={{ scale: 0.985 }}
+        onClick={() => setIsFullPortraitOpen(true)}
+        className="group cursor-pointer relative mx-1 rounded-2xl bg-white border border-brand-warm-stone/60 shadow-[0_8px_25px_-5px_rgba(0,0,0,0.06)] overflow-hidden transition-all hover:shadow-lg"
+      >
+        {/* Magazine Ribbon Top */}
+        <div className="bg-brand-deep-green text-white px-4 py-1.5 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest font-semibold">
+          <span className="flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-brand-terracotta" />
+            Life Portrait &amp; Foundations · Volume I
+          </span>
+          <span className="text-brand-sage flex items-center gap-0.5 group-hover:translate-x-0.5 transition-transform">
+            Tap to Open ↗
+          </span>
+        </div>
+
+        <div className="p-5 sm:p-6 space-y-3">
+          <blockquote className="font-serif text-base sm:text-lg leading-relaxed text-brand-ink font-medium">
+            "{persona.lifeNarrative.openingSummary}"
+          </blockquote>
+
+          <div className="pt-2 flex items-center justify-between text-xs border-t border-brand-warm-stone/40">
+            <span className="font-serif italic text-stone-500 text-xs">
+              4 Enduring Horizons · Zero permanent rules
+            </span>
+            <span className="font-mono text-[11px] text-brand-terracotta font-semibold group-hover:underline">
+              Read Monograph &rarr;
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* 3. VISUALLY SPECTACULAR 2-COLUMN MASONRY GRID (SIDE-BY-SIDE ON MOBILE) */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between px-2 pt-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-brand-ink/50 font-bold">
+            Enduring Horizons Lookbook
+          </span>
+          <span className="font-serif italic text-xs text-brand-terracotta">
+            Tap any tile to calibrate
+          </span>
+        </div>
+
+        {/* The 2-Column Staggered Masonry Layout (Column 1 = Tall + Square, Column 2 = Square + Tall) */}
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3.5 items-start">
+          
+          {/* ============================================================= */}
+          {/* COLUMN 1: Travel (Tall 3:4) + Events (Square 1:1)             */}
+          {/* ============================================================= */}
+          <div className="space-y-2.5 sm:space-y-3.5">
+            {/* Tile 1: Travel (Tall Aspect Ratio) */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4"
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleOpenTile(persona.lookbookTiles[0])}
+              className="group cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-brand-warm-stone/50 shadow-xs hover:shadow-md transition-all flex flex-col"
             >
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <h3 className="font-serif text-lg font-bold text-brand-ink">
-                    Tell Undernote something
+              {/* Image */}
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-stone-100">
+                <Image
+                  src={persona.lookbookTiles[0].heroImage}
+                  alt={persona.lookbookTiles[0].title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                
+                {/* Domain Tag */}
+                <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-mono uppercase font-bold text-brand-ink">
+                  Travel
+                </div>
+
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
+                  <h3 className="font-serif text-sm sm:text-base font-bold leading-tight">
+                    {persona.lookbookTiles[0].title}
                   </h3>
-                  <p className="text-xs text-brand-ink/65">
-                    Speak or write a thought, preference, or trip plan.
-                  </p>
+                </div>
+              </div>
+
+              {/* Editorial Content Below Image */}
+              <div className="p-3 space-y-2.5 bg-white">
+                <p className="font-serif italic text-[11px] sm:text-xs text-brand-ink leading-snug">
+                  "{persona.lookbookTiles[0].pullQuote}"
+                </p>
+
+                {/* Circular Stamped Seal */}
+                <div className="border border-brand-ink/50 rounded-full py-1.5 px-2 text-center my-1 bg-brand-ivory/50">
+                  <span className="font-serif text-[10px] text-brand-ink font-bold block uppercase tracking-tight leading-none">
+                    {getBadgeText(persona.lookbookTiles[0].domain)}
+                  </span>
+                </div>
+
+                <div className="pt-1 text-[10px] text-stone-500 font-sans leading-tight line-clamp-2">
+                  {persona.lookbookTiles[0].enduringTendency}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Tile 3: Events (Square Aspect Ratio) */}
+            <motion.div
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleOpenTile(persona.lookbookTiles[2])}
+              className="group cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-brand-warm-stone/50 shadow-xs hover:shadow-md transition-all flex flex-col"
+            >
+              <div className="relative aspect-square w-full overflow-hidden bg-stone-100">
+                <Image
+                  src={persona.lookbookTiles[2].heroImage}
+                  alt={persona.lookbookTiles[2].title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                
+                <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-mono uppercase font-bold text-brand-ink">
+                  Events
+                </div>
+
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
+                  <h3 className="font-serif text-sm sm:text-base font-bold leading-tight">
+                    {persona.lookbookTiles[2].title}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="p-3 space-y-2.5 bg-white">
+                <p className="font-serif italic text-[11px] sm:text-xs text-brand-ink leading-snug">
+                  "{persona.lookbookTiles[2].pullQuote}"
+                </p>
+
+                {/* Circular Stamped Seal */}
+                <div className="border border-brand-ink/50 rounded-full py-1.5 px-2 text-center my-1 bg-brand-ivory/50">
+                  <span className="font-serif text-[10px] text-brand-ink font-bold block uppercase tracking-tight leading-none">
+                    {getBadgeText(persona.lookbookTiles[2].domain)}
+                  </span>
+                </div>
+
+                <div className="pt-1 text-[10px] text-stone-500 font-sans leading-tight line-clamp-2">
+                  {persona.lookbookTiles[2].enduringTendency}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* ============================================================= */}
+          {/* COLUMN 2: Books (Square 1:1) + Hardware (Tall 3:4)            */}
+          {/* ============================================================= */}
+          <div className="space-y-2.5 sm:space-y-3.5">
+            {/* Tile 2: Books (Square Aspect Ratio) */}
+            <motion.div
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleOpenTile(persona.lookbookTiles[1])}
+              className="group cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-brand-warm-stone/50 shadow-xs hover:shadow-md transition-all flex flex-col"
+            >
+              <div className="relative aspect-square w-full overflow-hidden bg-stone-100">
+                <Image
+                  src={persona.lookbookTiles[1].heroImage}
+                  alt={persona.lookbookTiles[1].title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                
+                <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-mono uppercase font-bold text-brand-ink">
+                  Books
+                </div>
+
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
+                  <h3 className="font-serif text-sm sm:text-base font-bold leading-tight">
+                    {persona.lookbookTiles[1].title}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="p-3 space-y-2.5 bg-white">
+                <p className="font-serif italic text-[11px] sm:text-xs text-brand-ink leading-snug">
+                  "{persona.lookbookTiles[1].pullQuote}"
+                </p>
+
+                {/* Circular Stamped Seal */}
+                <div className="border border-brand-ink/50 rounded-full py-1.5 px-2 text-center my-1 bg-brand-ivory/50">
+                  <span className="font-serif text-[10px] text-brand-ink font-bold block uppercase tracking-tight leading-none">
+                    {getBadgeText(persona.lookbookTiles[1].domain)}
+                  </span>
+                </div>
+
+                <div className="pt-1 text-[10px] text-stone-500 font-sans leading-tight line-clamp-2">
+                  {persona.lookbookTiles[1].enduringTendency}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Tile 4: Hardware & Everyday Tools (Tall Aspect Ratio) */}
+            <motion.div
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleOpenTile(persona.lookbookTiles[3])}
+              className="group cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-brand-warm-stone/50 shadow-xs hover:shadow-md transition-all flex flex-col"
+            >
+              <div className="relative aspect-[3/4] w-full overflow-hidden bg-stone-100">
+                <Image
+                  src={persona.lookbookTiles[3].heroImage}
+                  alt={persona.lookbookTiles[3].title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                
+                <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-full text-[9px] font-mono uppercase font-bold text-brand-ink">
+                  Hardware
+                </div>
+
+                <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
+                  <h3 className="font-serif text-sm sm:text-base font-bold leading-tight">
+                    {persona.lookbookTiles[3].title}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="p-3 space-y-2.5 bg-white">
+                <p className="font-serif italic text-[11px] sm:text-xs text-brand-ink leading-snug">
+                  "{persona.lookbookTiles[3].pullQuote}"
+                </p>
+
+                {/* Circular Stamped Seal */}
+                <div className="border border-brand-ink/50 rounded-full py-1.5 px-2 text-center my-1 bg-brand-ivory/50">
+                  <span className="font-serif text-[10px] text-brand-ink font-bold block uppercase tracking-tight leading-none">
+                    {getBadgeText(persona.lookbookTiles[3].domain)}
+                  </span>
+                </div>
+
+                <div className="pt-1 text-[10px] text-stone-500 font-sans leading-tight line-clamp-2">
+                  {persona.lookbookTiles[3].enduringTendency}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 4. FLOATING EXPORT BUTTON (EXACTLY LIKE THE MOCKUP IMAGE) */}
+      <div className="pt-2 flex justify-center">
+        <button
+          onClick={handleCopyPassport}
+          className="w-full max-w-xs py-3.5 px-6 rounded-full bg-[#1F3A33] hover:bg-[#162B25] text-white font-medium text-xs shadow-md flex items-center justify-center gap-2 transition-all active:scale-95"
+        >
+          {copiedPassport ? <Check className="w-4 h-4 text-emerald-300" /> : <Share2 className="w-4 h-4" />}
+          <span>{copiedPassport ? 'Aesthetic Passport Copied' : 'Export Aesthetic Passport'}</span>
+        </button>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* MODAL 1: FULL-SCREEN LIFE PORTRAIT READER VIEW (CEREAL MAGAZINE SPREAD)   */}
+      {/* ========================================================================= */}
+      <AnimatePresence>
+        {isFullPortraitOpen && (
+          <div className="fixed inset-0 z-50 flex justify-center bg-neutral-900/80 backdrop-blur-xs overflow-hidden">
+            <div className="w-full max-w-md h-full overflow-y-auto bg-[#F7F3EC] shadow-2xl relative flex flex-col">
+              {/* Sticky Minimal Header */}
+              <div className="sticky top-0 z-30 bg-[#F7F3EC]/95 backdrop-blur-md border-b border-brand-warm-stone/40 px-5 py-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-serif text-lg font-bold text-brand-deep-green">
+                    K
+                  </span>
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-brand-ink/60 font-semibold">
+                    Personal Life Portrait
+                  </span>
                 </div>
                 <button
-                  onClick={() => setIsTellModalOpen(false)}
-                  className="p-1 rounded-full text-stone-400 hover:text-stone-800"
+                  onClick={() => setIsFullPortraitOpen(false)}
+                  className="p-1.5 rounded-full bg-black/5 hover:bg-black/10 text-brand-ink transition-colors"
                 >
-                  <X size={18} />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <form onSubmit={handleAddContext} className="space-y-3">
-                <textarea
-                  rows={4}
-                  value={newInputText}
-                  onChange={(e) => setNewInputText(e.target.value)}
-                  placeholder="e.g. I prefer quiet outdoor dining, or I'm looking for a non-stop family trip in December..."
-                  className="w-full p-3 rounded-2xl border border-brand-warm-stone bg-[#F7F3EC] text-xs font-sans leading-relaxed focus:outline-brand-deep-green"
-                />
+              {/* Monograph Content */}
+              <div className="px-5 py-8 space-y-10">
+              {/* Title Header */}
+              <div className="space-y-3 text-center">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold">
+                  Sovereign Monograph · Volume I
+                </span>
+                <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink leading-tight">
+                  {persona.title}
+                </h1>
+                <p className="font-serif italic text-base text-brand-ink/75 max-w-md mx-auto">
+                  "{persona.lifeNarrative.manifestoHeadline}"
+                </p>
+                <div className="text-[10px] text-stone-400 font-mono pt-1">
+                  Anchor: {persona.locationAnchor} · Fluid Horizons
+                </div>
+              </div>
 
-                <div className="flex items-center justify-between pt-1">
+              {/* Editable Synthesis Box */}
+              <div className="relative p-5 rounded-2xl bg-white border border-brand-warm-stone/50 shadow-xs space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono text-[10px] uppercase text-brand-deep-green font-bold">
+                    Executive Narrative
+                  </span>
                   <button
-                    type="button"
-                    onClick={() => {
-                      setIsRecording(!isRecording);
-                      if (!isRecording) {
-                        setNewInputText('Looking for a compact camera for travel with great low-light performance...');
-                      }
-                    }}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                      isRecording
-                        ? 'bg-rose-100 text-rose-800 border-rose-300 animate-pulse'
-                        : 'bg-white text-stone-600 border-stone-300 hover:bg-stone-50'
-                    }`}
+                    onClick={() => setIsEditingNarrative(!isEditingNarrative)}
+                    className="inline-flex items-center gap-1 text-[11px] text-brand-terracotta font-medium"
                   >
-                    <Mic size={13} />
-                    <span>{isRecording ? 'Listening...' : 'Voice note'}</span>
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="px-5 py-2 rounded-full bg-brand-deep-green text-white text-xs font-bold shadow-xs hover:bg-[#162B25] transition-all"
-                  >
-                    Save to context
+                    <Edit3 className="w-3 h-3" />
+                    <span>{isEditingNarrative ? 'Cancel' : 'Edit Synthesis'}</span>
                   </button>
                 </div>
-              </form>
+
+                {isEditingNarrative ? (
+                  <div className="space-y-3">
+                    <textarea
+                      rows={5}
+                      value={editedNarrativeText}
+                      onChange={(e) => setEditedNarrativeText(e.target.value)}
+                      className="w-full p-3 rounded-xl border border-brand-warm-stone/60 bg-brand-ivory text-brand-ink text-xs font-serif leading-relaxed focus:outline-brand-deep-green"
+                    />
+                    <button
+                      onClick={handleSaveNarrativeEdit}
+                      className="px-4 py-2 rounded-xl bg-brand-deep-green text-white text-xs font-medium"
+                    >
+                      Save Narrative
+                    </button>
+                  </div>
+                ) : (
+                  <p className="font-serif text-sm sm:text-base leading-relaxed text-brand-ink/90">
+                    {persona.lifeNarrative.openingSummary}
+                  </p>
+                )}
+              </div>
+
+              {/* Interspersed Chapters with Photography and Contextual Edits */}
+              <div className="space-y-12">
+                {persona.lifeNarrative.chapters.map((chapter, idx) => (
+                  <article key={chapter.id} className="space-y-4 pt-4 border-t border-brand-warm-stone/30 first:border-t-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono text-brand-terracotta uppercase font-bold tracking-widest">
+                          Chapter {idx + 1}
+                        </span>
+                        <h2 className="font-serif text-xl sm:text-2xl font-bold text-brand-ink">
+                          {chapter.title}
+                        </h2>
+                        <p className="text-xs text-brand-ink/60 font-medium">
+                          {chapter.subtitle}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleStartEditChapter(chapter.id, chapter.body)}
+                        className="inline-flex items-center gap-1 text-[10px] font-medium text-brand-deep-green hover:text-brand-terracotta transition-colors px-2.5 py-1 rounded-full bg-white border border-brand-warm-stone/40 shadow-xs shrink-0"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                        <span>{editingChapterId === chapter.id ? 'Cancel' : 'Calibrate'}</span>
+                      </button>
+                    </div>
+
+                    {chapter.image && (
+                      <div className="relative h-60 sm:h-72 w-full rounded-2xl overflow-hidden shadow-xs">
+                        <Image
+                          src={chapter.image}
+                          alt={chapter.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+
+                    {chapter.pullQuote && (
+                      <blockquote className="border-l-2 border-brand-terracotta pl-4 py-1 font-serif italic text-sm text-brand-ink/80 leading-snug">
+                        "{chapter.pullQuote}"
+                      </blockquote>
+                    )}
+
+                    {editingChapterId === chapter.id ? (
+                      <div className="p-3.5 rounded-2xl bg-white border border-brand-warm-stone/60 space-y-2.5 shadow-xs">
+                        <div className="text-[10px] font-mono uppercase font-bold text-brand-terracotta">
+                          Contextual Correction · Chapter {idx + 1}
+                        </div>
+                        <textarea
+                          rows={6}
+                          value={editedChapterBody}
+                          onChange={(e) => setEditedChapterBody(e.target.value)}
+                          className="w-full p-3 rounded-xl border border-brand-warm-stone/60 bg-brand-ivory text-brand-ink text-xs font-sans leading-relaxed focus:outline-brand-deep-green"
+                          placeholder="Correct or refine how this aspect of your life is described..."
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingChapterId(null)}
+                            className="px-3 py-1.5 rounded-lg border border-brand-warm-stone text-xs font-medium text-stone-600"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleSaveChapterEdit(chapter.id)}
+                            className="px-4 py-1.5 rounded-lg bg-brand-deep-green text-white text-xs font-medium shadow-xs"
+                          >
+                            Save Correction
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs sm:text-sm leading-relaxed text-brand-ink/85 font-sans">
+                        {chapter.body}
+                      </p>
+                    )}
+                  </article>
+                ))}
+              </div>
+
+              {/* Reader Footer */}
+              <div className="pt-8 border-t border-brand-warm-stone/40 text-center space-y-3">
+                <p className="text-xs text-stone-500 italic font-serif">
+                  "Nothing in Undernote is a rigid rule. Horizons shift as life rhythms change."
+                </p>
+                <button
+                  onClick={() => setIsFullPortraitOpen(false)}
+                  className="px-6 py-2.5 rounded-full bg-brand-deep-green text-white font-medium text-xs shadow-sm hover:bg-brand-deep-green/90 transition-all"
+                >
+                  Return to Lookbook
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        )}
+      </AnimatePresence>
+
+      {/* ========================================================================= */}
+      {/* MODAL 2: TILE CALIBRATION DRAWER                                          */}
+      {/* ========================================================================= */}
+      <AnimatePresence>
+        {selectedTile && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4">
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="w-full max-w-md bg-[#F7F3EC] rounded-t-[32px] sm:rounded-[32px] p-6 space-y-4 text-xs border border-brand-warm-stone/60 shadow-2xl max-h-[85vh] overflow-y-auto"
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-brand-warm-stone/30">
+                <span className="font-mono text-xs uppercase font-bold text-brand-deep-green tracking-wider">
+                  {selectedTile.domain} Horizon Calibration
+                </span>
+                <button
+                  onClick={() => setSelectedTile(null)}
+                  className="p-1.5 rounded-full bg-black/5 hover:bg-black/10 text-stone-500"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="relative h-44 w-full rounded-2xl overflow-hidden shadow-xs">
+                <Image
+                  src={selectedTile.heroImage}
+                  alt={selectedTile.title}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <h3 className="font-serif text-lg font-bold">{selectedTile.title}</h3>
+                  <p className="font-serif italic text-xs text-brand-sage leading-snug">
+                    "{selectedTile.pullQuote}"
+                  </p>
+                </div>
+              </div>
+
+              {/* Form to Calibrate */}
+              <div className="space-y-3 pt-1">
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-brand-deep-green font-bold mb-1">
+                    ⏳ Longer Horizon (Enduring Tendency)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={editedTendency}
+                    onChange={(e) => setEditedTendency(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white text-brand-ink text-xs font-medium leading-relaxed focus:outline-brand-deep-green"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-brand-terracotta font-bold mb-1">
+                    ⏱️ Current Horizon (Active Focus)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={editedFocus}
+                    onChange={(e) => setEditedFocus(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white text-brand-ink text-xs font-medium leading-relaxed focus:outline-brand-terracotta"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => setSelectedTile(null)}
+                  className="flex-1 py-2.5 rounded-xl border border-brand-warm-stone text-brand-ink font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveCalibration}
+                  className="flex-1 py-2.5 rounded-xl bg-brand-deep-green text-white font-medium shadow-xs"
+                >
+                  Save Calibration
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+      </div>
     </AppShell>
   );
 }
