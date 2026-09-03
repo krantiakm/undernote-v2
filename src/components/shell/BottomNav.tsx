@@ -20,18 +20,18 @@ export const BottomNav: React.FC = () => {
       isActive: pathname.startsWith('/radar'),
     },
     {
-      label: 'Watching',
-      href: '/watching',
-      icon: Eye,
-      isActive: pathname.startsWith('/watching'),
-      badge: triggeredWatchesCount > 0 ? triggeredWatchesCount : undefined,
-    },
-    {
       label: 'Together',
       href: '/capsules',
       icon: Users,
       isActive: pathname.startsWith('/capsules'),
       badge: groupCapsules.length > 0 ? groupCapsules.length : undefined,
+    },
+    {
+      label: 'Watching',
+      href: '/watching',
+      icon: Eye,
+      isActive: pathname.startsWith('/watching'),
+      badge: triggeredWatchesCount > 0 ? triggeredWatchesCount : undefined,
     },
     {
       label: 'Me',

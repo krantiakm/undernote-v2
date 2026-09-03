@@ -41,13 +41,13 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenAiModal }) =
                 </Link>
               </li>
               <li>
-                <Link href="/watching" className="hover:text-white transition-colors">
-                  Watching
+                <Link href="/capsules" className="hover:text-white transition-colors">
+                  Together
                 </Link>
               </li>
               <li>
-                <Link href="/capsules" className="hover:text-white transition-colors">
-                  Together
+                <Link href="/watching" className="hover:text-white transition-colors">
+                  Watching
                 </Link>
               </li>
               <li>
