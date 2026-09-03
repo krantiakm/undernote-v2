@@ -184,6 +184,26 @@ export interface DomainMoodboardCapsule {
   guardrailMetric: string;
 }
 
+export interface LookbookTile {
+  domain: 'travel' | 'books' | 'events' | 'shopping';
+  title: string;
+  pullQuote: string;
+  heroImage: string;
+  aspectRatio: 'tall' | 'square';
+  enduringTendency: string; // Longer Horizon (e.g. non-stop direct flights, tactile hardcover craft)
+  currentFocus: string; // Shorter Horizon (e.g. December beach retreat, Pixel 11 clearance)
+  localAnchor: string;
+}
+
+export interface LifeNarrativeChapter {
+  id: string;
+  title: string;
+  subtitle: string;
+  body: string;
+  image?: string;
+  pullQuote?: string;
+}
+
 export interface PersonaArchetype {
   title: string;
   tagline: string;
@@ -192,6 +212,12 @@ export interface PersonaArchetype {
   currency: string;
   familyComposition: string;
   domainCapsules: DomainMoodboardCapsule[];
+  lookbookTiles: LookbookTile[];
+  lifeNarrative: {
+    openingSummary: string;
+    manifestoHeadline: string;
+    chapters: LifeNarrativeChapter[];
+  };
   livingStory: Array<{
     paragraph: string;
     tokenChips: Array<{
