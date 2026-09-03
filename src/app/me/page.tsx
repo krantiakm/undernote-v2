@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { LookbookTile } from '@/types';
+import { AppShell } from '@/components/shell/AppShell';
 
 export default function MePage() {
   const { persona, showToast, updatePersona } = useApp();
@@ -98,9 +99,10 @@ ${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFoc
   };
 
   return (
-    <div className="space-y-6 pb-28 pt-2 text-brand-ink antialiased bg-[#F7F3EC]">
-      {/* 1. EDITORIAL LOOKBOOK HEADER (EXACTLY LIKE THE CEREAL SPREAD) */}
-      <div className="text-center pt-4 pb-2 space-y-2">
+    <AppShell>
+      <div className="flex-1 flex flex-col bg-[#F7F3EC] px-3.5 pt-2 pb-24 space-y-6 text-brand-ink antialiased">
+        {/* 1. EDITORIAL LOOKBOOK HEADER (EXACTLY LIKE THE CEREAL SPREAD) */}
+        <div className="text-center pt-3 pb-1 space-y-2">
         {/* Large Haute Serif Monogram */}
         <div className="font-serif text-6xl text-brand-deep-green font-normal tracking-tight leading-none">
           K
@@ -376,27 +378,28 @@ ${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFoc
       {/* ========================================================================= */}
       <AnimatePresence>
         {isFullPortraitOpen && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F7F3EC]">
-            {/* Sticky Minimal Header */}
-            <div className="sticky top-0 z-20 bg-[#F7F3EC]/95 backdrop-blur-md border-b border-brand-warm-stone/40 px-5 py-3.5 flex items-center justify-between max-w-2xl mx-auto">
-              <div className="flex items-center gap-2">
-                <span className="font-serif text-lg font-bold text-brand-deep-green">
-                  K
-                </span>
-                <span className="font-mono text-[11px] uppercase tracking-wider text-brand-ink/60 font-semibold">
-                  Personal Life Portrait
-                </span>
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/80 flex justify-center backdrop-blur-xs">
+            <div className="w-full max-w-md min-h-screen bg-[#F7F3EC] shadow-2xl relative flex flex-col">
+              {/* Sticky Minimal Header */}
+              <div className="sticky top-0 z-20 bg-[#F7F3EC]/95 backdrop-blur-md border-b border-brand-warm-stone/40 px-5 py-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="font-serif text-lg font-bold text-brand-deep-green">
+                    K
+                  </span>
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-brand-ink/60 font-semibold">
+                    Personal Life Portrait
+                  </span>
+                </div>
+                <button
+                  onClick={() => setIsFullPortraitOpen(false)}
+                  className="p-1.5 rounded-full bg-black/5 hover:bg-black/10 text-brand-ink transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setIsFullPortraitOpen(false)}
-                className="p-1.5 rounded-full bg-black/5 hover:bg-black/10 text-brand-ink transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            {/* Monograph Content */}
-            <div className="max-w-xl mx-auto px-5 py-8 space-y-10">
+              {/* Monograph Content */}
+              <div className="px-5 py-8 space-y-10">
               {/* Title Header */}
               <div className="space-y-3 text-center">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold">
@@ -504,6 +507,7 @@ ${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFoc
               </div>
             </div>
           </div>
+        </div>
         )}
       </AnimatePresence>
 
@@ -593,6 +597,7 @@ ${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFoc
           </div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </AppShell>
   );
 }
