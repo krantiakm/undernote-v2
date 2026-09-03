@@ -3,11 +3,11 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ShieldCheck, ArrowRight, Lock, Edit3, FileJson } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Share2, Edit3, FileJson } from 'lucide-react';
 
 export const SovereigntySection: React.FC = () => {
   return (
-    <section id="privacy" className="relative py-20 sm:py-28 overflow-hidden">
+    <section id="privacy" className="relative py-14 sm:py-20 overflow-hidden">
       {/* Full Bleed Atmospheric Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -21,32 +21,32 @@ export const SovereigntySection: React.FC = () => {
         <div className="absolute inset-0 bg-[#0E1A17]/85 backdrop-blur-[2px]" />
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-10 relative z-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8 relative z-10">
         
         {/* Header - Pristine contrast on dark atmospheric backdrop */}
-        <div className="text-center space-y-2.5 max-w-xl mx-auto">
+        <div className="text-center space-y-2 max-w-xl mx-auto">
           <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold">
             Privacy &amp; Control
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">
+          <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-white">
             Your context belongs to you.
           </h2>
           <p className="text-xs sm:text-sm text-[#D1C9BE] leading-relaxed font-sans">
-            See everything it knows, edit anything, and take it with you whenever you want.
+            See everything it knows, edit anything, and share only what you choose.
           </p>
         </div>
 
-        {/* 3 Frosted Glass Guarantee Cards - Mobile-first readability */}
+        {/* 3 Frosted Glass Guarantee Cards - Owned by you, Always editable, Portable & erasable */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white/10 backdrop-blur-md rounded-3xl p-5 sm:p-6 border border-white/15 space-y-2.5">
             <div className="w-8 h-8 rounded-xl bg-white/15 text-brand-terracotta flex items-center justify-center border border-white/20">
-              <Lock size={15} />
+              <Share2 size={15} />
             </div>
             <h3 className="font-serif font-bold text-sm text-white">
-              Stored on your device
+              Owned by you
             </h3>
             <p className="text-xs text-[#DDD6CB] font-sans leading-relaxed">
-              Your preferences are evaluated locally against public web signals. We never broker your profile or sell ad space.
+              Your context is completely yours. You choose who to share with—a friend, a group, or a service—and share only the relevant slice without revealing everything.
             </p>
           </div>
 

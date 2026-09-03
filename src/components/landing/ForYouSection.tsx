@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Film, Headphones, Utensils, Compass, BookOpen } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight, Film, Headphones, Utensils, Compass, BookOpen } from 'lucide-react';
 
 const FOR_YOU_CARDS = [
   {
@@ -49,16 +49,28 @@ const FOR_YOU_CARDS = [
 ];
 
 export const ForYouSection: React.FC = () => {
+  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth * 0.82;
+      carouselRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   return (
-    <section className="py-16 sm:py-24 bg-[#F7F3EC] border-t border-brand-warm-stone/40">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
+    <section className="py-12 sm:py-16 bg-[#F7F3EC] border-t border-brand-warm-stone/40 overflow-hidden">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
         
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-2.5">
+        {/* Header with swipe indicator on mobile */}
+        <div className="text-center max-w-xl mx-auto space-y-2">
           <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold">
             For You
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink">
+          <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-brand-ink">
             Things worth your attention.
           </h2>
           <p className="text-xs sm:text-sm text-brand-ink/75 leading-relaxed font-sans">
@@ -66,63 +78,89 @@ export const ForYouSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Cards Stream - 100% distinct fresh images, concise chips */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {FOR_YOU_CARDS.map((card, idx) => {
-            const Icon = card.icon;
-            return (
-              <div
-                key={idx}
-                className="bg-white rounded-3xl overflow-hidden border border-brand-warm-stone/50 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
-              >
-                {/* Large Image */}
-                <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
-                  <Image
-                    src={card.image}
-                    alt={card.title}
-                    fill
-                    className="object-cover group-hover:scale-104 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                  
-                  <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md shadow-xs">
-                    <Icon size={11} className="text-brand-terracotta" />
-                    <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-brand-ink">
-                      {card.tag}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Minimal Card Body */}
-                <div className="p-4 sm:p-5 space-y-2.5 flex-1 flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <h3 className="font-serif text-base font-bold text-brand-ink leading-snug">
-                      {card.title}
-                    </h3>
-                    <p className="text-xs text-brand-ink/65 font-sans">
-                      {card.subtitle}
-                    </p>
-                  </div>
-
-                  {/* Clean Filter Chips */}
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {card.chips.map((chip, cIdx) => (
-                      <span
-                        key={cIdx}
-                        className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-[#F7F3EC] text-brand-ink/75 border border-brand-warm-stone/50"
-                      >
-                        {chip}
+        {/* Mobile Horizontal Carousel (82% card width with peek) / Desktop Grid */}
+        <div className="relative">
+          <div
+            ref={carouselRef}
+            className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-none pb-2 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0"
+          >
+            {FOR_YOU_CARDS.map((card, idx) => {
+              const Icon = card.icon;
+              return (
+                <div
+                  key={idx}
+                  className="w-[82vw] sm:w-[320px] md:w-auto shrink-0 md:shrink snap-center bg-white rounded-3xl overflow-hidden border border-brand-warm-stone/50 shadow-xs hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  {/* Large Image */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-stone-100">
+                    <Image
+                      src={card.image}
+                      alt={card.title}
+                      fill
+                      className="object-cover group-hover:scale-104 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                    
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md shadow-xs">
+                      <Icon size={11} className="text-brand-terracotta" />
+                      <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-brand-ink">
+                        {card.tag}
                       </span>
-                    ))}
+                    </div>
+                  </div>
+
+                  {/* Minimal Card Body */}
+                  <div className="p-4 sm:p-5 space-y-2.5 flex-1 flex flex-col justify-between">
+                    <div className="space-y-1">
+                      <h3 className="font-serif text-base font-bold text-brand-ink leading-snug">
+                        {card.title}
+                      </h3>
+                      <p className="text-xs text-brand-ink/65 font-sans">
+                        {card.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Clean Filter Chips */}
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {card.chips.map((chip, cIdx) => (
+                        <span
+                          key={cIdx}
+                          className="text-[10px] font-mono px-2.5 py-0.5 rounded-md bg-[#F7F3EC] text-brand-ink/75 border border-brand-warm-stone/50"
+                        >
+                          {chip}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+
+          {/* Mobile Carousel Navigation Arrows / Hints */}
+          <div className="flex md:hidden items-center justify-between pt-3 px-2 text-xs text-stone-400">
+            <span className="text-[11px] font-mono">Swipe cards &rarr;</span>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => scroll('left')}
+                className="w-8 h-8 rounded-full bg-white border border-brand-warm-stone/60 flex items-center justify-center text-brand-ink hover:bg-stone-50 active:scale-95 shadow-xs cursor-pointer"
+                aria-label="Previous card"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                className="w-8 h-8 rounded-full bg-white border border-brand-warm-stone/60 flex items-center justify-center text-brand-ink hover:bg-stone-50 active:scale-95 shadow-xs cursor-pointer"
+                aria-label="Next card"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Action Link */}
-        <div className="text-center pt-2">
+        <div className="text-center pt-1">
           <Link
             href="/radar"
             className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-xs transition-all active:scale-95 group"
