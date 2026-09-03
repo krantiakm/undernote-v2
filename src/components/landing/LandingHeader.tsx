@@ -27,11 +27,7 @@ export const LandingHeader: React.FC = () => {
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="font-serif text-2xl font-bold tracking-tight text-brand-deep-green">
-            undernote
-          </span>
-        </Link>
+        <Logo size="md" type="full" variant="green" />
 
         {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-brand-ink/70 tracking-wide">

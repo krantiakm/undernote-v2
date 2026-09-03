@@ -3,20 +3,19 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Film, Utensils, Ticket, Compass, Smartphone, BookOpen, MapPin, Plane } from 'lucide-react';
 
 export const PersonalizationDemo: React.FC = () => {
   const feeds = [
     {
-      id: 'feed-1',
-      label: 'Feed 01',
-      vibe: 'Cinema · Neighborhood Dining · Live Sets',
+      id: 'liam',
+      name: 'Liam',
+      vibe: 'Cinema · Vinyl · Neighborhood Counters',
       cards: [
         {
           tag: 'Tonight',
-          title: 'Korean Noir Premiere',
-          meta: '92 min · Streaming this Friday',
-          image: '/images/for_you_film.jpg',
+          title: 'Tokyo Vinyl Listening Bar',
+          meta: 'Curated records & analog acoustics',
+          image: '/images/feed_vinyl_listening.jpg',
         },
         {
           tag: 'Near you',
@@ -25,100 +24,106 @@ export const PersonalizationDemo: React.FC = () => {
           image: '/images/feed_ramen_dining.jpg',
         },
         {
-          tag: 'This weekend',
-          title: 'Acoustic Stage Recital',
-          meta: 'Saturday 7:30 PM · Intimate hall',
-          image: '/images/hero_theatre_acoustic.jpg',
+          tag: 'Stream release',
+          title: 'Neo-Noir Film Premiere',
+          meta: '94 min · Director you liked',
+          image: '/images/for_you_film.jpg',
         },
       ],
     },
     {
-      id: 'feed-2',
-      label: 'Feed 02',
-      vibe: 'Trail Running · Hardware · Complex Systems',
+      id: 'elena',
+      name: 'Elena',
+      vibe: 'Trail Running · High Passes · Design Theory',
       cards: [
         {
-          tag: 'Worth knowing',
-          title: 'Alpine Ridge Trail Watch',
-          meta: 'Weather clearing · 14km loop',
+          tag: 'This weekend',
+          title: 'Alpine Ridge Trail Loop',
+          meta: 'Weather clearing · 14km mountain loop',
           image: '/images/feed_trail_runner.jpg',
         },
         {
-          tag: 'Price drop',
-          title: 'Compact Flagship Phone',
-          meta: 'Under 6.3" display · clean software',
-          image: '/images/hero_pixel11_compact.jpg',
+          tag: 'Worth knowing',
+          title: 'Titanium Gravel Bike Build',
+          meta: 'Passo Giau pass · lightweight carbon',
+          image: '/images/feed_gravel_bike.jpg',
         },
         {
           tag: 'Read this',
-          title: 'Systems & Architecture Essay',
+          title: 'A Pattern Language Treatise',
           meta: 'Christopher Alexander reprint',
           image: '/images/hero_alexander_book.jpg',
         },
       ],
     },
     {
-      id: 'feed-3',
-      label: 'Feed 03',
-      vibe: 'Visual Arts · Architecture · Family Travel',
+      id: 'kai',
+      name: 'Kai',
+      vibe: 'Modern Art · Architecture · Family Retreats',
       cards: [
         {
-          tag: 'This weekend',
-          title: 'Modern Art Installation',
-          meta: 'Contemporary gallery · Saturday open',
+          tag: 'Saturday',
+          title: 'Modern Art Gallery Opening',
+          meta: 'Contemporary sculpture · Morning daylight',
           image: '/images/feed_museum_event.jpg',
         },
         {
           tag: 'Good time to go',
-          title: 'Direct Island Coastal Villa',
-          meta: 'Direct flight · Quiet family dates',
-          image: '/images/hero_srilanka_villa.jpg',
+          title: 'Mallorca Oceanfront Villa',
+          meta: 'Direct flight · Family quiet bay',
+          image: '/images/feed_modern_coastal.jpg',
         },
         {
-          tag: 'Near you',
-          title: 'Architectural Monograph Repress',
-          meta: 'Independent neighborhood bookshop',
-          image: '/images/hero_singapore_book.jpg',
+          tag: 'Coastal watch',
+          title: 'Beachfront Quiet Sanctuary',
+          meta: 'Child-safe pool · Private garden',
+          image: '/images/hero_srilanka_villa.jpg',
         },
       ],
     },
   ];
 
   return (
-    <section className="py-20 sm:py-28 bg-[#F7F3EC] border-t border-brand-warm-stone/40">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
+    <section className="py-16 sm:py-24 bg-[#F7F3EC] border-t border-brand-warm-stone/40">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
+        <div className="text-center max-w-2xl mx-auto space-y-2.5">
           <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold">
             One world. Different for everyone.
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink">
             The same world. A completely different fit.
           </h2>
-          <p className="text-sm sm:text-base text-brand-ink/75 leading-relaxed font-sans">
+          <p className="text-xs sm:text-sm text-brand-ink/75 font-sans">
             What deserves your attention changes depending on who you are.
           </p>
         </div>
 
-        {/* 3 Visual Feeds Side by Side - Pure Visual Cards per Section 5 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* 3 Visual Feeds with Global Names per user feedback */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
           {feeds.map((feed) => (
             <div
               key={feed.id}
-              className="bg-white rounded-3xl p-5 border border-brand-warm-stone/50 shadow-xs space-y-4 flex flex-col justify-between"
+              className="bg-white rounded-3xl p-4 sm:p-5 border border-brand-warm-stone/50 shadow-xs space-y-3.5 flex flex-col justify-between"
             >
-              <div className="space-y-1 pb-1 border-b border-brand-warm-stone/30">
-                <span className="text-[10px] font-mono uppercase font-bold text-brand-terracotta">
-                  {feed.label}
-                </span>
-                <p className="text-xs font-serif italic text-brand-ink/70">
+              {/* Persona Header with clean global name */}
+              <div className="space-y-0.5 pb-2 border-b border-brand-warm-stone/30">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif text-lg font-bold text-brand-ink">
+                    For {feed.name}
+                  </h3>
+                  <span className="text-[10px] font-mono uppercase text-brand-deep-green bg-brand-deep-green/10 px-2 py-0.5 rounded-full font-bold">
+                    Tuned
+                  </span>
+                </div>
+                <p className="text-[11px] font-serif italic text-brand-ink/65">
                   {feed.vibe}
                 </p>
               </div>
 
-              {/* Stack of Visual Cards */}
-              <div className="space-y-3">
+              {/* Stack of Visual Cards with distinct images */}
+              <div className="space-y-2.5">
                 {feed.cards.map((card, cIdx) => (
                   <div
                     key={cIdx}
@@ -135,7 +140,7 @@ export const PersonalizationDemo: React.FC = () => {
                         {card.tag}
                       </div>
                     </div>
-                    <div className="p-3 space-y-0.5">
+                    <div className="p-2.5 space-y-0.5">
                       <h4 className="font-serif font-bold text-xs text-brand-ink leading-snug">
                         {card.title}
                       </h4>
@@ -147,7 +152,7 @@ export const PersonalizationDemo: React.FC = () => {
                 ))}
               </div>
 
-              <div className="text-[10px] font-mono text-stone-400 pt-2 border-t border-brand-warm-stone/20">
+              <div className="text-[10px] font-mono text-stone-400 pt-1.5 border-t border-brand-warm-stone/20">
                 Tuned by active preferences
               </div>
             </div>
@@ -155,8 +160,8 @@ export const PersonalizationDemo: React.FC = () => {
         </div>
 
         {/* Section Footer */}
-        <div className="text-center pt-2 space-y-4">
-          <p className="font-serif italic text-base text-brand-ink font-semibold">
+        <div className="text-center pt-1">
+          <p className="font-serif italic text-sm sm:text-base text-brand-ink font-semibold">
             Not a generic “For You” page. One built from you.
           </p>
         </div>
