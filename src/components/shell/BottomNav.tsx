@@ -39,12 +39,6 @@ export const BottomNav: React.FC = () => {
       icon: Fingerprint,
       isActive: pathname.startsWith('/me'),
     },
-    {
-      label: 'Your Context',
-      href: '/data',
-      icon: ShieldCheck,
-      isActive: pathname.startsWith('/data'),
-    },
   ];
 
   return (

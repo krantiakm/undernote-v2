@@ -1,104 +1,221 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowRight, ShieldCheck, Sparkles, Film, BookOpen, Utensils, Plane, Smartphone, Ticket } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, ShieldCheck, Film, BookOpen, MapPin, Smartphone, Plane } from 'lucide-react';
 
-export const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  onOpenAiModal: () => void;
+}
+
+const TUNED_CATEGORIES = [
+  {
+    id: 'films',
+    name: 'Films',
+    tagline: "in tune with you.",
+    subtitle: "Films you'd actually want to watch.",
+    icon: Film,
+    card: {
+      image: '/images/for_you_film.jpg',
+      title: 'Past Lives',
+      meta: 'Slow burn · 92 min · director you liked',
+      badge: 'Streaming this Friday',
+    },
+  },
+  {
+    id: 'books',
+    name: 'Books',
+    tagline: "in tune with you.",
+    subtitle: "Ideas that connect to what you think about.",
+    icon: BookOpen,
+    card: {
+      image: '/images/hero_alexander_book.jpg',
+      title: 'A Pattern Language',
+      meta: 'Systems & Architecture · Hardcover reprint',
+      badge: 'Independent bookshop',
+    },
+  },
+  {
+    id: 'places',
+    name: 'Places',
+    tagline: "in tune with you.",
+    subtitle: "Places you'd be glad you found.",
+    icon: MapPin,
+    card: {
+      image: '/images/feed_ramen_dining.jpg',
+      title: 'Kuro Artisan Ramen',
+      meta: 'Intimate counter · 12 min away · outdoor seating',
+      badge: 'New opening',
+    },
+  },
+  {
+    id: 'products',
+    name: 'Products',
+    tagline: "in tune with you.",
+    subtitle: "Products that fit how you choose.",
+    icon: Smartphone,
+    card: {
+      image: '/images/hero_pixel11_compact.jpg',
+      title: 'Compact Flagship',
+      meta: 'Under 6.3" · clean software · price dropped',
+      badge: 'Target price met',
+    },
+  },
+  {
+    id: 'trips',
+    name: 'Trips',
+    tagline: "in tune with you.",
+    subtitle: "Trips that fit the way you travel.",
+    icon: Plane,
+    card: {
+      image: '/images/hero_srilanka_villa.jpg',
+      title: 'Direct Island Sanctuary',
+      meta: 'Direct flight · family quiet villa · right dates',
+      badge: 'Fare dropped 24%',
+    },
+  },
+];
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAiModal }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % TUNED_CATEGORIES.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
+
+  const activeCategory = TUNED_CATEGORIES[currentIndex];
+
   return (
     <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 overflow-hidden bg-[#F7F3EC]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10 space-y-12">
         
-        {/* Hero Copy */}
-        <div className="text-center space-y-5 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-brand-deep-green/10 text-brand-deep-green font-bold border border-brand-deep-green/15">
-            <Sparkles className="w-3 h-3 text-brand-terracotta" />
-            <span>Meet Undernote</span>
-          </div>
+        {/* Above the fold copy - concise & clear per Section 27 */}
+        <div className="text-center space-y-5 max-w-2xl mx-auto">
+          <span className="text-[11px] font-mono tracking-widest uppercase text-brand-ink/50 font-bold block">
+            UNDERNOTE
+          </span>
 
-          {/* Master Tagline Headline */}
-          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-brand-ink leading-[1.15]">
+          <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-brand-ink leading-[1.12]">
             A world in tune with you.
           </h1>
 
-          {/* Body */}
-          <p className="text-base sm:text-lg md:text-xl text-brand-ink/80 max-w-2xl mx-auto font-sans font-normal leading-relaxed">
-            Bring what your AI already knows about you. Undernote uses it to find things that feel unusually well chosen for you — from films, books and places to trips, products and things worth knowing.
+          <p className="text-base sm:text-lg text-brand-ink/80 max-w-xl mx-auto font-sans leading-relaxed">
+            Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.
           </p>
 
-          {/* Supporting line */}
-          <p className="text-xs sm:text-sm text-brand-ink/60 font-medium">
-            No starting from scratch. No endless searching. Just more of the world that feels like it fits.
-          </p>
-
-          {/* Primary & Secondary CTAs */}
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={onOpenAiModal}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 group w-full sm:w-auto cursor-pointer"
+            >
+              <span>Start my Undernote</span>
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-brand-terracotta" />
+            </button>
             <Link
               href="/radar"
-              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-sm font-bold shadow-md transition-all active:scale-95 group w-full sm:w-auto"
+              className="inline-flex items-center justify-center px-6 py-3.5 rounded-full bg-white hover:bg-stone-50 border border-brand-warm-stone text-brand-ink text-xs sm:text-sm font-semibold shadow-xs transition-all active:scale-95 w-full sm:w-auto"
             >
-              <span>See what Undernote finds for me</span>
-              <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform text-brand-terracotta" />
+              <span>See it in action</span>
             </Link>
-            <a
-              href="#how-it-works"
-              className="text-xs font-semibold text-brand-ink/70 hover:text-brand-ink transition-colors underline underline-offset-4 decoration-brand-warm-stone py-2 px-4"
-            >
-              See how it works &darr;
-            </a>
           </div>
 
-          {/* Trust line */}
-          <div className="pt-1 text-xs text-brand-ink/60 font-sans flex items-center justify-center gap-2">
-            <ShieldCheck size={14} className="text-emerald-700" />
+          <div className="pt-1 text-xs text-brand-ink/60 font-sans flex items-center justify-center gap-1.5">
+            <ShieldCheck size={13} className="text-emerald-700" />
             <span>Your context stays yours. No sponsored ranking.</span>
           </div>
         </div>
 
-        {/* Hero Visual: Dynamic Editorial World Collage */}
-        <div className="relative max-w-4xl mx-auto rounded-[32px] overflow-hidden bg-white border border-brand-warm-stone/60 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.08)]">
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-100">
-            <Image
-              src="/images/landing_hero_lookbook.jpg"
-              alt="A world curated around you"
-              fill
-              priority
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-            
-            {/* Floating Diverse Horizon Stream Over Collage */}
-            <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4 text-white">
-              <div className="space-y-1">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-brand-sage font-bold block">
-                  The Living Feed
-                </span>
-                <h3 className="font-serif text-lg sm:text-xl font-bold leading-tight">
-                  Films · Books · Articles · Places · Escapes · Hardware
-                </h3>
-                <p className="text-xs text-white/80 font-sans">
-                  The more it understands what you value, the better the world fits.
-                </p>
-              </div>
+        {/* Hero Animation - Visual Category Tuning Demonstration per Section 3 */}
+        <div className="relative max-w-3xl mx-auto">
+          {/* Category Navigation Bar */}
+          <div className="flex items-center justify-center gap-2 sm:gap-4 overflow-x-auto py-2 scrollbar-none">
+            {TUNED_CATEGORIES.map((cat, idx) => {
+              const isActive = idx === currentIndex;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setCurrentIndex(idx)}
+                  className={`relative px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 flex items-center gap-1.5 ${
+                    isActive
+                      ? 'text-brand-deep-green bg-white shadow-xs font-bold'
+                      : 'text-brand-ink/50 hover:text-brand-ink'
+                  }`}
+                >
+                  <span>{cat.name}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeHeroCategoryUnderline"
+                      className="absolute bottom-0 left-3 right-3 h-[2px] bg-brand-terracotta rounded-full"
+                      transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-              {/* Sample Discovery Badges */}
-              <div className="flex flex-wrap gap-1.5 text-[11px] font-medium">
-                <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center gap-1.5">
-                  <Film size={12} className="text-brand-terracotta" />
-                  <span>Hidden Film</span>
-                </span>
-                <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center gap-1.5">
-                  <Plane size={12} className="text-brand-terracotta" />
-                  <span>Direct Flight</span>
-                </span>
-                <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white flex items-center gap-1.5">
-                  <Utensils size={12} className="text-brand-terracotta" />
-                  <span>Quiet Table</span>
-                </span>
-              </div>
-            </div>
+          {/* Animated Card Display Showcase */}
+          <div className="mt-4 relative bg-white rounded-3xl overflow-hidden border border-brand-warm-stone/60 shadow-[0_16px_40px_-12px_rgba(0,0,0,0.08)]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeCategory.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className="grid grid-cols-1 md:grid-cols-12 items-center"
+              >
+                {/* Visual Image */}
+                <div className="md:col-span-7 relative aspect-[16/10] md:aspect-auto md:h-[340px] w-full bg-stone-100 overflow-hidden">
+                  <Image
+                    src={activeCategory.card.image}
+                    alt={activeCategory.card.title}
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-white text-[10px] font-mono uppercase tracking-wider">
+                    {activeCategory.card.badge}
+                  </div>
+                </div>
+
+                {/* Editorial Tuning Statement on Right */}
+                <div className="md:col-span-5 p-6 sm:p-8 space-y-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold block">
+                      In Tune With You
+                    </span>
+                    <h3 className="font-serif text-2xl font-bold text-brand-ink leading-tight">
+                      {activeCategory.name},{' '}
+                      <span className="text-brand-deep-green italic font-normal">
+                        {activeCategory.tagline}
+                      </span>
+                    </h3>
+                    <p className="text-xs text-brand-ink/70 font-sans">
+                      {activeCategory.subtitle}
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-brand-ivory border border-brand-warm-stone/50 space-y-1">
+                    <h4 className="font-serif font-bold text-sm text-brand-ink">
+                      {activeCategory.card.title}
+                    </h4>
+                    <p className="text-[11px] text-brand-ink/65 font-sans">
+                      {activeCategory.card.meta}
+                    </p>
+                  </div>
+
+                  <div className="text-[10px] font-mono text-stone-400">
+                    Filtered by your enduring standards
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 

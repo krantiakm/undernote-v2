@@ -1,169 +1,164 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Film, Utensils, Plane, BookOpen, Sparkles, Footprints, Ticket, Hotel, Newspaper } from 'lucide-react';
+import { ArrowRight, Film, Utensils, Ticket, Compass, Smartphone, BookOpen, MapPin, Plane } from 'lucide-react';
 
 export const PersonalizationDemo: React.FC = () => {
-  const personas = [
+  const feeds = [
     {
-      name: 'Maya',
-      vibe: 'Cinema, Neighborhood Food & Weekend Travel',
-      accentColor: 'border-l-rose-500',
-      items: [
+      id: 'feed-1',
+      label: 'Feed 01',
+      vibe: 'Cinema · Neighborhood Dining · Live Sets',
+      cards: [
         {
-          icon: Film,
-          type: 'Watch this',
-          title: 'A Korean film she somehow missed',
-          detail: 'Slow-burn mystery, 92 minutes · streaming this Friday',
+          tag: 'Tonight',
+          title: 'Korean Noir Premiere',
+          meta: '92 min · Streaming this Friday',
+          image: '/images/for_you_film.jpg',
         },
         {
-          icon: Utensils,
-          type: 'Near you',
-          title: 'A tiny restaurant opening ten minutes away',
-          detail: 'Cuisine she likes · outdoor seating · easy walk',
+          tag: 'Near you',
+          title: 'Artisan Counter Ramen',
+          meta: '12 min away · Outdoor courtyard',
+          image: '/images/feed_ramen_dining.jpg',
         },
         {
-          icon: Plane,
-          type: 'Good time to go',
-          title: 'A direct-flight deal for her free weekend',
-          detail: 'Direct route · long weekend window · fare dropped 22%',
+          tag: 'This weekend',
+          title: 'Acoustic Stage Recital',
+          meta: 'Saturday 7:30 PM · Intimate hall',
+          image: '/images/hero_theatre_acoustic.jpg',
         },
       ],
     },
     {
-      name: 'Arjun',
-      vibe: 'Deep Research, Trail Gear & Live Music',
-      accentColor: 'border-l-amber-600',
-      items: [
+      id: 'feed-2',
+      label: 'Feed 02',
+      vibe: 'Trail Running · Hardware · Complex Systems',
+      cards: [
         {
-          icon: Newspaper,
-          type: 'Read this',
-          title: 'A long-form piece on what he has been researching',
-          detail: 'Complex systems & energy transition · 18 min read',
+          tag: 'Worth knowing',
+          title: 'Alpine Ridge Trail Watch',
+          meta: 'Weather clearing · 14km loop',
+          image: '/images/feed_trail_runner.jpg',
         },
         {
-          icon: Footprints,
-          type: 'Worth a look',
-          title: 'Trail shoe that finally dropped below his price',
-          detail: 'Target met · size 10 in stock · ₹4,200 under retail',
+          tag: 'Price drop',
+          title: 'Compact Flagship Phone',
+          meta: 'Under 6.3" display · clean software',
+          image: '/images/hero_pixel11_compact.jpg',
         },
         {
-          icon: Ticket,
-          type: 'Live soon',
-          title: 'Intimate stage tickets to an artist he follows',
-          detail: 'Natural timber acoustic hall · Saturday 8:00 PM',
+          tag: 'Read this',
+          title: 'Systems & Architecture Essay',
+          meta: 'Christopher Alexander reprint',
+          image: '/images/hero_alexander_book.jpg',
         },
       ],
     },
     {
-      name: 'Nina',
-      vibe: 'Literature, Family Weekends & Space',
-      accentColor: 'border-l-emerald-600',
-      items: [
+      id: 'feed-3',
+      label: 'Feed 03',
+      vibe: 'Visual Arts · Architecture · Family Travel',
+      cards: [
         {
-          icon: BookOpen,
-          type: 'Read this',
-          title: 'A book mentioned by an author she loves',
-          detail: 'Hardcover repress available at an independent bookshop',
+          tag: 'This weekend',
+          title: 'Modern Art Installation',
+          meta: 'Contemporary gallery · Saturday open',
+          image: '/images/feed_museum_event.jpg',
         },
         {
-          icon: Sparkles,
-          type: 'Near you',
-          title: 'A child-friendly Sunday morning event nearby',
-          detail: 'Botanical greenhouse workshop · 15 mins away',
+          tag: 'Good time to go',
+          title: 'Direct Island Coastal Villa',
+          meta: 'Direct flight · Quiet family dates',
+          image: '/images/hero_srilanka_villa.jpg',
         },
         {
-          icon: Hotel,
-          type: 'Good time to go',
-          title: 'A hotel that works unusually well for her family',
-          detail: 'Direct flight destination · quiet family suite',
+          tag: 'Near you',
+          title: 'Architectural Monograph Repress',
+          meta: 'Independent neighborhood bookshop',
+          image: '/images/hero_singapore_book.jpg',
         },
       ],
     },
   ];
 
   return (
-    <section className="py-20 sm:py-28 bg-[#F2EDE4] border-t border-brand-warm-stone/40">
+    <section className="py-20 sm:py-28 bg-[#F7F3EC] border-t border-brand-warm-stone/40">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
         
-        {/* Header */}
+        {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold">
-            One internet. Completely different Undernotes.
+            One world. Different for everyone.
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink">
-            The same world. A much better fit.
+            The same world. A completely different fit.
           </h2>
           <p className="text-sm sm:text-base text-brand-ink/75 leading-relaxed font-sans">
-            What is worth your attention depends on who you are, what you care about and what is happening in your life right now. Undernote learns that difference.
+            What deserves your attention changes depending on who you are.
           </p>
         </div>
 
-        {/* 3 Personas Side by Side */}
+        {/* 3 Visual Feeds Side by Side - Pure Visual Cards per Section 5 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {personas.map((persona) => (
+          {feeds.map((feed) => (
             <div
-              key={persona.name}
-              className={`bg-white rounded-3xl p-6 border border-brand-warm-stone/50 shadow-xs flex flex-col justify-between space-y-6 hover:shadow-md transition-all border-l-4 ${persona.accentColor}`}
+              key={feed.id}
+              className="bg-white rounded-3xl p-5 border border-brand-warm-stone/50 shadow-xs space-y-4 flex flex-col justify-between"
             >
-              <div className="space-y-4">
-                <div className="space-y-0.5">
-                  <h3 className="font-serif text-xl font-bold text-brand-ink">
-                    For {persona.name}
-                  </h3>
-                  <p className="text-[11px] font-mono text-stone-500 uppercase tracking-wider">
-                    {persona.vibe}
-                  </p>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                  {persona.items.map((item, idx) => {
-                    const Icon = item.icon;
-                    return (
-                      <div
-                        key={idx}
-                        className="p-3 rounded-2xl bg-brand-ivory/60 border border-brand-warm-stone/40 space-y-1"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-brand-terracotta font-bold flex items-center gap-1">
-                            <Icon size={11} />
-                            <span>{item.type}</span>
-                          </span>
-                        </div>
-                        <p className="text-xs font-semibold text-brand-ink leading-snug">
-                          {item.title}
-                        </p>
-                        <p className="text-[11px] text-brand-ink/65 leading-tight">
-                          {item.detail}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="space-y-1 pb-1 border-b border-brand-warm-stone/30">
+                <span className="text-[10px] font-mono uppercase font-bold text-brand-terracotta">
+                  {feed.label}
+                </span>
+                <p className="text-xs font-serif italic text-brand-ink/70">
+                  {feed.vibe}
+                </p>
               </div>
 
-              <div className="text-[10px] font-mono text-stone-400 border-t border-brand-warm-stone/30 pt-3">
-                Tailored dynamically from her active context
+              {/* Stack of Visual Cards */}
+              <div className="space-y-3">
+                {feed.cards.map((card, cIdx) => (
+                  <div
+                    key={cIdx}
+                    className="rounded-2xl overflow-hidden border border-brand-warm-stone/40 bg-brand-ivory group"
+                  >
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-100">
+                      <Image
+                        src={card.image}
+                        alt={card.title}
+                        fill
+                        className="object-cover group-hover:scale-104 transition-transform duration-500"
+                      />
+                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-white text-[9px] font-mono uppercase">
+                        {card.tag}
+                      </div>
+                    </div>
+                    <div className="p-3 space-y-0.5">
+                      <h4 className="font-serif font-bold text-xs text-brand-ink leading-snug">
+                        {card.title}
+                      </h4>
+                      <p className="text-[11px] text-brand-ink/65 font-sans">
+                        {card.meta}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="text-[10px] font-mono text-stone-400 pt-2 border-t border-brand-warm-stone/20">
+                Tuned by active preferences
               </div>
             </div>
           ))}
         </div>
 
-        {/* Closing Line */}
+        {/* Section Footer */}
         <div className="text-center pt-2 space-y-4">
           <p className="font-serif italic text-base text-brand-ink font-semibold">
             Not a generic “For You” page. One built from you.
           </p>
-          <div>
-            <Link
-              href="/radar"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
-            >
-              <span>See what Undernote finds for me</span>
-              <ArrowRight size={14} className="text-brand-terracotta" />
-            </Link>
-          </div>
         </div>
 
       </div>

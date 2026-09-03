@@ -3,14 +3,39 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Users, Check, Sparkles } from 'lucide-react';
+import { ArrowRight, Users, Check, Sparkles, MapPin } from 'lucide-react';
 
 export const TogetherSection: React.FC = () => {
+  const friends = [
+    { name: 'You', avatar: 'K', chip: 'Vegetarian' },
+    { name: 'Alex', avatar: 'A', chip: 'Quiet enough to talk' },
+    { name: 'Sarah', avatar: 'S', chip: 'Somewhere new' },
+    { name: 'Rohan', avatar: 'R', chip: '< 25 min away' },
+  ];
+
+  const matchedPlaces = [
+    {
+      name: 'The Glasshouse Courtyard',
+      meta: 'Vegetarian menu · Garden seating · 18 min away',
+      tag: 'Best fit',
+    },
+    {
+      name: 'Olive & Timber',
+      meta: 'Intimate acoustic noise levels · New menu',
+      tag: 'Quiet atmosphere',
+    },
+    {
+      name: 'Sora Izakaya',
+      meta: 'Small plates · Plant-forward options · Easy drive',
+      tag: 'New opening',
+    },
+  ];
+
   return (
     <section id="together" className="py-20 sm:py-28 bg-[#F2EDE4] border-t border-brand-warm-stone/40">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
         
-        {/* Header */}
+        {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <span className="text-[10px] font-mono uppercase tracking-widest text-brand-deep-green font-bold">
             Together
@@ -19,122 +44,94 @@ export const TogetherSection: React.FC = () => {
             Find somewhere everyone will actually like.
           </h2>
           <p className="text-sm sm:text-base text-brand-ink/75 leading-relaxed font-sans">
-            Start with what Undernote already knows about you. Invite the people you’re going with, and let each person share only what matters for this plan. Undernote finds the overlap and gives you a shortlist that works better for everyone.
+            Start with what Undernote already knows about you. Invite the people you’re going with, and let each person share only what matters for this plan.
           </p>
         </div>
 
-        {/* Visual Feature Card with 3 Steps and Concrete Example */}
-        <div className="bg-white rounded-[32px] overflow-hidden border border-brand-warm-stone/60 shadow-xs">
-          <div className="grid grid-cols-1 lg:grid-cols-12">
-            
-            {/* Left: Atmospheric Group Dining Image */}
-            <div className="lg:col-span-6 relative aspect-[16/10] lg:aspect-auto lg:h-full min-h-[320px] bg-stone-100">
-              <Image
-                src="/images/landing_group_dining.jpg"
-                alt="Friends having dinner together"
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent lg:hidden" />
-              
-              {/* Floating Overlap Card */}
-              <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl border border-stone-200 shadow-md text-xs space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[10px] uppercase font-bold text-brand-deep-green">
-                    Friday night · 4 people
+        {/* Visual Preference-Merging Demonstration per Section 13 */}
+        <div className="bg-white rounded-[32px] p-6 sm:p-10 border border-brand-warm-stone/60 shadow-xs space-y-8">
+          
+          {/* 4 Avatar Circles with Preference Chips */}
+          <div className="space-y-3">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 font-bold block text-center">
+              Shared Context Input
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {friends.map((friend, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-2xl bg-[#F7F3EC] border border-brand-warm-stone/50 flex flex-col items-center text-center space-y-2"
+                >
+                  <div className="w-10 h-10 rounded-full bg-brand-deep-green text-white font-serif font-bold text-sm flex items-center justify-center shadow-xs">
+                    {friend.avatar}
+                  </div>
+                  <span className="text-xs font-semibold text-brand-ink">
+                    {friend.name}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-                    Overlap Solved
+                  <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-white text-brand-deep-green border border-brand-warm-stone/60 font-medium">
+                    {friend.chip}
                   </span>
                 </div>
-                <div className="space-y-1 text-stone-600 text-[11px]">
-                  <p>• One person is vegetarian</p>
-                  <p>• One hates very loud restaurants</p>
-                  <p>• Two want somewhere new</p>
-                  <p>• Nobody wants a 45-minute drive</p>
-                </div>
-                <div className="pt-1 border-t border-stone-200 font-serif font-bold text-brand-ink text-xs">
-                  Result: 3 places that work for everyone
-                </div>
-              </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Merge Arrow */}
+          <div className="flex items-center justify-center">
+            <div className="px-4 py-1 rounded-full bg-[#F7F3EC] text-stone-500 text-[11px] font-mono font-semibold flex items-center gap-1.5 border border-brand-warm-stone/40">
+              <span>Merged without group chat arguments</span>
+              <span>&darr;</span>
+            </div>
+          </div>
+
+          {/* Resulting 3 Places That Work */}
+          <div className="space-y-4">
+            <div className="text-center space-y-1">
+              <h3 className="font-serif text-2xl font-bold text-brand-ink">
+                Four people. Three places that work.
+              </h3>
+              <p className="text-xs text-brand-ink/70 font-serif italic">
+                Everyone shares only what matters for tonight.
+              </p>
             </div>
 
-            {/* Right: The 3 Clean Steps */}
-            <div className="lg:col-span-6 p-6 sm:p-10 space-y-8 flex flex-col justify-between">
-              <div className="space-y-6">
-                <div className="space-y-1">
-                  <h3 className="font-serif text-2xl font-bold text-brand-ink">
-                    No back-and-forth group chats.
-                  </h3>
-                  <p className="text-xs text-brand-ink/70 font-sans">
-                    Effortless planning for going out, weekend trips, and shared moments.
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              {matchedPlaces.map((place, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-2xl bg-white border border-brand-deep-green/20 shadow-xs space-y-2 hover:border-brand-deep-green transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-mono uppercase px-2 py-0.5 rounded-full bg-brand-deep-green/10 text-brand-deep-green font-bold">
+                      {place.tag}
+                    </span>
+                    <MapPin size={12} className="text-brand-terracotta" />
+                  </div>
+                  <h4 className="font-serif font-bold text-sm text-brand-ink">
+                    {place.name}
+                  </h4>
+                  <p className="text-[11px] text-brand-ink/70 font-sans leading-tight">
+                    {place.meta}
                   </p>
                 </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3.5">
-                    <div className="w-7 h-7 rounded-full bg-brand-ivory text-brand-deep-green flex items-center justify-center font-bold text-xs shrink-0 border border-brand-warm-stone">
-                      1
-                    </div>
-                    <div>
-                      <h4 className="font-serif font-bold text-brand-ink text-sm">
-                        Start a plan
-                      </h4>
-                      <p className="text-xs text-brand-ink/70 leading-relaxed font-sans">
-                        Dinner, drinks, a show or something to do this weekend.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3.5">
-                    <div className="w-7 h-7 rounded-full bg-brand-ivory text-brand-deep-green flex items-center justify-center font-bold text-xs shrink-0 border border-brand-warm-stone">
-                      2
-                    </div>
-                    <div>
-                      <h4 className="font-serif font-bold text-brand-ink text-sm">
-                        Invite your people
-                      </h4>
-                      <p className="text-xs text-brand-ink/70 leading-relaxed font-sans">
-                        They can join from a simple link. No account required.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3.5">
-                    <div className="w-7 h-7 rounded-full bg-brand-ivory text-brand-deep-green flex items-center justify-center font-bold text-xs shrink-0 border border-brand-warm-stone">
-                      3
-                    </div>
-                    <div>
-                      <h4 className="font-serif font-bold text-brand-ink text-sm">
-                        Get the shortlist
-                      </h4>
-                      <p className="text-xs text-brand-ink/70 leading-relaxed font-sans">
-                        Undernote finds what fits the group, not just the loudest person in the chat.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Privacy Reassurance & CTA */}
-              <div className="space-y-4 pt-4 border-t border-brand-warm-stone/40">
-                <p className="text-xs text-brand-ink/65 font-serif italic">
-                  Everyone shares only what is relevant to this plan. Nobody shares their whole Undernote.
-                </p>
-                <div>
-                  <Link
-                    href="/capsules"
-                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 group"
-                  >
-                    <span>Plan something together</span>
-                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-brand-terracotta" />
-                  </Link>
-                </div>
-              </div>
-
+              ))}
             </div>
-
           </div>
+
+          {/* CTA & Non-user explanation */}
+          <div className="pt-4 border-t border-brand-warm-stone/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-stone-500 font-sans text-center sm:text-left">
+              Friends join from a web link. No app install or account required.
+            </p>
+            <Link
+              href="/capsules"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 group"
+            >
+              <span>Plan something together</span>
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-brand-terracotta" />
+            </Link>
+          </div>
+
         </div>
 
       </div>

@@ -34,13 +34,13 @@ export const IngestionHero: React.FC<IngestionHeroProps> = ({ onOpenModal }) => 
           <div className="text-left">
             <span className="text-xs font-semibold block leading-tight">
               {hasPersonalized
-                ? 'Sovereign Bedrock Active'
-                : 'Personalize with AI in 10s'}
+                ? 'Your Context Active'
+                : 'Bring what your AI already knows'}
             </span>
             <span className="text-[10px] opacity-80 block leading-tight">
               {hasPersonalized
-                ? 'Tuned to BLR · Direct Flights · <6.3" Screens'
-                : 'Connect ChatGPT, Claude, or speak a voice note'}
+                ? 'Tuned to your enduring preferences and active watches'
+                : 'Connect ChatGPT, Claude, or speak a voice note in 10s'}
             </span>
           </div>
         </div>

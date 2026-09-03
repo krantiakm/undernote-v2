@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { LandingHeader } from '@/components/landing/LandingHeader';
 import { HeroSection } from '@/components/landing/HeroSection';
-import { PersonalizationDemo } from '@/components/landing/PersonalizationDemo';
 import { ImportHook } from '@/components/landing/ImportHook';
 import { ForYouSection } from '@/components/landing/ForYouSection';
-import { HowItWorks } from '@/components/landing/HowItWorks';
+import { WorksWhileAwaySection } from '@/components/landing/WorksWhileAwaySection';
+import { PersonalizationDemo } from '@/components/landing/PersonalizationDemo';
 import { TogetherSection } from '@/components/landing/TogetherSection';
+import { HowItWorks } from '@/components/landing/HowItWorks';
 import { SovereigntySection } from '@/components/landing/SovereigntySection';
 import { FinalCtaSection } from '@/components/landing/FinalCtaSection';
 import { LandingFooter } from '@/components/landing/LandingFooter';
@@ -25,37 +26,40 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#F7F3EC] text-brand-ink selection:bg-brand-terracotta selection:text-white antialiased overflow-x-hidden">
-      {/* 1. Header */}
+      {/* Navigation Header */}
       <LandingHeader />
 
-      {/* 2. Hero: A world in tune with you */}
-      <HeroSection />
+      {/* 1. HERO — A world in tune with you */}
+      <HeroSection onOpenAiModal={() => handleOpenAiModal('gemini')} />
 
-      {/* 3. Personalization Demo: The same world. A much better fit */}
-      <PersonalizationDemo />
+      {/* 2. IMPORT — You already told AI who you are */}
+      <ImportHook onOpenAiModal={() => handleOpenAiModal('gemini')} />
 
-      {/* 4. Import Hook: You already told AI who you are */}
-      <ImportHook onOpenAiModal={handleOpenAiModal} />
-
-      {/* 5. For You Stream: Things worth your attention */}
+      {/* 3. FOR YOU — Things worth your attention */}
       <ForYouSection />
 
-      {/* 6. How It Works: It gets better without becoming work */}
-      <HowItWorks />
+      {/* 4. FINDS + WATCHES — You don't have to keep checking */}
+      <WorksWhileAwaySection />
 
-      {/* 7. Together: Find somewhere everyone will actually like */}
+      {/* 5. DIFFERENT FOR EVERYONE — One world. Different for everyone */}
+      <PersonalizationDemo />
+
+      {/* 6. TOGETHER — Find somewhere everyone will actually like */}
       <TogetherSection />
 
-      {/* 8. Ownership & Privacy: What knows you should belong to you */}
+      {/* 7. IT GETS BETTER — 3 clean steps */}
+      <HowItWorks />
+
+      {/* 8. YOURS — What knows you should belong to you */}
       <SovereigntySection />
 
-      {/* 9. Final CTA: See what the world looks like when it knows you better */}
-      <FinalCtaSection />
+      {/* 9. FINAL CTA — See what the world looks like when it knows you better */}
+      <FinalCtaSection onOpenAiModal={() => handleOpenAiModal('gemini')} />
 
-      {/* 10. Footer */}
-      <LandingFooter />
+      {/* 10. RICH FOOTER */}
+      <LandingFooter onOpenAiModal={handleOpenAiModal} />
 
-      {/* AI Extraction Prompt Studio Modal */}
+      {/* Interactive AI Extraction Prompt Studio Modal */}
       <AiPromptModal
         isOpen={isAiModalOpen}
         onClose={() => setIsAiModalOpen(false)}

@@ -84,10 +84,10 @@ export default function RadarPage() {
                 <Sparkles size={20} className="absolute inset-0 m-auto text-brand-deep-green" />
               </div>
               <p className="font-serif text-sm font-bold text-brand-deep-green">
-                Synthesizing Dual Horizon Context Graph...
+                Tuning your personalized feed...
               </p>
               <p className="text-xs text-brand-ink-light max-w-xs">
-                Recalibrating Bangalore departure rules, flight constraints, and coffee notes.
+                Applying your enduring preferences and active watches.
               </p>
             </div>
           ) : visibleCards.length > 0 ? (
