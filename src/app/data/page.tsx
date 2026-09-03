@@ -49,18 +49,18 @@ export default function DataPage() {
     <AppShell>
       <div className="flex-1 flex flex-col bg-brand-ivory p-4 space-y-5 pb-8">
         {/* Header */}
-        <div className="pt-2">
+        <div className="pt-2 space-y-1">
           <div className="flex items-center gap-1.5">
             <ShieldCheck size={14} className="text-brand-deep-green" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink-light">
-              Personal Data Sovereignty
+            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink/60">
+              Yours to edit · Yours to export · Yours to delete
             </span>
           </div>
           <h1 className="font-serif text-2xl font-bold tracking-tight text-brand-ink">
-            Transparency & Audit Log
+            Your Context
           </h1>
-          <p className="text-xs text-brand-ink-light mt-0.5">
-            Every inference, constraint, and preference is 100% owned and auditable by you.
+          <p className="text-xs text-brand-ink/75">
+            The things Undernote currently uses to make your world fit better. You can inspect, correct, remove or export anything here.
           </p>
         </div>
 
@@ -68,27 +68,16 @@ export default function DataPage() {
         <div className="bg-white rounded-3xl p-5 border border-brand-warm-stone/60 shadow-soft space-y-3.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-brand-deep-green uppercase tracking-wider">
-              Sovereignty Status
+              Privacy Status
             </span>
             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
               <CheckCircle2 size={11} />
-              <span>100% Local & Sovereign</span>
+              <span>Stored locally by default</span>
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="p-3 bg-brand-ivory rounded-2xl border border-brand-warm-stone/40">
-              <span className="text-[10px] text-brand-ink-light block">Ad Surveillance</span>
-              <span className="font-bold text-brand-deep-green text-sm">0% Tracking</span>
-            </div>
-            <div className="p-3 bg-brand-ivory rounded-2xl border border-brand-warm-stone/40">
-              <span className="text-[10px] text-brand-ink-light block">Storage Mode</span>
-              <span className="font-bold text-brand-deep-green text-sm">Client-Side First</span>
-            </div>
-          </div>
-
-          <p className="text-[11px] text-brand-ink-muted leading-relaxed">
-            Undernote does not broker your profile to ad networks or third-party brokers. Your Dual Horizon context graph is evaluated client-side against public web signals.
+          <p className="text-[11px] text-brand-ink/70 leading-relaxed">
+            Undernote does not broker your profile to ad networks or third-party brokers. Your context is evaluated client-side against public web signals.
           </p>
         </div>
 
@@ -100,7 +89,7 @@ export default function DataPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search rules, providers, or constraints..."
+              placeholder="Search what Undernote knows..."
               className="w-full text-xs py-2.5 pl-9 pr-3 rounded-2xl border border-brand-warm-stone/60 bg-white font-sans focus:outline-none focus:ring-2 focus:ring-brand-deep-green/30"
             />
           </div>

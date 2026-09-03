@@ -13,8 +13,8 @@ export const OriginFilterBar: React.FC = () => {
 
   const filters: Array<{ id: 'all' | RecommendationOrigin; label: string; count: number }> = [
     { id: 'all', label: 'All', count: totalCount },
-    { id: 'proactive', label: '✨ Proactive', count: proactiveCount },
-    { id: 'requested', label: '🎯 Tracked', count: trackedCount },
+    { id: 'proactive', label: 'Picked for you', count: proactiveCount },
+    { id: 'requested', label: 'Watching', count: trackedCount },
   ];
 
   return (

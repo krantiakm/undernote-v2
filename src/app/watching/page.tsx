@@ -82,13 +82,16 @@ export default function WatchingPage() {
           <div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink-light">
-                Autonomous Monitors
+              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink/60">
+                Active Tracking
               </span>
             </div>
             <h1 className="font-serif text-2xl font-bold tracking-tight text-brand-ink">
               Watching
             </h1>
+            <p className="text-xs text-brand-ink/70 mt-0.5">
+              Things Undernote is keeping an eye on for you.
+            </p>
           </div>
 
           <button

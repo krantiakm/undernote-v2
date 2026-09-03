@@ -110,12 +110,15 @@ export default function CapsulesPage() {
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-brand-terracotta" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink-light">
-                Multi-Player Intelligence
+                Shared Decisions
               </span>
             </div>
             <h1 className="font-serif text-2xl font-bold tracking-tight text-brand-ink">
-              Group Capsules & Fusion
+              Together
             </h1>
+            <p className="text-xs text-brand-ink/70 pt-0.5">
+              Make a plan that fits everyone.
+            </p>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -123,14 +126,14 @@ export default function CapsulesPage() {
               onClick={() => setIsJoinModalOpen(true)}
               className="text-xs font-semibold bg-white text-brand-deep-green border border-brand-warm-stone/80 px-3 py-2 rounded-full shadow-xs hover:bg-brand-ivory transition-all active:scale-95"
             >
-              Join
+              Join plan
             </button>
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className="flex items-center gap-1 text-xs font-semibold bg-brand-deep-green text-white px-3.5 py-2 rounded-full shadow-xs hover:bg-brand-deep-green-dark transition-all active:scale-95"
             >
               <Plus size={14} />
-              <span>Create</span>
+              <span>Start a plan</span>
             </button>
           </div>
         </div>
@@ -138,10 +141,10 @@ export default function CapsulesPage() {
         {/* Hero Visual Card */}
         <div className="relative rounded-3xl overflow-hidden aspect-[16/8] bg-brand-deep-green shadow-soft">
           <Image
-            src="/images/hero_group_dining.jpg"
-            alt="Group Fusion"
+            src="/images/landing_group_dining.jpg"
+            alt="Group Planning"
             fill
-            className="object-cover opacity-60"
+            className="object-cover opacity-65"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -149,13 +152,13 @@ export default function CapsulesPage() {
           <div className="absolute bottom-3.5 left-4 right-4 text-white space-y-1">
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-brand-terracotta text-white px-2 py-0.5 rounded-full">
               <Sparkles size={10} />
-              <span>Zero-Compromise Coordination</span>
+              <span>Shared Decisions</span>
             </span>
             <h3 className="font-serif text-lg font-bold leading-tight drop-shadow-sm">
-              Constraint Overlap Solver
+              What works for everyone
             </h3>
             <p className="text-xs text-white/85 line-clamp-1">
-              Fuses non-negotiables across travellers and diners to find the sweet spot.
+              Start with what you like, invite the others, and get a shortlist that works for the whole group.
             </p>
           </div>
         </div>

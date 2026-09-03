@@ -17,7 +17,8 @@ const satoshi = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: 'Undernote — A world in tune with you',
-  description: 'A sovereign, privacy-preserving personal context engine that turns AI memory into an active, proactive intelligence feed with zero ad surveillance.',
+  description:
+    'Bring what your AI already knows about you. Undernote uses it to find films, reads, places, trips, products and moments that feel unusually right for you.',
   icons: {
     icon: '/undernote.png',
   },

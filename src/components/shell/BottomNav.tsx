@@ -14,7 +14,7 @@ export const BottomNav: React.FC = () => {
 
   const navItems = [
     {
-      label: 'Radar',
+      label: 'For You',
       href: '/radar',
       icon: Compass,
       isActive: pathname.startsWith('/radar'),
@@ -27,7 +27,7 @@ export const BottomNav: React.FC = () => {
       badge: triggeredWatchesCount > 0 ? triggeredWatchesCount : undefined,
     },
     {
-      label: 'Capsules',
+      label: 'Together',
       href: '/capsules',
       icon: Users,
       isActive: pathname.startsWith('/capsules'),
@@ -40,7 +40,7 @@ export const BottomNav: React.FC = () => {
       isActive: pathname.startsWith('/me'),
     },
     {
-      label: 'Data',
+      label: 'Your Context',
       href: '/data',
       icon: ShieldCheck,
       isActive: pathname.startsWith('/data'),

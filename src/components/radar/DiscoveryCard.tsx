@@ -85,12 +85,12 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
             {isTracked ? (
               <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide bg-emerald-900/85 text-emerald-100 backdrop-blur-md px-3 py-1 rounded-full shadow-sm border border-emerald-500/30">
                 <Target size={11} className="text-emerald-400" />
-                <span>Tracked Alert</span>
+                <span>You’re watching this</span>
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide bg-brand-deep-green/90 text-brand-ivory backdrop-blur-md px-3 py-1 rounded-full shadow-sm border border-white/20">
-                <Sparkles size={11} className="text-brand-terracotta-light" />
-                <span>Proactive Match</span>
+                <Sparkles size={11} className="text-brand-terracotta" />
+                <span>Picked for you</span>
               </span>
             )}
           </div>
@@ -158,7 +158,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
           <div className="flex items-center gap-1.5">
             <ShieldCheck size={13} className="text-brand-terracotta" />
             <span className="text-[11px]">
-              {Math.round(card.relevanceScore * 100)}% Match: {card.relevanceReason[0]}
+              Why this fits: {card.relevanceReason[0]}
             </span>
           </div>
           <ChevronDown
@@ -185,10 +185,10 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
                 <span>{card.whyNow}</span>
               </div>
 
-              {/* Matched Bedrock Rules List */}
+              {/* Matched Reasons List */}
               <div className="space-y-1">
                 <span className="text-[10px] uppercase font-semibold text-brand-ink-light block">
-                  Matched Personal Bedrock:
+                  Why this fits you:
                 </span>
                 <div className="flex flex-wrap gap-1">
                   {card.relevanceReason.map((reason, idx) => (

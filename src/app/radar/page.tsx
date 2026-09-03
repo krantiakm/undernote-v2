@@ -60,19 +60,19 @@ export default function RadarPage() {
         {/* 5. Opportunity Discovery Feed */}
         <div className="px-4 pt-2 pb-6 flex-1">
           <div className="flex items-center justify-between pb-2 px-1">
-            <span className="text-[11px] font-semibold text-brand-ink-light flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold text-brand-ink/70 flex items-center gap-1.5">
               <Sparkles size={12} className="text-brand-terracotta" />
               <span>
                 {originFilter === 'proactive'
-                  ? 'Surfaced from Ambient Bedrock'
+                  ? 'Picked for you'
                   : originFilter === 'requested'
-                  ? 'Matched to Active Watches'
-                  : 'Proactive Discovery Radar'}
+                  ? 'You’re watching this'
+                  : 'For you'}
               </span>
             </span>
 
-            <span className="text-[10px] text-brand-ink-light font-mono">
-              {visibleCards.length} high-confidence finds
+            <span className="text-[10px] text-brand-ink/50 font-mono">
+              {visibleCards.length} new finds
             </span>
           </div>
 

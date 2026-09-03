@@ -27,46 +27,48 @@ export const LandingHeader: React.FC = () => {
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <Logo type="horizontal" size="md" variant="green" withTagline={false} clickable={false} />
+        <Link href="/" className="flex items-center gap-2">
+          <span className="font-serif text-2xl font-bold tracking-tight text-brand-deep-green">
+            undernote
+          </span>
         </Link>
 
         {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-brand-ink/70 tracking-wide">
-          <a
-            href="#categories"
+          <Link
+            href="/radar"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
-            What We Watch
-          </a>
+            For You
+          </Link>
+          <Link
+            href="/capsules"
+            className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
+          >
+            Together
+          </Link>
           <a
             href="#how-it-works"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
-            How It Works
+            How it works
           </a>
-          <a
-            href="#friends"
+          <Link
+            href="/data"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
-            Shared Horizons
-          </a>
-          <a
-            href="#privacy"
-            className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
-          >
-            Your Control
-          </a>
+            Your Context
+          </Link>
         </nav>
 
-        {/* Right Action CTA: Singular Clean "Try It Now" */}
+        {/* Right Action CTA: Clean "Try Undernote" */}
         <div className="hidden sm:flex items-center">
           <Link
             href="/radar"
             className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs font-bold transition-all shadow-sm group active:scale-95"
           >
-            <span>Try It Now</span>
-            <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+            <span>Try Undernote</span>
+            <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform text-brand-terracotta" />
           </Link>
         </div>
 
@@ -76,7 +78,7 @@ export const LandingHeader: React.FC = () => {
             href="/radar"
             className="px-3.5 py-1.5 rounded-full bg-brand-deep-green text-white text-xs font-bold shadow-sm"
           >
-            Try It Now
+            Try Undernote
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -92,34 +94,34 @@ export const LandingHeader: React.FC = () => {
       {mobileMenuOpen && (
         <div className="sm:hidden bg-[#F7F3EC] border-b border-brand-warm-stone/60 px-6 py-5 space-y-4 animate-fade-in shadow-xl">
           <div className="flex flex-col space-y-3 text-sm font-semibold text-brand-ink">
-            <a
-              href="#categories"
+            <Link
+              href="/radar"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1 border-b border-brand-warm-stone/30"
             >
-              What We Watch
-            </a>
+              For You
+            </Link>
+            <Link
+              href="/capsules"
+              onClick={() => setMobileMenuOpen(false)}
+              className="py-1 border-b border-brand-warm-stone/30"
+            >
+              Together
+            </Link>
             <a
               href="#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1 border-b border-brand-warm-stone/30"
             >
-              How It Works
+              How it works
             </a>
-            <a
-              href="#friends"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-1 border-b border-brand-warm-stone/30"
-            >
-              Shared Horizons
-            </a>
-            <a
-              href="#privacy"
+            <Link
+              href="/data"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1"
             >
-              Your Control
-            </a>
+              Your Context
+            </Link>
           </div>
 
           <div className="pt-2">
@@ -128,7 +130,7 @@ export const LandingHeader: React.FC = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="w-full py-3 rounded-full bg-brand-deep-green text-white font-bold text-xs flex items-center justify-center gap-2 text-center shadow-sm"
             >
-              <span>Try It Now</span>
+              <span>Try Undernote</span>
               <ArrowRight size={14} />
             </Link>
           </div>
