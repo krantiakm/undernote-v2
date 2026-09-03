@@ -22,7 +22,7 @@ import { AppShell } from '@/components/shell/AppShell';
 import { useApp } from '@/context/AppContext';
 
 export default function WatchingPage() {
-  const { watches, intents, toggleWatchStatus, addWatch, showToast } = useApp();
+  const { watches, intents, toggleWatchStatus, addWatch, showToast, geography, persona } = useApp();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [expandedWatchId, setExpandedWatchId] = useState<string | null>(null);
@@ -56,12 +56,13 @@ export default function WatchingPage() {
     if (!newEntity.trim() || !newCriteria.trim()) return;
 
     addWatch({
+      geography,
       type: newType,
       entity: newEntity.trim(),
       criteria: newCriteria.trim(),
       targetPrice: newTargetPrice ? parseFloat(newTargetPrice) : undefined,
       currentPrice: newTargetPrice ? parseFloat(newTargetPrice) * 1.15 : undefined,
-      currency: 'INR',
+      currency: persona.currency.includes('SGD') ? 'SGD' : 'INR',
       status: 'active',
       checkCadence: 'Every 2 hours',
       notificationMode: 'important_only',

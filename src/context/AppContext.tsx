@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import {
   CardData,
   ContextItemData,
+  GeographyAnchor,
   GroupCapsuleData,
   IntentData,
   PersonaArchetype,
@@ -14,13 +15,14 @@ import {
   WatchData,
 } from '@/types';
 import {
-  initialCards,
+  allCards,
+  indiaPersona,
   initialContextItems,
   initialGroupCapsules,
   initialIntents,
-  initialPersona,
   initialStories,
   initialWatches,
+  singaporePersona,
 } from '@/data/initialData';
 
 interface IngestionData {
@@ -31,6 +33,10 @@ interface IngestionData {
 }
 
 interface AppContextType {
+  // Geography Anchor (Dual Geography: India - BLR vs Singapore - SIN)
+  geography: GeographyAnchor;
+  setGeography: (geo: GeographyAnchor) => void;
+
   // Persona & DNA
   persona: PersonaArchetype;
   updatePersona: (updates: Partial<PersonaArchetype>) => void;
@@ -58,24 +64,25 @@ interface AppContextType {
   addWatch: (watch: Omit<WatchData, 'id' | 'lastChecked' | 'triggerMet' | 'observations'>) => void;
   toggleWatchStatus: (id: string) => void;
 
-  // Intents
+  // Planning Horizons / Intents
   intents: IntentData[];
-  addIntent: (intent: Omit<IntentData, 'id' | 'createdAt' | 'status'>) => void;
+  addIntent: (intent: Omit<IntentData, 'id' | 'createdAt'>) => void;
 
-  // Group Capsules
+  // Multi-Player Capsules
   groupCapsules: GroupCapsuleData[];
-  createGroupCapsule: (capsule: Omit<GroupCapsuleData, 'id' | 'createdAt' | 'inviteCode' | 'fusedOpportunities'>) => void;
-  joinGroupCapsule: (inviteCode: string, userName: string) => boolean;
+  createGroupCapsule: (capsule: Omit<GroupCapsuleData, 'id' | 'createdAt' | 'inviteCode'>) => string;
+  joinGroupCapsule: (inviteCode: string, guestName: string) => boolean;
 
-  // Stories Tray
+  // Stories
   stories: StoryPulse[];
   activeStoryIndex: number | null;
+  setActiveStoryIndex: (index: number | null) => void;
   openStory: (index: number) => void;
   closeStory: () => void;
   nextStory: () => void;
   prevStory: () => void;
 
-  // Ingestion Studio & Morphing
+  // Ingestion & Morphing
   isIngesting: boolean;
   isMorphing: boolean;
   hasPersonalized: boolean;
@@ -89,16 +96,17 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'undernote_app_state_v1';
+const STORAGE_KEY = 'undernote_app_state_v2';
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [persona, setPersona] = useState<PersonaArchetype>(initialPersona);
-  const [cards, setCards] = useState<CardData[]>(initialCards);
+  const [geography, setGeographyState] = useState<GeographyAnchor>('india-blr');
+  const [persona, setPersona] = useState<PersonaArchetype>(indiaPersona);
+  const [cards, setCards] = useState<CardData[]>(allCards.filter((c) => c.geography === 'india-blr'));
   const [contextItems, setContextItems] = useState<ContextItemData[]>(initialContextItems);
-  const [watches, setWatches] = useState<WatchData[]>(initialWatches);
-  const [intents, setIntents] = useState<IntentData[]>(initialIntents);
+  const [watches, setWatches] = useState<WatchData[]>(initialWatches.filter((w) => w.geography === 'india-blr'));
+  const [intents, setIntents] = useState<IntentData[]>(initialIntents.filter((i) => i.geography === 'india-blr'));
   const [groupCapsules, setGroupCapsules] = useState<GroupCapsuleData[]>(initialGroupCapsules);
-  const [stories, setStories] = useState<StoryPulse[]>(initialStories);
+  const [stories, setStories] = useState<StoryPulse[]>(initialStories.filter((s) => s.geography === 'india-blr'));
 
   // Filters
   const [originFilter, setOriginFilter] = useState<'all' | RecommendationOrigin>('all');
@@ -106,6 +114,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Stories
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
+
+  const openStory = (index: number) => setActiveStoryIndex(index);
+  const closeStory = () => setActiveStoryIndex(null);
+  const nextStory = () => {
+    setActiveStoryIndex((curr) => {
+      if (curr === null) return null;
+      if (curr >= stories.length - 1) return null;
+      return curr + 1;
+    });
+  };
+  const prevStory = () => {
+    setActiveStoryIndex((curr) => {
+      if (curr === null || curr <= 0) return 0;
+      return curr - 1;
+    });
+  };
 
   // Ingestion / Morphing State
   const [isIngesting, setIsIngesting] = useState(false);
@@ -122,17 +146,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }, 3500);
   };
 
+  // Geography Switcher
+  const setGeography = (geo: GeographyAnchor) => {
+    setGeographyState(geo);
+    if (geo === 'singapore-sin') {
+      setPersona(singaporePersona);
+      setCards(allCards.filter((c) => c.geography === 'singapore-sin'));
+      setStories(initialStories.filter((s) => s.geography === 'singapore-sin'));
+      setWatches(initialWatches.filter((w) => w.geography === 'singapore-sin'));
+      setIntents(initialIntents.filter((i) => i.geography === 'singapore-sin'));
+      showToast('Switched context to Singapore (SIN) 🇸🇬');
+    } else {
+      setPersona(indiaPersona);
+      setCards(allCards.filter((c) => c.geography === 'india-blr'));
+      setStories(initialStories.filter((s) => s.geography === 'india-blr'));
+      setWatches(initialWatches.filter((w) => w.geography === 'india-blr'));
+      setIntents(initialIntents.filter((i) => i.geography === 'india-blr'));
+      showToast('Switched context to Bangalore, India (BLR) 🇮🇳');
+    }
+  };
+
   // Local Storage hydration
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        if (parsed.geography) setGeographyState(parsed.geography);
         if (parsed.cards) setCards(parsed.cards);
         if (parsed.contextItems) setContextItems(parsed.contextItems);
         if (parsed.watches) setWatches(parsed.watches);
         if (parsed.intents) setIntents(parsed.intents);
-        if (parsed.groupCapsules) setGroupCapsules(parsed.groupCapsules);
         if (parsed.persona) setPersona(parsed.persona);
       }
     } catch {
@@ -146,6 +190,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
+          geography,
           cards,
           contextItems,
           watches,
@@ -157,7 +202,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // storage full or disabled
     }
-  }, [cards, contextItems, watches, intents, groupCapsules, persona]);
+  }, [geography, cards, contextItems, watches, intents, groupCapsules, persona]);
 
   const updatePersona = (updates: Partial<PersonaArchetype>) => {
     setPersona((prev) => ({ ...prev, ...updates }));
@@ -206,10 +251,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       })
     );
 
-    // Also add to context items
     const newContextItem: ContextItemData = {
       id: `ctx-${Date.now()}`,
-      domain: 'food-drink',
+      domain: 'travel',
       type: 'preference',
       key: 'Refined Preference',
       value: answer,
@@ -240,7 +284,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!refinedNote.trim()) return;
     const newContextItem: ContextItemData = {
       id: `ctx-${Date.now()}`,
-      domain: 'interests',
+      domain: 'travel',
       type: 'decision_rule',
       key: 'User Refinement Rule',
       value: refinedNote.trim(),
@@ -298,17 +342,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           timestamp: new Date().toISOString(),
           availability: 'Active Monitoring',
           sourceUrl: 'https://undernote.ai',
-          notes: 'Tracker initialized silently',
+          notes: 'Watch initialized from context',
         },
       ],
     };
     setWatches((prev) => [newWatch, ...prev]);
-    confetti({
-      particleCount: 35,
-      spread: 50,
-      colors: ['#24483F', '#C66E45'],
-    });
-    showToast('🎯 Proactive Tracker activated silently');
+    showToast(`Active watch established for "${watch.entity}"`);
   };
 
   const toggleWatchStatus = (id: string) => {
@@ -319,125 +358,137 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           : w
       )
     );
-    showToast('Tracker status updated');
+    showToast('Watch status updated');
   };
 
-  const addIntent = (intent: Omit<IntentData, 'id' | 'createdAt' | 'status'>) => {
+  const addIntent = (intent: Omit<IntentData, 'id' | 'createdAt'>) => {
     const newIntent: IntentData = {
       ...intent,
       id: `intent-${Date.now()}`,
       createdAt: new Date().toISOString(),
-      status: 'active',
     };
     setIntents((prev) => [newIntent, ...prev]);
-    showToast('Active horizon intent registered');
+    showToast(`Planning horizon added: "${intent.title}"`);
   };
 
   const createGroupCapsule = (
-    capsule: Omit<GroupCapsuleData, 'id' | 'createdAt' | 'inviteCode' | 'fusedOpportunities'>
-  ) => {
+    capsule: Omit<GroupCapsuleData, 'id' | 'createdAt' | 'inviteCode'>
+  ): string => {
+    const inviteCode = `UND-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
     const newCapsule: GroupCapsuleData = {
       ...capsule,
       id: `cap-${Date.now()}`,
-      inviteCode: `FUSE-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
-      fusedOpportunities: [initialCards[0], initialCards[2]],
+      inviteCode,
       createdAt: new Date().toISOString(),
     };
     setGroupCapsules((prev) => [newCapsule, ...prev]);
-    showToast('Multi-Player Group Capsule created');
+    confetti({
+      particleCount: 50,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+    showToast(`Group Capsule created! Share code: ${inviteCode}`);
+    return inviteCode;
   };
 
-  const joinGroupCapsule = (inviteCode: string, userName: string) => {
-    const code = inviteCode.trim().toUpperCase();
-    const found = groupCapsules.find((g) => g.inviteCode.toUpperCase() === code);
-    if (found) {
-      setGroupCapsules((prev) =>
-        prev.map((g) => {
-          if (g.inviteCode.toUpperCase() === code) {
-            return {
-              ...g,
+  const joinGroupCapsule = (inviteCode: string, guestName: string): boolean => {
+    const found = groupCapsules.find(
+      (c) => c.inviteCode.toUpperCase() === inviteCode.trim().toUpperCase()
+    );
+    if (!found) {
+      showToast('Invite code not found');
+      return false;
+    }
+    setGroupCapsules((prev) =>
+      prev.map((c) =>
+        c.id === found.id
+          ? {
+              ...c,
               members: [
-                ...g.members,
+                ...c.members,
                 {
                   userId: `user-${Date.now()}`,
-                  name: userName,
-                  avatar: userName.charAt(0).toUpperCase(),
-                  isPcpUser: true,
-                  contributedRuleIds: ['ctx-1'],
+                  name: guestName,
+                  avatar: guestName[0].toUpperCase(),
+                  isPcpUser: false,
+                  contributedRuleIds: [],
                   status: 'joined',
                 },
               ],
-            };
-          }
-          return g;
-        })
-      );
-      showToast(`Joined "${found.title}" successfully!`);
-      return true;
-    }
-    showToast('Invite code not found. Check code and try again.');
-    return false;
-  };
-
-  const openStory = (index: number) => {
-    setActiveStoryIndex(index);
-  };
-
-  const closeStory = () => {
-    setActiveStoryIndex(null);
-  };
-
-  const nextStory = () => {
-    if (activeStoryIndex !== null) {
-      if (activeStoryIndex < stories.length - 1) {
-        setActiveStoryIndex(activeStoryIndex + 1);
-      } else {
-        closeStory();
-      }
-    }
-  };
-
-  const prevStory = () => {
-    if (activeStoryIndex !== null) {
-      if (activeStoryIndex > 0) {
-        setActiveStoryIndex(activeStoryIndex - 1);
-      } else {
-        closeStory();
-      }
-    }
+            }
+          : c
+      )
+    );
+    confetti({
+      particleCount: 40,
+      spread: 60,
+      origin: { y: 0.6 },
+    });
+    showToast(`Joined "${found.title}"! Shared constraints fused.`);
+    return true;
   };
 
   const runIngestionPipeline = async (data: IngestionData) => {
     setIsIngesting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1400));
-    setIsIngesting(false);
-
-    // Start morphing animation
-    setIsMorphing(true);
     await new Promise((resolve) => setTimeout(resolve, 800));
+
+    setIsMorphing(true);
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+
+    // Dynamic extraction logic based on text or voice input
+    const inputContent = (data.text || data.voiceNote || '').toLowerCase();
+    
+    // Auto-detect geography from input
+    if (inputContent.includes('singapore') || inputContent.includes('changi')) {
+      setGeography('singapore-sin');
+    }
+
+    // Add synthesized context item
+    const extractedRule: ContextItemData = {
+      id: `ctx-${Date.now()}`,
+      domain: inputContent.includes('flight') || inputContent.includes('travel') ? 'travel' : 'shopping',
+      type: 'decision_rule',
+      key: 'Imported Rule',
+      value: (data.text || data.voiceNote || 'Curated taste preferences').substring(0, 100),
+      durability: 'durable',
+      horizon: 'persistent_long_term',
+      confidence: 0.98,
+      status: 'active',
+      origin: 'imported',
+      explicitness: 'explicit',
+      sensitivity: 'normal',
+      lastConfirmedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      provenance: { provider: data.source || 'AI Ingestion Studio' },
+    };
+
+    setContextItems((prev) => [extractedRule, ...prev]);
     setHasPersonalized(true);
+    setIsIngesting(false);
     setIsMorphing(false);
 
     confetti({
-      particleCount: 80,
-      spread: 70,
-      origin: { y: 0.5 },
-      colors: ['#24483F', '#C66E45', '#9DB6A9'],
+      particleCount: 75,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#24483F', '#C66E45', '#DDD6CB'],
     });
 
-    showToast('✨ Personal Context Synthesized! Radar dynamically transformed.');
+    showToast('✨ Personal Context Dossier calibrated and synchronized!');
   };
 
   const resetToBaseline = () => {
-    setCards(initialCards);
-    setContextItems(initialContextItems);
-    setWatches(initialWatches);
-    setIntents(initialIntents);
-    setGroupCapsules(initialGroupCapsules);
-    setPersona(initialPersona);
-    setHasPersonalized(true);
     localStorage.removeItem(STORAGE_KEY);
-    showToast('Reset to original master profile');
+    setGeographyState('india-blr');
+    setPersona(indiaPersona);
+    setCards(allCards.filter((c) => c.geography === 'india-blr'));
+    setContextItems(initialContextItems);
+    setWatches(initialWatches.filter((w) => w.geography === 'india-blr'));
+    setIntents(initialIntents.filter((i) => i.geography === 'india-blr'));
+    setStories(initialStories.filter((s) => s.geography === 'india-blr'));
+    setHasPersonalized(true);
+    showToast('Reset to sovereign baseline profile');
   };
 
   const savedCards = cards.filter((c) => c.status === 'saved');
@@ -445,6 +496,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        geography,
+        setGeography,
         persona,
         updatePersona,
         cards,
@@ -471,6 +524,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         joinGroupCapsule,
         stories,
         activeStoryIndex,
+        setActiveStoryIndex,
         openStory,
         closeStory,
         nextStory,

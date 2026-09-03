@@ -82,6 +82,7 @@ export default function CapsulesPage() {
         'Scoped privacy active: Only relevant travel/dining rules shared',
         'Automatic constraint overlap solver running',
       ],
+      fusedOpportunities: [],
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     });
 

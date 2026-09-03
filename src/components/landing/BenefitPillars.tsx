@@ -1,88 +1,69 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Plane, Coffee, BookOpen, Smartphone, CheckCircle, ArrowUpRight, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+import { Plane, Coffee, BookOpen, Smartphone, Sparkles, CheckCircle2, Shield } from 'lucide-react';
 
 const PILLARS = [
   {
     id: 'travel',
     icon: Plane,
-    tag: 'Escapes & Journeys',
-    title: 'Travel that already knows your non-negotiables.',
-    description:
-      'Traveling with a child means transit fatigue ruins vacations. Undernote automatically discards any flight with a layover, regardless of how cheap it looks, and surfaces child-safe boutique sanctuaries with quiet room zoning.',
-    highlight: 'Non-stop direct flights from BLR • Child-safe boutique villas • Zero layovers',
+    tag: 'Escapes & Travel',
+    title: 'Zero-compromise travel for your family.',
+    story:
+      'If you have young kids, a 12-hour layover in Bangkok isn’t a "deal"—it’s exhausting. Undernote locks in your non-negotiables: non-stop direct flights only, child-safe boutique villas with private pools, and departs strictly from your home airport.',
+    highlight: 'Non-stop flights from BLR • Child-safe sanctuaries • Zero layover fatigue',
+    sampleBadge: 'Direct BLR ➔ Sri Lanka · Dec 20–27',
+    price: '₹14,200 direct',
     image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=900&q=80',
-    sampleFind: {
-      title: 'Sri Lanka Coastal Villa + Direct BLR Flight',
-      badge: '🎯 Dec Intent Matched',
-      price: '₹14,200 flight + ₹18k/night villa',
-      why: 'Direct 85m hop. Private plunge pool with child safety gate.',
-    },
   },
   {
     id: 'coffee',
     icon: Coffee,
-    tag: 'Taste & Gastronomy',
-    title: 'Micro-lots and seasonal roasts before they sell out.',
-    description:
-      'Commercial coffee is stale and generic. When an anaerobic micro-lot with jasmine floral and stone-fruit notes is released by neighborhood roasters, Undernote alerts you within hours of the roast date.',
-    highlight: 'Anaerobic light/medium roasts • Floral & stone-fruit profiles • Fresh 48h roast batches',
+    tag: 'Specialty Taste',
+    title: 'Micro-lot harvests before they sell out.',
+    story:
+      'When your neighborhood roastery releases a rare 40kg anaerobic micro-lot with peach and jasmine notes, it sells out in a few hours. Undernote watches harvests matching your pour-over palate and alerts you the day it’s roasted.',
+    highlight: 'Anaerobic light/medium roasts • Floral & stone-fruit notes • 48h roast batches',
+    sampleBadge: 'Araku Seasonal 40kg Harvest',
+    price: '₹790 / 250g',
     image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=900&q=80',
-    sampleFind: {
-      title: 'Araku Micro-Lot 40kg Harvest Release',
-      badge: '✨ Proactive Taste Match',
-      price: '₹790 / 250g bag',
-      why: 'Harvested in Eastern Ghats. Peach & jasmine notes matching your exact pour-over palate.',
-    },
   },
   {
     id: 'culture',
     icon: BookOpen,
-    tag: 'Culture & Curiosity',
-    title: 'Books, intimate theatre, and heritage walks.',
-    description:
-      'Instead of bestseller lists engineered for mass appeal, discover unamplified 200-seat acoustic theatre productions, indie bookstore releases on architecture, and heritage dawn walks that match your weekend pacing.',
-    highlight: '200-seat acoustic theatre • Architectural literature • Unhurried morning walks',
+    tag: 'Books & Culture',
+    title: 'Books and intimate theatre aligned with your mind.',
+    story:
+      'No airport bestsellers or algorithmic hype. Discover seminal architectural literature from indie bookstores like Champaca, unamplified 200-seat acoustic theatre productions, and quiet heritage dawn walks that match your weekend rhythm.',
+    highlight: '200-seat acoustic theatre • Indie architectural prints • Dawn heritage walks',
+    sampleBadge: 'Champaca Indie Book Release',
+    price: '₹3,400 Hardcover',
     image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=900&q=80',
-    sampleFind: {
-      title: 'Christopher Alexander "The Nature of Order" Rare Print',
-      badge: '✨ Indie Bookstore Gem',
-      price: '₹3,400 (Champaca Bangalore)',
-      why: 'Seminal urbanism text matching your persistent craft and design interest.',
-    },
   },
   {
     id: 'hardware',
     icon: Smartphone,
-    tag: 'Tactile Hardware',
-    title: 'Tools that fit your life, not affiliate commission lists.',
-    description:
-      'Tired of tech blogs pushing bulky 6.9-inch phables? Undernote monitors compact hardware under 6.3 inches with clean OS and ultralight camera bodies under 500g, alerting you when verified price drops occur.',
-    highlight: 'Phone screens < 6.3 inches • Clean OS • Ultralight camera gear < 500g',
+    tag: 'Mindful Goods',
+    title: 'Tools that fit your hands, not affiliate blogs.',
+    story:
+      'Why are phones getting heavier when hands aren’t? Undernote monitors compact hardware under 6.3 inches with clean OS and ultralight camera bodies under 500g, alerting you the exact moment verified prices drop.',
+    highlight: 'Screens under 6.3" • Clean stock OS • Ultralight camera bodies <500g',
+    sampleBadge: 'Pixel 11 Compact Price Drop',
+    price: '₹56,499 (Target Met)',
     image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=900&q=80',
-    sampleFind: {
-      title: 'Pixel 11 Compact Flagship Drop',
-      badge: '🎯 Target Price Breached',
-      price: '₹56,499 (Watch: <₹60k)',
-      why: 'Single-hand grip ergonomic limit met with clean Android OS and 7 years of support.',
-    },
   },
 ];
 
 export const BenefitPillars: React.FC = () => {
-  const [activePillar, setActivePillar] = useState(0);
-
   return (
-    <section id="benefits" className="py-24 sm:py-32 bg-brand-ivory relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-16">
+    <section id="curations" className="py-20 sm:py-32 bg-brand-ivory relative">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-16">
         {/* Section Header */}
-        <div className="max-w-2xl space-y-3">
+        <div className="text-center max-w-2xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-terracotta">
             <Sparkles size={13} />
-            <span>Benefits Over Features</span>
+            <span>Real-Life Curation</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-5xl font-normal text-brand-ink leading-tight">
             Curated for how you{' '}
@@ -92,74 +73,63 @@ export const BenefitPillars: React.FC = () => {
             </span>
           </h2>
           <p className="text-sm sm:text-base text-brand-ink-light leading-relaxed">
-            Personal context isn't an abstract database. It's the filter that transforms an overwhelming web into a quiet stream of opportunities you genuinely care about.
+            Personal context isn’t an abstract database. It’s the filter that turns the overwhelming internet into a quiet stream of things you genuinely care about.
           </p>
         </div>
 
-        {/* 4 Lifestyle Benefit Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+        {/* 4 Rich Lifestyle Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {PILLARS.map((pillar, idx) => {
             const Icon = pillar.icon;
             return (
               <motion.div
                 key={pillar.id}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-white rounded-3xl overflow-hidden border border-brand-warm-stone/70 shadow-soft hover:shadow-elevated transition-all duration-300 flex flex-col group"
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.1 }}
+                className="bg-white rounded-3xl overflow-hidden border border-brand-warm-stone/70 shadow-soft hover:shadow-card transition-all duration-300 flex flex-col group"
               >
-                {/* Visual Imagery Banner */}
-                <div className="relative h-56 sm:h-64 overflow-hidden bg-brand-deep-green">
+                {/* Visual Image Banner with Subtle Badge */}
+                <div className="relative h-52 sm:h-60 overflow-hidden bg-neutral-900">
                   <img
                     src={pillar.image}
                     alt={pillar.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-brand-ink/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-transparent to-transparent" />
                   
-                  {/* Floating Tag */}
-                  <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[11px] font-bold text-brand-deep-green shadow-soft">
+                  {/* Category Pill */}
+                  <div className="absolute top-4 left-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[11px] font-bold text-brand-deep-green shadow-soft">
                     <Icon size={12} className="text-brand-terracotta" />
                     <span>{pillar.tag}</span>
                   </div>
 
-                  {/* Sample Opportunity Overlay Pill */}
-                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md rounded-2xl p-3 shadow-elevated border border-brand-warm-stone/50">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-terracotta/15 text-brand-terracotta font-mono">
-                        {pillar.sampleFind.badge}
-                      </span>
-                      <span className="text-xs font-mono font-bold text-emerald-700">
-                        {pillar.sampleFind.price}
-                      </span>
-                    </div>
-                    <h5 className="font-serif font-bold text-xs text-brand-ink truncate">
-                      {pillar.sampleFind.title}
-                    </h5>
-                    <p className="text-[11px] text-brand-ink-light truncate mt-0.5">
-                      {pillar.sampleFind.why}
-                    </p>
+                  {/* Sample Opportunity Badge */}
+                  <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white text-xs font-semibold">
+                    <span className="bg-brand-deep-green/90 backdrop-blur-md px-3 py-1 rounded-full text-[11px]">
+                      {pillar.sampleBadge}
+                    </span>
+                    <span className="font-mono text-emerald-300 bg-black/40 px-2 py-0.5 rounded text-[11px]">
+                      {pillar.price}
+                    </span>
                   </div>
                 </div>
 
-                {/* Card Content & Narrative */}
+                {/* Editorial Content */}
                 <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-2.5">
                     <h3 className="font-serif text-xl sm:text-2xl font-bold text-brand-ink group-hover:text-brand-deep-green transition-colors leading-snug">
                       {pillar.title}
                     </h3>
                     <p className="text-xs sm:text-sm text-brand-ink-light leading-relaxed">
-                      {pillar.description}
+                      {pillar.story}
                     </p>
                   </div>
 
-                  {/* Rule Highlights */}
-                  <div className="pt-3 border-t border-brand-warm-stone/40">
-                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-brand-deep-green">
-                      <CheckCircle size={13} className="text-emerald-600 shrink-0" />
-                      <span>{pillar.highlight}</span>
-                    </div>
+                  <div className="pt-3 border-t border-brand-warm-stone/40 flex items-center gap-2 text-xs font-semibold text-brand-deep-green">
+                    <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
+                    <span>{pillar.highlight}</span>
                   </div>
                 </div>
               </motion.div>

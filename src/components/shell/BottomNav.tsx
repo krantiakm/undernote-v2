@@ -15,9 +15,9 @@ export const BottomNav: React.FC = () => {
   const navItems = [
     {
       label: 'Radar',
-      href: '/radar',
+      href: '/',
       icon: Compass,
-      isActive: pathname === '/radar' || pathname.startsWith('/radar'),
+      isActive: pathname === '/' || pathname.startsWith('/radar'),
     },
     {
       label: 'Watching',
@@ -60,7 +60,7 @@ export const BottomNav: React.FC = () => {
               className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all duration-200 group ${
                 active
                   ? 'text-brand-deep-green font-medium'
-                  : 'text-brand-ink-light hover:text-brand-ink'
+                  : 'text-brand-ink/60 hover:text-brand-ink'
               }`}
             >
               <div className="relative">

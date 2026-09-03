@@ -1,15 +1,16 @@
 export type RadarDomain =
-  | 'shopping'
   | 'travel'
-  | 'food-drink'
   | 'books'
   | 'events'
+  | 'shopping'
+  | 'food-drink'
   | 'interests'
   | 'what-matters'
   | 'my-world';
 
 export type ContextHorizon = 'persistent_long_term' | 'active_short_term';
 export type RecommendationOrigin = 'proactive' | 'requested';
+export type GeographyAnchor = 'india-blr' | 'singapore-sin';
 
 export interface ContextItemData {
   id: string;
@@ -58,6 +59,7 @@ export interface CardData {
   type: string;
   originType: RecommendationOrigin;
   requestedTriggerLabel?: string;
+  geography: GeographyAnchor;
   domain: RadarDomain;
   title: string;
   subtitle?: string;
@@ -110,11 +112,13 @@ export interface StoryPulse {
   cardId: string;
   actionUrl: string;
   actionLabel: string;
+  geography: GeographyAnchor;
 }
 
 export interface WatchData {
   id: string;
   type: 'price' | 'availability' | 'route' | 'product' | 'travel';
+  geography: GeographyAnchor;
   entity: string;
   criteria: string;
   targetPrice?: number;
@@ -136,7 +140,8 @@ export interface WatchData {
 
 export interface IntentData {
   id: string;
-  category: 'shopping' | 'travel' | 'other';
+  geography: GeographyAnchor;
+  category: 'shopping' | 'travel' | 'books' | 'events' | 'other';
   title: string;
   description: string;
   status: 'active' | 'fulfilled' | 'expired';
@@ -167,20 +172,26 @@ export interface GroupCapsuleData {
   expiresAt: string;
 }
 
+export interface DomainMoodboardCapsule {
+  domain: 'travel' | 'books' | 'events' | 'shopping';
+  title: string;
+  tagline: string;
+  heroImage: string;
+  accentColor: string;
+  bedrockRule: string;
+  activeWatchOrHorizon: string;
+  curatedLocalNode: string;
+  guardrailMetric: string;
+}
+
 export interface PersonaArchetype {
   title: string;
   tagline: string;
   locationAnchor: string;
   homeAirport: string;
+  currency: string;
   familyComposition: string;
-  dnaScores: {
-    familySanctuary: number;
-    craftSovereignty: number;
-    minimalistHardware: number;
-    lowFrictionTravel: number;
-    specialtyCoffee: number;
-    culturalArts: number;
-  };
+  domainCapsules: DomainMoodboardCapsule[];
   livingStory: Array<{
     paragraph: string;
     tokenChips: Array<{

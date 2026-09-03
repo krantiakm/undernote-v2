@@ -4,580 +4,625 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MapPin,
-  Users,
-  ShieldCheck,
-  Sparkles,
-  Lock,
-  Clock,
+  Shield,
+  Plane,
+  BookOpen,
+  Ticket,
+  Smartphone,
   Copy,
   Check,
   Plus,
   Trash2,
+  Sliders,
   ChevronRight,
-  Download,
+  Sparkles,
+  MapPin,
+  Users,
+  Compass,
+  Lock,
+  Clock,
   X,
-  SlidersHorizontal,
-  BookOpen,
-  Layers,
+  Globe,
 } from 'lucide-react';
-import { AppShell } from '@/components/shell/AppShell';
 import { useApp } from '@/context/AppContext';
-import { ContextHorizon, ContextItemData, RadarDomain } from '@/types';
+import { DomainMoodboardCapsule, GeographyAnchor } from '@/types';
 
 export default function MePage() {
   const {
+    geography,
+    setGeography,
     persona,
     contextItems,
     intents,
+    watches,
     addContextItem,
     deleteContextItem,
     showToast,
   } = useApp();
 
-  // Active sheets / modals for progressive disclosure
-  const [activeSheet, setActiveSheet] = useState<'dna' | 'story' | 'add' | null>(null);
-  const [horizonTab, setHorizonTab] = useState<ContextHorizon>('persistent_long_term');
-  const [selectedToken, setSelectedToken] = useState<{
-    token: string;
-    ruleKey: string;
-    impactSummary: string;
-  } | null>(null);
+  const [activeTab, setActiveTab] = useState<'bedrock' | 'active'>('bedrock');
+  const [selectedCapsule, setSelectedCapsule] = useState<DomainMoodboardCapsule | null>(null);
+  const [showAddRuleModal, setShowAddRuleModal] = useState(false);
+  const [copiedContext, setCopiedContext] = useState(false);
+  const [activeTokenModal, setActiveTokenModal] = useState<{ token: string; impact: string } | null>(null);
 
-  const [hasCopiedExport, setHasCopiedExport] = useState(false);
+  // New rule form
+  const [newRuleKey, setNewRuleKey] = useState('');
+  const [newRuleValue, setNewRuleValue] = useState('');
+  const [newRuleDomain, setNewRuleDomain] = useState<'travel' | 'books' | 'events' | 'shopping'>('travel');
 
-  // Add rule state
-  const [newDomain, setNewDomain] = useState<RadarDomain>('my-world');
-  const [newKey, setNewKey] = useState('');
-  const [newValue, setNewValue] = useState('');
-  const [newHorizon, setNewHorizon] = useState<ContextHorizon>('persistent_long_term');
+  const bedrockItems = contextItems.filter((i) => i.horizon === 'persistent_long_term');
+  const activeItems = contextItems.filter((i) => i.horizon === 'active_short_term');
 
-  // Filter items by selected horizon
-  const filteredItems = contextItems.filter((item) => item.horizon === horizonTab);
+  const handleCopyPortableContext = () => {
+    const text = `# Undernote Sovereign Context Passport (${persona.locationAnchor})
+Archetype: ${persona.title}
+Location: ${persona.locationAnchor} (${persona.homeAirport})
+Family: ${persona.familyComposition}
+Currency: ${persona.currency}
 
-  // SVG Radar Polygon points computation
-  const dnaScores = persona.dnaScores;
-  const axes = [
-    { label: 'Family Calm', value: dnaScores.familySanctuary, angle: 0 },
-    { label: 'Craft Ethics', value: dnaScores.craftSovereignty, angle: 60 },
-    { label: 'Compact Hardware', value: dnaScores.minimalistHardware, angle: 120 },
-    { label: 'Zero Friction Travel', value: dnaScores.lowFrictionTravel, angle: 180 },
-    { label: 'Specialty Coffee', value: dnaScores.specialtyCoffee, angle: 240 },
-    { label: 'Acoustic Arts', value: dnaScores.culturalArts, angle: 300 },
-  ];
+## Non-Negotiable Bedrock Rules:
+${bedrockItems.map((b) => `- [${b.domain.toUpperCase()}] ${b.key}: ${b.value}`).join('\n')}
 
-  const center = 100;
-  const maxRadius = 75;
-
-  const getCoordinates = (value: number, angleDeg: number) => {
-    const angleRad = (angleDeg - 90) * (Math.PI / 180);
-    const r = (value / 100) * maxRadius;
-    const x = center + r * Math.cos(angleRad);
-    const y = center + r * Math.sin(angleRad);
-    return { x, y };
-  };
-
-  const polygonPoints = axes
-    .map((a) => {
-      const { x, y } = getCoordinates(a.value, a.angle);
-      return `${x},${y}`;
-    })
-    .join(' ');
-
-  const handleCopyMarkdownExport = () => {
-    const markdown = `# Undernote Personal Context Capsule
-**Persona**: ${persona.title}
-**Location**: ${persona.locationAnchor} (${persona.homeAirport})
-**Family**: ${persona.familyComposition}
-
-## Persistent Bedrock Rules
-${contextItems
-  .filter((c) => c.horizon === 'persistent_long_term')
-  .map((c) => `- **${c.key}**: ${c.value}`)
-  .join('\n')}
-
-## Active Short-Term Horizons
-${intents
-  .map((i) => `- **${i.title}**: ${i.description} (${i.daysRemaining} days left)`)
-  .join('\n')}
+## Active Intent Horizons:
+${intents.map((i) => `- ${i.title} (${i.daysRemaining} days remaining)`).join('\n')}
 `;
 
-    navigator.clipboard.writeText(markdown);
-    setHasCopiedExport(true);
-    showToast('Context Capsule copied! Paste into any AI model.');
-    setTimeout(() => setHasCopiedExport(false), 2500);
+    navigator.clipboard.writeText(text);
+    setCopiedContext(true);
+    showToast('Sovereign Context Passport copied to clipboard');
+    setTimeout(() => setCopiedContext(false), 3000);
   };
 
-  const handleAddRuleSubmit = (e: React.FormEvent) => {
+  const handleCreateRule = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newKey.trim() || !newValue.trim()) return;
+    if (!newRuleKey || !newRuleValue) return;
 
     addContextItem({
-      domain: newDomain,
+      domain: newRuleDomain,
       type: 'constraint',
-      key: newKey.trim(),
-      value: newValue.trim(),
-      durability: newHorizon === 'persistent_long_term' ? 'durable' : 'medium_lived',
-      horizon: newHorizon,
+      key: newRuleKey,
+      value: newRuleValue,
+      durability: 'durable',
+      horizon: activeTab === 'bedrock' ? 'persistent_long_term' : 'active_short_term',
       confidence: 1.0,
       status: 'active',
       origin: 'user_edit',
       explicitness: 'explicit',
       sensitivity: 'normal',
       lastConfirmedAt: new Date().toISOString(),
-      provenance: { provider: 'User Direct Input' },
+      provenance: { provider: 'Direct Profile Entry' },
     });
 
-    setNewKey('');
-    setNewValue('');
-    setActiveSheet(null);
+    setNewRuleKey('');
+    setNewRuleValue('');
+    setShowAddRuleModal(false);
+  };
+
+  const getDomainIcon = (domain: string) => {
+    switch (domain) {
+      case 'travel':
+        return <Plane className="w-4 h-4 text-emerald-700" />;
+      case 'books':
+        return <BookOpen className="w-4 h-4 text-amber-700" />;
+      case 'events':
+        return <Ticket className="w-4 h-4 text-rose-700" />;
+      case 'shopping':
+        return <Smartphone className="w-4 h-4 text-blue-700" />;
+      default:
+        return <Compass className="w-4 h-4 text-stone-700" />;
+    }
   };
 
   return (
-    <AppShell>
-      <div className="flex-1 flex flex-col bg-brand-ivory p-4 space-y-4 pb-12">
-        {/* 1. CLEAN CONSUMER PROFILE HERO */}
-        <div className="pt-2 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-brand-deep-green text-brand-ivory flex items-center justify-center text-xl font-bold border-2 border-brand-terracotta shadow-md">
-              K
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="font-serif text-xl font-bold text-brand-ink">Kranti</h1>
-                <span className="text-[10px] font-semibold bg-brand-deep-green text-white px-2 py-0.5 rounded-full">
-                  Sovereign
-                </span>
-              </div>
-              <p className="text-xs text-brand-ink-light font-medium">
-                The Mindful Craftsperson
-              </p>
-            </div>
-          </div>
-
+    <div className="space-y-6 pb-20 pt-1">
+      {/* 1. DUAL GEOGRAPHY ANCHOR SELECTOR */}
+      <div className="bg-brand-warm-stone/25 rounded-2xl p-2 border border-brand-warm-stone/50 flex items-center justify-between">
+        <div className="flex items-center gap-2 pl-2">
+          <Globe className="w-4 h-4 text-brand-deep-green" />
+          <span className="text-[11px] font-mono tracking-wider uppercase text-brand-ink/70 font-semibold">
+            Context Anchor
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
           <button
-            onClick={handleCopyMarkdownExport}
-            className="flex items-center gap-1 text-xs font-semibold bg-white text-brand-deep-green border border-brand-warm-stone/80 px-3 py-1.5 rounded-full shadow-xs hover:bg-brand-ivory transition-all active:scale-95"
+            onClick={() => setGeography('india-blr')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+              geography === 'india-blr'
+                ? 'bg-brand-deep-green text-white shadow-sm font-semibold'
+                : 'bg-transparent text-brand-ink/70 hover:bg-black/5'
+            }`}
           >
-            {hasCopiedExport ? <Check size={12} className="text-emerald-600" /> : <Download size={12} />}
-            <span>{hasCopiedExport ? 'Exported' : 'Export'}</span>
+            🇮🇳 Bangalore (BLR)
+          </button>
+          <button
+            onClick={() => setGeography('singapore-sin')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+              geography === 'singapore-sin'
+                ? 'bg-brand-deep-green text-white shadow-sm font-semibold'
+                : 'bg-transparent text-brand-ink/70 hover:bg-black/5'
+            }`}
+          >
+            🇸🇬 Singapore (SIN)
           </button>
         </div>
+      </div>
 
-        {/* Location & Family Pills */}
-        <div className="flex items-center gap-2 text-[11px] text-brand-ink-muted">
-          <span className="flex items-center gap-1 bg-white px-2.5 py-1 rounded-full border border-brand-warm-stone/50 shadow-xs">
-            <MapPin size={11} className="text-brand-terracotta" />
-            <span>Bangalore (BLR)</span>
-          </span>
-          <span className="flex items-center gap-1 bg-white px-2.5 py-1 rounded-full border border-brand-warm-stone/50 shadow-xs">
-            <Users size={11} className="text-emerald-700" />
-            <span>Married · 1 Child (7yo)</span>
-          </span>
+      {/* 2. CINEMATIC PERSONA DOSSIER HERO */}
+      <div className="relative overflow-hidden rounded-[28px] border border-brand-warm-stone/40 shadow-sm bg-brand-deep-green text-white">
+        <div className="relative h-48 w-full overflow-hidden">
+          <Image
+            src="/images/hero_persona_banner.jpg"
+            alt="Persona scenic landscape"
+            fill
+            className="object-cover opacity-60 mix-blend-overlay"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-deep-green via-brand-deep-green/60 to-transparent" />
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono tracking-wider uppercase bg-white/15 backdrop-blur-md text-white border border-white/20">
+              <Shield className="w-3 h-3 text-brand-sage" />
+              Sovereign Identity Dossier
+            </span>
+            <button
+              onClick={handleCopyPortableContext}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-colors border border-white/15"
+            >
+              {copiedContext ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+              {copiedContext ? 'Copied' : 'Export'}
+            </button>
+          </div>
         </div>
 
-        {/* 2. REVEAL-ON-TAP HUB CARDS */}
-
-        {/* CARD A: 6-Axis Lifestyle DNA (Tap to open full matrix) */}
-        <div
-          onClick={() => setActiveSheet('dna')}
-          className="bg-white rounded-3xl p-4 border border-brand-warm-stone/60 shadow-soft hover:shadow-card transition-all cursor-pointer group space-y-2.5"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-brand-deep-green/10 flex items-center justify-center text-brand-deep-green">
-                <SlidersHorizontal size={15} />
-              </div>
-              <div>
-                <h3 className="font-serif text-sm font-bold text-brand-ink">
-                  6-Axis Lifestyle DNA
-                </h3>
-                <p className="text-[11px] text-brand-ink-light">
-                  95% Sovereign Match Calibration
-                </p>
-              </div>
-            </div>
-
-            <ChevronRight size={16} className="text-brand-ink-light group-hover:translate-x-0.5 transition-transform" />
+        <div className="p-5 pt-0 relative z-10 space-y-3">
+          <div>
+            <h1 className="font-serif text-2xl font-bold tracking-tight text-white">
+              {persona.title}
+            </h1>
+            <p className="text-xs text-brand-sage mt-1 leading-relaxed font-sans">
+              {persona.tagline}
+            </p>
           </div>
 
-          {/* Mini Preview Polygon */}
-          <div className="h-16 flex items-center justify-between px-2 bg-brand-ivory rounded-2xl border border-brand-warm-stone/30">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12">
-                <svg className="w-full h-full" viewBox="0 0 200 200">
-                  <polygon
-                    points={polygonPoints}
-                    fill="rgba(36, 72, 63, 0.3)"
-                    stroke="#24483F"
-                    strokeWidth="4"
-                  />
-                </svg>
-              </div>
-              <div className="text-[11px] text-brand-ink-muted">
-                <span>Family Calm (98%) · Hardware (95%) · Coffee (92%)</span>
-              </div>
-            </div>
-            <span className="text-[11px] font-semibold text-brand-terracotta">
-              View Matrix →
+          <div className="flex flex-wrap gap-2 pt-1 text-[11px]">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 text-white/90">
+              <MapPin className="w-3 h-3 text-brand-sage" />
+              {persona.locationAnchor} ({persona.homeAirport})
+            </span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 text-white/90">
+              <Users className="w-3 h-3 text-brand-sage" />
+              {persona.familyComposition}
+            </span>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 text-white/90">
+              <Lock className="w-3 h-3 text-brand-sage" />
+              Zero Ad Tracking
             </span>
           </div>
         </div>
+      </div>
 
-        {/* CARD B: Living Story Tapestry (Tap to open story) */}
-        <div
-          onClick={() => setActiveSheet('story')}
-          className="bg-white rounded-3xl p-4 border border-brand-warm-stone/60 shadow-soft hover:shadow-card transition-all cursor-pointer group space-y-2"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-brand-terracotta/10 flex items-center justify-center text-brand-terracotta">
-                <BookOpen size={15} />
-              </div>
-              <div>
-                <h3 className="font-serif text-sm font-bold text-brand-ink">
-                  Living Story Tapestry
-                </h3>
-                <p className="text-[11px] text-brand-ink-light">
-                  Editorial biography with interactive context tokens
-                </p>
-              </div>
-            </div>
-
-            <ChevronRight size={16} className="text-brand-ink-light group-hover:translate-x-0.5 transition-transform" />
+      {/* 3. THE 4 FOCUSED DOMAIN MOODBOARDS (REPLACES THE HEXAGON) */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div>
+            <h2 className="text-sm font-semibold tracking-tight text-brand-ink uppercase font-mono text-[11px]">
+              Extracted Lifestyle Domains
+            </h2>
+            <p className="text-xs text-brand-ink/60 mt-0.5">
+              Visual guardrails protecting your attention across 4 core domains
+            </p>
           </div>
-
-          <p className="text-xs text-brand-ink-muted line-clamp-1 bg-brand-ivory p-2.5 rounded-2xl border border-brand-warm-stone/30 italic">
-            &ldquo;Based in Bangalore, your lifestyle revolves around intentional, unhurried routines...&rdquo;
-          </p>
+          <span className="text-[10px] font-mono text-brand-deep-green font-medium bg-brand-deep-green/10 px-2 py-0.5 rounded-full">
+            4 Calibrated
+          </span>
         </div>
 
-        {/* 3. DUAL HORIZON BEDROCK REGISTRY */}
-        <div className="bg-white rounded-3xl p-4 border border-brand-warm-stone/60 shadow-soft space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-serif text-sm font-bold text-brand-ink">
-                Dual Horizon Rules
-              </h3>
-              <p className="text-[11px] text-brand-ink-light">
-                {horizonTab === 'persistent_long_term'
-                  ? 'Permanent Bedrock (Never expires)'
-                  : 'Active Short-Term Planning Goals'}
-              </p>
-            </div>
-
-            <button
-              onClick={() => setActiveSheet('add')}
-              className="flex items-center gap-1 text-[11px] font-semibold bg-brand-deep-green text-white px-2.5 py-1 rounded-full shadow-xs hover:bg-brand-deep-green-dark transition-all active:scale-95"
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {persona.domainCapsules.map((capsule) => (
+            <motion.div
+              key={capsule.domain}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedCapsule(capsule)}
+              className="group cursor-pointer rounded-2xl overflow-hidden bg-white border border-brand-warm-stone/50 shadow-sm hover:shadow-md transition-all flex flex-col"
             >
-              <Plus size={12} />
-              <span>Add Rule</span>
-            </button>
-          </div>
+              {/* Photo Banner */}
+              <div className="relative h-32 w-full overflow-hidden bg-brand-warm-stone/20">
+                <Image
+                  src={capsule.heroImage}
+                  alt={capsule.title}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                
+                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-md shadow-sm">
+                  {getDomainIcon(capsule.domain)}
+                  <span className="text-[10px] font-mono uppercase font-bold tracking-wider text-brand-ink">
+                    {capsule.domain}
+                  </span>
+                </div>
 
-          {/* Segmented Horizon Control */}
-          <div className="flex p-1 bg-brand-warm-stone/25 rounded-full border border-brand-warm-stone/40 gap-1">
-            <button
-              onClick={() => setHorizonTab('persistent_long_term')}
-              className={`flex-1 py-1 text-xs font-medium rounded-full flex items-center justify-center gap-1 transition-all ${
-                horizonTab === 'persistent_long_term'
-                  ? 'bg-white text-brand-deep-green font-semibold shadow-xs'
-                  : 'text-brand-ink-light hover:text-brand-ink'
-              }`}
-            >
-              <Lock size={11} />
-              <span>🔒 Bedrock ({contextItems.filter((c) => c.horizon === 'persistent_long_term').length})</span>
-            </button>
+                <div className="absolute bottom-2.5 left-3 right-3 text-white">
+                  <h3 className="font-serif text-base font-semibold leading-tight drop-shadow-sm">
+                    {capsule.title}
+                  </h3>
+                </div>
+              </div>
 
-            <button
-              onClick={() => setHorizonTab('active_short_term')}
-              className={`flex-1 py-1 text-xs font-medium rounded-full flex items-center justify-center gap-1 transition-all ${
-                horizonTab === 'active_short_term'
-                  ? 'bg-white text-brand-deep-green font-semibold shadow-xs'
-                  : 'text-brand-ink-light hover:text-brand-ink'
-              }`}
-            >
-              <Clock size={11} />
-              <span>⏱️ Active ({contextItems.filter((c) => c.horizon === 'active_short_term').length})</span>
-            </button>
-          </div>
-
-          {/* Minimal Rule List */}
-          <div className="space-y-2 divide-y divide-brand-warm-stone/20">
-            {filteredItems.map((item) => (
-              <div key={item.id} className="pt-2 flex items-start justify-between gap-2 text-xs">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-brand-ink">{item.key}</span>
-                    {item.expiryCountdown && (
-                      <span className="text-[9px] font-semibold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded-full">
-                        {item.expiryCountdown}
-                      </span>
-                    )}
+              {/* Guardrail Content */}
+              <div className="p-3.5 space-y-2.5 text-xs flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="text-[10px] font-mono uppercase text-brand-terracotta font-semibold tracking-wider">
+                    🔒 Non-Negotiable Rule
                   </div>
-                  <p className="text-brand-ink-muted text-[11px] leading-snug">
-                    {item.value}
+                  <p className="text-brand-ink/90 font-medium line-clamp-2 mt-0.5 leading-snug">
+                    {capsule.bedrockRule}
                   </p>
                 </div>
 
+                <div className="pt-2 border-t border-brand-warm-stone/30 flex items-center justify-between text-[11px] text-brand-ink/70">
+                  <span className="truncate max-w-[170px] font-mono text-[10px] text-brand-deep-green font-medium">
+                    📍 {capsule.curatedLocalNode}
+                  </span>
+                  <span className="flex items-center gap-0.5 text-brand-terracotta font-medium group-hover:translate-x-0.5 transition-transform">
+                    Inspect <ChevronRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. LIVING STORY TAPESTRY (EDITORIAL NARRATIVE WITH TOKENS) */}
+      <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 shadow-sm space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-brand-terracotta" />
+            <h2 className="font-serif text-base font-bold text-brand-ink">
+              Living Story Tapestry
+            </h2>
+          </div>
+          <span className="text-[10px] font-mono text-brand-ink/60 uppercase">
+            Tap highlighted tokens
+          </span>
+        </div>
+
+        <div className="space-y-3 text-xs leading-relaxed text-brand-ink/80">
+          {persona.livingStory.map((sec, idx) => (
+            <p key={idx} className="bg-brand-ivory/60 p-3 rounded-xl border border-brand-warm-stone/30">
+              {sec.paragraph}
+              <span className="mt-2.5 flex flex-wrap gap-1.5 block">
+                {sec.tokenChips.map((chip) => (
+                  <button
+                    key={chip.token}
+                    onClick={() => setActiveTokenModal({ token: chip.token, impact: chip.impactSummary })}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-deep-green/10 hover:bg-brand-deep-green/20 text-brand-deep-green text-[11px] font-medium border border-brand-deep-green/20 transition-all cursor-pointer"
+                  >
+                    <span>✨</span>
+                    <span>{chip.token}</span>
+                  </button>
+                ))}
+              </span>
+            </p>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. DUAL HORIZON RULE REGISTRY */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <Sliders className="w-4 h-4 text-brand-deep-green" />
+            <h2 className="font-serif text-base font-bold text-brand-ink">
+              Dual Horizon Engine
+            </h2>
+          </div>
+          <button
+            onClick={() => setShowAddRuleModal(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-brand-deep-green text-white hover:bg-brand-deep-green/90 transition-colors shadow-xs"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Add Rule</span>
+          </button>
+        </div>
+
+        {/* Segmented Switcher */}
+        <div className="flex rounded-xl bg-brand-warm-stone/30 p-1 text-xs">
+          <button
+            onClick={() => setActiveTab('bedrock')}
+            className={`flex-1 py-1.5 rounded-lg font-medium transition-all text-center flex items-center justify-center gap-1.5 ${
+              activeTab === 'bedrock'
+                ? 'bg-white text-brand-deep-green shadow-xs font-semibold'
+                : 'text-brand-ink/70 hover:text-brand-ink'
+            }`}
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>🔒 Bedrock Rules ({bedrockItems.length})</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('active')}
+            className={`flex-1 py-1.5 rounded-lg font-medium transition-all text-center flex items-center justify-center gap-1.5 ${
+              activeTab === 'active'
+                ? 'bg-white text-brand-terracotta shadow-xs font-semibold'
+                : 'text-brand-ink/70 hover:text-brand-ink'
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>⏱️ Active Watches ({watches.length})</span>
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'bedrock' ? (
+          <div className="space-y-2">
+            {bedrockItems.map((item) => (
+              <div
+                key={item.id}
+                className="p-3.5 rounded-xl bg-white border border-brand-warm-stone/40 shadow-xs flex items-start justify-between gap-3 text-xs"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-brand-deep-green/10 text-brand-deep-green font-semibold">
+                      {item.domain}
+                    </span>
+                    <span className="font-medium text-brand-ink">{item.key}</span>
+                  </div>
+                  <p className="text-brand-ink/70 text-[11px] leading-relaxed">
+                    {item.value}
+                  </p>
+                  <div className="text-[10px] text-brand-ink/40 font-mono">
+                    Provenance: {item.provenance.provider} · Confidence: {Math.round(item.confidence * 100)}%
+                  </div>
+                </div>
                 <button
                   onClick={() => deleteContextItem(item.id)}
-                  className="text-brand-ink-light hover:text-rose-600 p-1 shrink-0"
-                  aria-label="Delete rule"
+                  className="text-stone-400 hover:text-rose-600 transition-colors p-1"
                 >
-                  <Trash2 size={12} />
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* 4. MODALS & SHEETS (Revealed On Tap) */}
-
-        {/* MODAL 1: DNA MATRIX SHEET */}
-        <AnimatePresence>
-          {activeSheet === 'dna' && (
-            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 40 }}
-                className="w-full max-w-md bg-brand-ivory rounded-t-3xl sm:rounded-3xl p-5 border border-brand-warm-stone shadow-2xl max-h-[85vh] overflow-y-auto space-y-4"
+        ) : (
+          <div className="space-y-2">
+            {watches.map((watch) => (
+              <div
+                key={watch.id}
+                className="p-3.5 rounded-xl bg-white border border-brand-warm-stone/40 shadow-xs flex items-start justify-between gap-3 text-xs"
               >
-                <div className="flex items-center justify-between pb-2 border-b border-brand-warm-stone/40">
-                  <h3 className="font-serif text-lg font-bold text-brand-ink">
-                    6-Axis Lifestyle DNA Matrix
-                  </h3>
-                  <button
-                    onClick={() => setActiveSheet(null)}
-                    className="w-7 h-7 rounded-full bg-brand-warm-stone/40 flex items-center justify-center"
-                  >
-                    <X size={15} />
-                  </button>
-                </div>
-
-                {/* SVG Radar */}
-                <div className="flex items-center justify-center py-2">
-                  <div className="w-56 h-56">
-                    <svg className="w-full h-full" viewBox="0 0 200 200">
-                      {[0.25, 0.5, 0.75, 1.0].map((ratio, i) => (
-                        <circle
-                          key={i}
-                          cx={center}
-                          cy={center}
-                          r={maxRadius * ratio}
-                          fill="none"
-                          stroke="#DDD6CB"
-                          strokeWidth="1"
-                          strokeDasharray="2 3"
-                        />
-                      ))}
-                      {axes.map((a, i) => {
-                        const { x, y } = getCoordinates(100, a.angle);
-                        return <line key={i} x1={center} y1={center} x2={x} y2={y} stroke="#DDD6CB" strokeWidth="1" />;
-                      })}
-                      <polygon
-                        points={polygonPoints}
-                        fill="rgba(36, 72, 63, 0.25)"
-                        stroke="#24483F"
-                        strokeWidth="2.5"
-                      />
-                      {axes.map((a, i) => {
-                        const { x, y } = getCoordinates(a.value, a.angle);
-                        return <circle key={i} cx={x} cy={y} r="4" fill="#C66E45" stroke="#FFFFFF" strokeWidth="1.5" />;
-                      })}
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Dimension Details */}
-                <div className="space-y-2">
-                  {axes.map((a, idx) => (
-                    <div key={idx} className="p-3 bg-white rounded-2xl border border-brand-warm-stone/40 flex items-center justify-between text-xs">
-                      <span className="font-medium text-brand-ink">{a.label}</span>
-                      <span className="font-bold text-brand-deep-green">{a.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-
-        {/* MODAL 2: LIVING STORY SHEET */}
-        <AnimatePresence>
-          {activeSheet === 'story' && (
-            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4">
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 40 }}
-                className="w-full max-w-md bg-brand-ivory rounded-t-3xl sm:rounded-3xl p-5 border border-brand-warm-stone shadow-2xl max-h-[85vh] overflow-y-auto space-y-4"
-              >
-                <div className="flex items-center justify-between pb-2 border-b border-brand-warm-stone/40">
-                  <div>
-                    <h3 className="font-serif text-lg font-bold text-brand-ink">
-                      Living Story Tapestry
-                    </h3>
-                    <p className="text-[11px] text-brand-ink-light">
-                      Tap any token to view Radar enforcement
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setActiveSheet(null)}
-                    className="w-7 h-7 rounded-full bg-brand-warm-stone/40 flex items-center justify-center"
-                  >
-                    <X size={15} />
-                  </button>
-                </div>
-
-                {/* Story paragraphs */}
-                <div className="space-y-3 text-xs leading-relaxed text-brand-ink-muted">
-                  {persona.livingStory.map((storyItem, idx) => (
-                    <p key={idx} className="bg-white p-4 rounded-2xl border border-brand-warm-stone/40">
-                      {storyItem.paragraph}
-                    </p>
-                  ))}
-                </div>
-
-                {/* Tokens */}
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[10px] uppercase font-semibold text-brand-ink-light block">
-                    Interactive Context Tokens:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {persona.livingStory.flatMap((s) => s.tokenChips).map((chip, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setSelectedToken(chip)}
-                        className="text-xs bg-brand-deep-green/10 hover:bg-brand-deep-green hover:text-white text-brand-deep-green px-3 py-1 rounded-full border border-brand-deep-green/20 transition-all font-medium"
-                      >
-                        ✦ {chip.token}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {selectedToken && (
-                  <div className="p-3.5 rounded-2xl bg-brand-deep-green text-brand-ivory space-y-1 animate-slide-up">
-                    <span className="text-xs font-bold text-brand-terracotta-light block">
-                      Token: {selectedToken.token}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-brand-terracotta/10 text-brand-terracotta font-semibold">
+                      {watch.type}
                     </span>
-                    <p className="text-xs text-brand-ivory/90 leading-snug">
-                      {selectedToken.impactSummary}
-                    </p>
+                    <span className="font-medium text-brand-ink">{watch.entity}</span>
+                    {watch.triggerMet && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-100 text-emerald-800 font-bold">
+                        Target Met
+                      </span>
+                    )}
                   </div>
-                )}
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+                  <p className="text-brand-ink/70 text-[11px]">
+                    Target: {watch.currency} {watch.targetPrice?.toLocaleString()} · Current:{' '}
+                    <span className="font-semibold text-brand-deep-green">
+                      {watch.currency} {watch.currentPrice?.toLocaleString()}
+                    </span>
+                  </p>
+                  <div className="text-[10px] text-brand-ink/40 font-mono">
+                    Cadence: {watch.checkCadence} · Checked: {watch.lastChecked}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-        {/* MODAL 3: ADD RULE SHEET */}
-        <AnimatePresence>
-          {activeSheet === 'add' && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-sm bg-brand-ivory rounded-3xl p-5 border border-brand-warm-stone shadow-2xl space-y-3.5"
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-base font-bold text-brand-ink">
-                    Add Context Bedrock Rule
-                  </h3>
-                  <button
-                    onClick={() => setActiveSheet(null)}
-                    className="w-7 h-7 rounded-full bg-brand-warm-stone/40 flex items-center justify-center"
-                  >
-                    <X size={15} />
-                  </button>
+      {/* MODAL 1: CAPSULE DEEP DIVE BOTTOM SHEET */}
+      <AnimatePresence>
+        {selectedCapsule && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4">
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="w-full max-w-md bg-white rounded-t-[28px] sm:rounded-[28px] max-h-[85vh] overflow-y-auto p-5 space-y-4 text-xs"
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-brand-warm-stone/30">
+                <div className="flex items-center gap-2">
+                  {getDomainIcon(selectedCapsule.domain)}
+                  <span className="font-mono text-xs uppercase font-bold text-brand-deep-green tracking-wider">
+                    {selectedCapsule.domain} Domain Blueprint
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSelectedCapsule(null)}
+                  className="p-1 rounded-full text-stone-400 hover:text-stone-700 bg-stone-100"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="relative h-44 w-full rounded-2xl overflow-hidden">
+                <Image
+                  src={selectedCapsule.heroImage}
+                  alt={selectedCapsule.title}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3 text-white">
+                  <h3 className="font-serif text-lg font-bold">{selectedCapsule.title}</h3>
+                  <p className="text-xs text-brand-sage mt-0.5">{selectedCapsule.tagline}</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div className="p-3 bg-brand-ivory rounded-xl border border-brand-warm-stone/40 space-y-1">
+                  <span className="font-mono text-[10px] text-brand-terracotta uppercase font-bold">
+                    🔒 Non-Negotiable Bedrock Rule
+                  </span>
+                  <p className="font-medium text-brand-ink">{selectedCapsule.bedrockRule}</p>
                 </div>
 
-                <form onSubmit={handleAddRuleSubmit} className="space-y-3">
-                  <div>
-                    <label className="text-xs font-semibold text-brand-ink block mb-1">
-                      Domain
-                    </label>
-                    <select
-                      value={newDomain}
-                      onChange={(e) => setNewDomain(e.target.value as RadarDomain)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                    >
-                      <option value="my-world">My World & Family</option>
-                      <option value="travel">Travel & Escapes</option>
-                      <option value="shopping">Shopping & Hardware</option>
-                      <option value="food-drink">Food & Specialty Coffee</option>
-                      <option value="interests">Interests & Craft</option>
-                      <option value="books">Books & Literature</option>
-                      <option value="what-matters">What Matters & Values</option>
-                    </select>
-                  </div>
+                <div className="p-3 bg-brand-ivory rounded-xl border border-brand-warm-stone/40 space-y-1">
+                  <span className="font-mono text-[10px] text-brand-deep-green uppercase font-bold">
+                    ⏱️ Active Focus & Horizon
+                  </span>
+                  <p className="font-medium text-brand-ink">{selectedCapsule.activeWatchOrHorizon}</p>
+                </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-brand-ink block mb-1">
-                      Horizon
-                    </label>
-                    <select
-                      value={newHorizon}
-                      onChange={(e) => setNewHorizon(e.target.value as ContextHorizon)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                    >
-                      <option value="persistent_long_term">Persistent Bedrock (Permanent)</option>
-                      <option value="active_short_term">Active Horizon (Short-Term)</option>
-                    </select>
-                  </div>
+                <div className="p-3 bg-brand-ivory rounded-xl border border-brand-warm-stone/40 space-y-1">
+                  <span className="font-mono text-[10px] text-stone-500 uppercase font-bold">
+                    📍 Curated Local Node ({persona.locationAnchor})
+                  </span>
+                  <p className="font-medium text-brand-ink">{selectedCapsule.curatedLocalNode}</p>
+                </div>
+              </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-brand-ink block mb-1">
-                      Rule Title
-                    </label>
-                    <input
-                      type="text"
-                      value={newKey}
-                      onChange={(e) => setNewKey(e.target.value)}
-                      placeholder="e.g. 'Camera Body Weight Limit'"
-                      className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                      required
-                    />
-                  </div>
+              <button
+                onClick={() => setSelectedCapsule(null)}
+                className="w-full py-3 rounded-xl bg-brand-deep-green text-white font-medium text-xs mt-2"
+              >
+                Close Domain Blueprint
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
-                  <div>
-                    <label className="text-xs font-semibold text-brand-ink block mb-1">
-                      Constraint Description
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={newValue}
-                      onChange={(e) => setNewValue(e.target.value)}
-                      placeholder="e.g. 'Under 500g body with full-frame sensor'"
-                      className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                      required
-                    />
-                  </div>
+      {/* MODAL 2: TOKEN IMPACT EXPLAINER */}
+      <AnimatePresence>
+        {activeTokenModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-sm bg-white rounded-2xl p-5 space-y-3 text-xs"
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-brand-warm-stone/30">
+                <div className="flex items-center gap-1.5 font-bold text-brand-deep-green font-mono">
+                  <span>✨</span>
+                  <span>{activeTokenModal.token}</span>
+                </div>
+                <button
+                  onClick={() => setActiveTokenModal(null)}
+                  className="p-1 rounded-full text-stone-400 hover:text-stone-700 bg-stone-100"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
 
-                  <div className="flex justify-end gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setActiveSheet(null)}
-                      className="text-xs text-brand-ink-light px-3 py-2"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="text-xs font-semibold bg-brand-deep-green text-white px-4 py-2 rounded-xl shadow-xs"
-                    >
-                      Save Rule
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-      </div>
-    </AppShell>
+              <div className="space-y-1">
+                <span className="text-[10px] font-mono uppercase text-brand-ink/50">
+                  Engine Protection & Action
+                </span>
+                <p className="text-brand-ink leading-relaxed font-medium">
+                  {activeTokenModal.impact}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setActiveTokenModal(null)}
+                className="w-full py-2 rounded-xl bg-brand-deep-green text-white font-medium text-xs"
+              >
+                Understood
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* MODAL 3: ADD NEW RULE */}
+      <AnimatePresence>
+        {showAddRuleModal && (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4">
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              className="w-full max-w-md bg-white rounded-t-[28px] sm:rounded-[28px] p-5 space-y-4 text-xs"
+            >
+              <div className="flex items-center justify-between pb-2 border-b border-brand-warm-stone/30">
+                <h3 className="font-serif text-base font-bold text-brand-ink">
+                  Add Bedrock Constraint
+                </h3>
+                <button
+                  onClick={() => setShowAddRuleModal(false)}
+                  className="p-1 rounded-full text-stone-400 hover:text-stone-700 bg-stone-100"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateRule} className="space-y-3">
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-brand-ink/60 mb-1">
+                    Domain
+                  </label>
+                  <select
+                    value={newRuleDomain}
+                    onChange={(e) => setNewRuleDomain(e.target.value as any)}
+                    className="w-full p-2.5 rounded-xl border border-brand-warm-stone/50 bg-brand-ivory text-brand-ink text-xs focus:outline-brand-deep-green"
+                  >
+                    <option value="travel">✈️ Travel & Escapes</option>
+                    <option value="books">📚 Books & Mind</option>
+                    <option value="events">🎟️ Cultural Events</option>
+                    <option value="shopping">📱 Shopping & Hardware</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-brand-ink/60 mb-1">
+                    Rule Title / Constraint Key
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Non-Stop Flight Rule"
+                    value={newRuleKey}
+                    onChange={(e) => setNewRuleKey(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-brand-warm-stone/50 bg-brand-ivory text-brand-ink text-xs focus:outline-brand-deep-green"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-mono uppercase text-brand-ink/60 mb-1">
+                    Constraint Definition (Exact criteria)
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    placeholder="e.g. Reject any flight with layovers; family travel must be direct."
+                    value={newRuleValue}
+                    onChange={(e) => setNewRuleValue(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-brand-warm-stone/50 bg-brand-ivory text-brand-ink text-xs focus:outline-brand-deep-green"
+                  />
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAddRuleModal(false)}
+                    className="flex-1 py-2.5 rounded-xl border border-brand-warm-stone text-brand-ink font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2.5 rounded-xl bg-brand-deep-green text-white font-medium"
+                  >
+                    Save Rule
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

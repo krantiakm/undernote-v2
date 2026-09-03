@@ -2,42 +2,41 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Gift, Utensils, Plane, Sparkles, ArrowRight, ShieldCheck, Check } from 'lucide-react';
-import Link from 'next/link';
+import { Users, Gift, Utensils, Plane, Sparkles, CheckCircle2, MessageSquareOff, ShieldCheck } from 'lucide-react';
 
 export const MultiPlayerSection: React.FC = () => {
   return (
-    <section id="multiplayer" className="py-24 sm:py-32 bg-white relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-16">
-        {/* Section Header */}
-        <div className="max-w-2xl space-y-3">
+    <section id="friends" className="py-20 sm:py-32 bg-white relative">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-16">
+        {/* Header */}
+        <div className="text-center space-y-3 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-terracotta">
             <Users size={13} />
-            <span>Collaborative Context Fusion</span>
+            <span>Shared Taste & Planning</span>
           </div>
           <h2 className="font-serif text-3xl sm:text-5xl font-normal text-brand-ink leading-tight">
             Group planning without the{' '}
             <span className="relative italic font-medium text-brand-deep-green">
-              50-message group poll.
+              50-message debate.
               <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-terracotta rounded-full" />
             </span>
           </h2>
           <p className="text-sm sm:text-base text-brand-ink-light leading-relaxed">
-            Planning a trip or dinner shouldn't mean endless compromises. Undernote fuses multiple people's context rules into a shared sweet spot.
+            Planning a trip or dinner shouldn&apos;t mean endless compromises. Undernote fuses multiple people&apos;s rules into a shared sweet spot.
           </p>
         </div>
 
-        {/* 3 Collaborative Cards */}
+        {/* 3 Rich Stories */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Card 1: Group Travel Radar */}
+          {/* Card 1: Group Trips */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="bg-brand-ivory/60 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-6 group hover:shadow-card hover:bg-white transition-all"
+            transition={{ duration: 0.4 }}
+            className="bg-brand-ivory/50 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-5 hover:bg-white hover:shadow-card transition-all group"
           >
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               <div className="w-12 h-12 rounded-2xl bg-brand-deep-green text-brand-ivory flex items-center justify-center">
                 <Plane size={22} className="text-brand-terracotta" />
               </div>
@@ -47,35 +46,35 @@ export const MultiPlayerSection: React.FC = () => {
                   Group Travel Radar
                 </span>
                 <h3 className="font-serif text-xl font-bold text-brand-ink">
-                  Constraint Overlap Sweet Spot
+                  The Group Trip Sweet Spot
                 </h3>
               </div>
 
               <p className="text-xs sm:text-sm text-brand-ink-light leading-relaxed">
-                Invite friends with 1 link. Undernote compares everyone's budget, departure airport, and flight non-negotiables to surface destinations that satisfy 100% of the group.
+                Planning a trip with 4 friends? Send 1 link. Undernote finds flights and villas where everyone&apos;s departure airports, budgets, and dates align 100%—no endless group chat polls.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-2 shadow-inner text-xs">
+            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-1.5 shadow-inner text-xs">
               <div className="flex items-center justify-between text-[11px] font-semibold text-brand-deep-green">
                 <span>4 Friends Joined</span>
-                <span className="text-emerald-700">0 Rule Conflicts</span>
+                <span className="text-emerald-700 font-bold">0 Rule Conflicts</span>
               </div>
-              <p className="text-[11px] text-brand-ink">
-                ✔ BLR & BOM direct flights to Colombo · Beach villa with 4 king suites
+              <p className="text-[11px] text-brand-ink-light">
+                Direct flights from BLR & BOM • 4-bedroom beachfront villa in Galle
               </p>
             </div>
           </motion.div>
 
-          {/* Card 2: Group Dining */}
+          {/* Card 2: Dinner */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="bg-brand-ivory/60 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-6 group hover:shadow-card hover:bg-white transition-all"
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="bg-brand-ivory/50 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-5 hover:bg-white hover:shadow-card transition-all group"
           >
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               <div className="w-12 h-12 rounded-2xl bg-brand-deep-green text-brand-ivory flex items-center justify-center">
                 <Utensils size={22} className="text-brand-terracotta" />
               </div>
@@ -85,69 +84,69 @@ export const MultiPlayerSection: React.FC = () => {
                   Table for Four
                 </span>
                 <h3 className="font-serif text-xl font-bold text-brand-ink">
-                  Multi-Diet Restaurant Matcher
+                  Dinner Without the Debate
                 </h3>
               </div>
 
               <p className="text-xs sm:text-sm text-brand-ink-light leading-relaxed">
-                One friend is vegetarian, one avoids gluten, and two want quiet ambient noise for conversation. Undernote surfaces 3 neighborhood tables where everyone eats well.
+                One friend is vegan, one is gluten-free, two want a quiet place to talk. Undernote surfaces 3 neighborhood spots where everyone has great options.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-2 shadow-inner text-xs">
+            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-1.5 shadow-inner text-xs">
               <div className="flex items-center justify-between text-[11px] font-semibold text-brand-deep-green">
                 <span>3 Neighborhood Spots</span>
-                <span className="text-emerald-700">Low Noise Match</span>
+                <span className="text-emerald-700 font-bold">Low Ambient Noise</span>
               </div>
-              <p className="text-[11px] text-brand-ink">
-                ✔ Satisfies gluten-free, vegan & quiet acoustic seating
+              <p className="text-[11px] text-brand-ink-light">
+                Indiranagar & Koramangala • Verified farm-to-table menus
               </p>
             </div>
           </motion.div>
 
-          {/* Card 3: Gifting Radar */}
+          {/* Card 3: Gifting */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-brand-ivory/60 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-6 group hover:shadow-card hover:bg-white transition-all"
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="bg-brand-ivory/50 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-5 hover:bg-white hover:shadow-card transition-all group"
           >
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               <div className="w-12 h-12 rounded-2xl bg-brand-deep-green text-brand-ivory flex items-center justify-center">
                 <Gift size={22} className="text-brand-terracotta" />
               </div>
 
               <div className="space-y-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-brand-terracotta">
-                  Zero-Awkwardness Gifting
+                  Gift Wishlist
                 </span>
                 <h3 className="font-serif text-xl font-bold text-brand-ink">
-                  Privacy-Safe Gift Wish Capsules
+                  Zero-Awkwardness Gifting
                 </h3>
               </div>
 
               <p className="text-xs sm:text-sm text-brand-ink-light leading-relaxed">
-                Share a read-only gift radar with loved ones. It displays your favorite roasteries, book genres, and hardware form factors with direct 1-click buy links without spoiling the surprise.
+                Share a privacy-safe wishlist with loved ones. Shows your favorite roasters, book genres, and gear with 1-click buy links—without spoiling the exact surprise.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-2 shadow-inner text-xs">
+            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-1.5 shadow-inner text-xs">
               <div className="flex items-center justify-between text-[11px] font-semibold text-brand-deep-green">
                 <span>Safe Context Scoping</span>
-                <span className="text-emerald-700">Zero Spoilers</span>
+                <span className="text-emerald-700 font-bold">Surprise Preserved</span>
               </div>
-              <p className="text-[11px] text-brand-ink">
-                ✔ Curated wishlist of micro-lots, architecture books & prime lenses
+              <p className="text-[11px] text-brand-ink-light">
+                Micro-lot roasts • Rare architectural books • Compact primes
               </p>
             </div>
           </motion.div>
         </div>
 
-        {/* Scoped Privacy Footnote */}
+        {/* Privacy Scoping Callout */}
         <div className="flex items-center justify-center gap-2 text-xs text-brand-ink-light bg-brand-ivory/80 rounded-2xl p-4 border border-brand-warm-stone/60 max-w-xl mx-auto text-center">
           <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
-          <span>Multi-player context is strictly scoped: dining fusion only reads food & location; personal health or finances are cryptographically excluded.</span>
+          <span>Group sharing is strictly scoped: dinner only reads food preferences; personal health or finances are completely excluded.</span>
         </div>
       </div>
     </section>
