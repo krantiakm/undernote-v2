@@ -15,9 +15,9 @@ export const BottomNav: React.FC = () => {
   const navItems = [
     {
       label: 'Radar',
-      href: '/',
+      href: '/radar',
       icon: Compass,
-      isActive: pathname === '/' || pathname.startsWith('/radar'),
+      isActive: pathname.startsWith('/radar'),
     },
     {
       label: 'Watching',

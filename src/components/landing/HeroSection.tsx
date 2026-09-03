@@ -150,6 +150,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAiModal }) => {
             <span>•</span>
             <span>Takes 10 seconds to connect</span>
           </div>
+
+          {/* Primary Direct CTAs to Launch App */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/radar"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-deep-green hover:bg-brand-deep-green-dark text-white text-xs sm:text-sm font-bold shadow-card transition-all active:scale-95 group"
+            >
+              <span>Explore Live App Feed</span>
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              href="/me"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-white hover:bg-stone-50 border border-brand-warm-stone/80 text-brand-ink text-xs sm:text-sm font-bold shadow-soft transition-all active:scale-95 group"
+            >
+              <span>View Identity Lookbook</span>
+              <ArrowRight size={14} className="text-brand-terracotta group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
         </motion.div>
 
         {/* Visual Product Showcase with Mobile-First Aesthetic */}
