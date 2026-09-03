@@ -1,153 +1,101 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Users, Gift, Utensils, Plane, Sparkles, CheckCircle2, MessageSquareOff, ShieldCheck } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, Users, Check, Sparkles } from 'lucide-react';
 
 export const MultiPlayerSection: React.FC = () => {
   return (
-    <section id="friends" className="py-20 sm:py-32 bg-white relative">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-16">
+    <section id="friends" className="py-20 sm:py-28 bg-[#F2EDE4] border-t border-brand-warm-stone/40">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-10">
+        
         {/* Header */}
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-terracotta">
-            <Users size={13} />
-            <span>Shared Taste & Planning</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-normal text-brand-ink leading-tight">
-            Group planning without the{' '}
-            <span className="relative italic font-medium text-brand-deep-green">
-              50-message debate.
-              <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-terracotta rounded-full" />
-            </span>
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-brand-deep-green font-bold">
+            Multi-Player Shared Horizons
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink">
+            Planning with friends, without 40 WhatsApp debates.
           </h2>
-          <p className="text-sm sm:text-base text-brand-ink-light leading-relaxed">
-            Planning a trip or dinner shouldn&apos;t mean endless compromises. Undernote fuses multiple people&apos;s rules into a shared sweet spot.
+          <p className="text-sm sm:text-base text-brand-ink/70 leading-relaxed font-sans">
+            Group planning is notoriously exhausting. Create a shared capsule for an escape or dinner, share a 6-character link, and let Undernote find places where everyone's tastes effortlessly overlap.
           </p>
         </div>
 
-        {/* 3 Rich Stories */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Card 1: Group Trips */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="bg-brand-ivory/50 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-5 hover:bg-white hover:shadow-card transition-all group"
-          >
-            <div className="space-y-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-brand-deep-green text-brand-ivory flex items-center justify-center">
-                <Plane size={22} className="text-brand-terracotta" />
+        {/* Visual Hero Feature */}
+        <div className="relative rounded-[32px] overflow-hidden bg-white border border-brand-warm-stone/60 shadow-[0_16px_35px_-8px_rgba(0,0,0,0.07)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
+            
+            {/* Rich Editorial Image */}
+            <div className="lg:col-span-7 relative aspect-[16/10] sm:aspect-[16/9] lg:aspect-auto lg:h-[440px] w-full bg-stone-100">
+              <Image
+                src="/images/landing_group_dining.jpg"
+                alt="Friends enjoying dinner together"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent lg:hidden" />
+              
+              {/* Floating Overlap Pill */}
+              <div className="absolute bottom-4 left-4 right-4 sm:right-auto bg-white/95 backdrop-blur-md p-3.5 rounded-2xl border border-stone-200/80 shadow-md text-xs space-y-1">
+                <div className="flex items-center gap-1.5 font-mono text-[10px] uppercase font-bold text-brand-deep-green">
+                  <Sparkles size={11} className="text-brand-terracotta" />
+                  <span>Shared Horizon Overlap Solved</span>
+                </div>
+                <div className="font-serif font-bold text-brand-ink text-sm">
+                  Dinner in Courtyard Garden
+                </div>
+                <div className="text-[10px] text-stone-500 font-mono">
+                  ✓ 2 Vegetarian · ✓ 1 Gluten-Free · ✓ Quiet Courtyard Seating
+                </div>
               </div>
+            </div>
 
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-terracotta">
-                  Group Travel Radar
-                </span>
-                <h3 className="font-serif text-xl font-bold text-brand-ink">
-                  The Group Trip Sweet Spot
+            {/* Editorial Content on Right */}
+            <div className="lg:col-span-5 p-6 sm:p-8 space-y-6">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono uppercase bg-brand-deep-green/10 text-brand-deep-green font-bold">
+                  <Users size={12} />
+                  <span>Zero Password Required</span>
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-brand-ink leading-tight">
+                  Instant taste fusion for trips, dining, and gifts.
                 </h3>
+                <p className="text-xs sm:text-sm text-brand-ink/75 leading-relaxed font-sans">
+                  Friends don’t need an account. They tap your link, pick their dietary leanings or flight preferences, and Undernote automatically surfaces options that respect everyone's quiet boundaries.
+                </p>
               </div>
 
-              <p className="text-xs sm:text-sm text-brand-ink-light leading-relaxed">
-                Planning a trip with 4 friends? Send 1 link. Undernote finds flights and villas where everyone&apos;s departure airports, budgets, and dates align 100%—no endless group chat polls.
-              </p>
+              <div className="space-y-2.5 pt-2 border-t border-brand-warm-stone/30 text-xs">
+                <div className="flex items-center gap-2 text-brand-ink font-medium">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px]">✓</span>
+                  <span>Scoped privacy: Only relevant trip preferences shared</span>
+                </div>
+                <div className="flex items-center gap-2 text-brand-ink font-medium">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px]">✓</span>
+                  <span>Automatic constraint overlap solver</span>
+                </div>
+                <div className="flex items-center gap-2 text-brand-ink font-medium">
+                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px]">✓</span>
+                  <span>Capsule self-destructs after the event</span>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/radar"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs font-bold transition-all shadow-sm active:scale-95"
+                >
+                  <span>Try It Now</span>
+                  <ArrowRight size={13} />
+                </Link>
+              </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-1.5 shadow-inner text-xs">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-brand-deep-green">
-                <span>4 Friends Joined</span>
-                <span className="text-emerald-700 font-bold">0 Rule Conflicts</span>
-              </div>
-              <p className="text-[11px] text-brand-ink-light">
-                Direct flights from BLR & BOM • 4-bedroom beachfront villa in Galle
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Card 2: Dinner */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="bg-brand-ivory/50 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-5 hover:bg-white hover:shadow-card transition-all group"
-          >
-            <div className="space-y-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-brand-deep-green text-brand-ivory flex items-center justify-center">
-                <Utensils size={22} className="text-brand-terracotta" />
-              </div>
-
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-terracotta">
-                  Table for Four
-                </span>
-                <h3 className="font-serif text-xl font-bold text-brand-ink">
-                  Dinner Without the Debate
-                </h3>
-              </div>
-
-              <p className="text-xs sm:text-sm text-brand-ink-light leading-relaxed">
-                One friend is vegan, one is gluten-free, two want a quiet place to talk. Undernote surfaces 3 neighborhood spots where everyone has great options.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-1.5 shadow-inner text-xs">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-brand-deep-green">
-                <span>3 Neighborhood Spots</span>
-                <span className="text-emerald-700 font-bold">Low Ambient Noise</span>
-              </div>
-              <p className="text-[11px] text-brand-ink-light">
-                Indiranagar & Koramangala • Verified farm-to-table menus
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Card 3: Gifting */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="bg-brand-ivory/50 rounded-3xl p-6 sm:p-7 border border-brand-warm-stone/70 shadow-soft flex flex-col justify-between space-y-5 hover:bg-white hover:shadow-card transition-all group"
-          >
-            <div className="space-y-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-brand-deep-green text-brand-ivory flex items-center justify-center">
-                <Gift size={22} className="text-brand-terracotta" />
-              </div>
-
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-brand-terracotta">
-                  Gift Wishlist
-                </span>
-                <h3 className="font-serif text-xl font-bold text-brand-ink">
-                  Zero-Awkwardness Gifting
-                </h3>
-              </div>
-
-              <p className="text-xs sm:text-sm text-brand-ink-light leading-relaxed">
-                Share a privacy-safe wishlist with loved ones. Shows your favorite roasters, book genres, and gear with 1-click buy links—without spoiling the exact surprise.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/50 space-y-1.5 shadow-inner text-xs">
-              <div className="flex items-center justify-between text-[11px] font-semibold text-brand-deep-green">
-                <span>Safe Context Scoping</span>
-                <span className="text-emerald-700 font-bold">Surprise Preserved</span>
-              </div>
-              <p className="text-[11px] text-brand-ink-light">
-                Micro-lot roasts • Rare architectural books • Compact primes
-              </p>
-            </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Privacy Scoping Callout */}
-        <div className="flex items-center justify-center gap-2 text-xs text-brand-ink-light bg-brand-ivory/80 rounded-2xl p-4 border border-brand-warm-stone/60 max-w-xl mx-auto text-center">
-          <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
-          <span>Group sharing is strictly scoped: dinner only reads food preferences; personal health or finances are completely excluded.</span>
-        </div>
       </div>
     </section>
   );

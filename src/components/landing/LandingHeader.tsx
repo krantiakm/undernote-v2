@@ -3,13 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
-import { Sparkles, Menu, X, ArrowRight } from 'lucide-react';
+import { Menu, X, ArrowRight } from 'lucide-react';
 
-interface LandingHeaderProps {
-  onOpenAiModal: (provider?: 'gemini' | 'chatgpt' | 'claude' | 'voice') => void;
-}
-
-export const LandingHeader: React.FC<LandingHeaderProps> = ({ onOpenAiModal }) => {
+export const LandingHeader: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -25,23 +21,23 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onOpenAiModal }) =
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled
-          ? 'bg-brand-ivory/95 backdrop-blur-md shadow-soft border-b border-brand-warm-stone/40 py-3.5'
+          ? 'bg-[#F7F3EC]/95 backdrop-blur-md shadow-xs border-b border-brand-warm-stone/40 py-3.5'
           : 'bg-transparent py-5'
       }`}
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         {/* Brand Logo */}
-        <div className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <Logo type="horizontal" size="md" variant="green" withTagline={false} clickable={false} />
-        </div>
+        </Link>
 
-        {/* Desktop Nav Links - Pure Consumer Language */}
-        <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-brand-ink-light tracking-wide">
+        {/* Desktop Nav Links */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-brand-ink/70 tracking-wide">
           <a
-            href="#curations"
+            href="#categories"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
-            What We Curate
+            What We Watch
           </a>
           <a
             href="#how-it-works"
@@ -53,47 +49,39 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onOpenAiModal }) =
             href="#friends"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
-            With Friends
+            Shared Horizons
           </a>
           <a
             href="#privacy"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
-            Privacy
+            Your Control
           </a>
         </nav>
 
-        {/* Right Action CTAs */}
-        <div className="hidden sm:flex items-center gap-3">
-          <button
-            onClick={() => onOpenAiModal('gemini')}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-warm-stone text-xs font-bold text-brand-deep-green hover:border-brand-terracotta transition-all shadow-sm group active:scale-95"
-          >
-            <Sparkles size={13} className="text-brand-terracotta group-hover:rotate-12 transition-transform" />
-            <span>Connect Your AI</span>
-          </button>
-
+        {/* Right Action CTA: Singular Clean "Try It Now" */}
+        <div className="hidden sm:flex items-center">
           <Link
             href="/radar"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-deep-green text-white text-xs font-bold hover:bg-brand-deep-green-dark transition-all shadow-card group active:scale-95"
+            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs font-bold transition-all shadow-sm group active:scale-95"
           >
-            <span>Launch Radar</span>
+            <span>Try It Now</span>
             <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </div>
 
-        {/* Mobile Menu Trigger */}
+        {/* Mobile Menu Button */}
         <div className="flex sm:hidden items-center gap-2">
-          <button
-            onClick={() => onOpenAiModal('gemini')}
-            className="px-3 py-1.5 rounded-full bg-brand-deep-green text-brand-ivory text-xs font-bold flex items-center gap-1.5 shadow-sm"
+          <Link
+            href="/radar"
+            className="px-3.5 py-1.5 rounded-full bg-brand-deep-green text-white text-xs font-bold shadow-sm"
           >
-            <Sparkles size={13} className="text-brand-terracotta" />
-            <span>Connect AI</span>
-          </button>
+            Try It Now
+          </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-full bg-white border border-brand-warm-stone text-brand-ink shadow-sm"
+            className="p-2 rounded-full bg-white border border-brand-warm-stone text-brand-ink shadow-xs"
+            aria-label="Toggle Navigation"
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -102,14 +90,14 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onOpenAiModal }) =
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-brand-ivory border-b border-brand-warm-stone/60 px-6 py-5 space-y-4 animate-fade-in shadow-xl">
+        <div className="sm:hidden bg-[#F7F3EC] border-b border-brand-warm-stone/60 px-6 py-5 space-y-4 animate-fade-in shadow-xl">
           <div className="flex flex-col space-y-3 text-sm font-semibold text-brand-ink">
             <a
-              href="#curations"
+              href="#categories"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1 border-b border-brand-warm-stone/30"
             >
-              What We Curate
+              What We Watch
             </a>
             <a
               href="#how-it-works"
@@ -123,34 +111,24 @@ export const LandingHeader: React.FC<LandingHeaderProps> = ({ onOpenAiModal }) =
               onClick={() => setMobileMenuOpen(false)}
               className="py-1 border-b border-brand-warm-stone/30"
             >
-              Planning With Friends
+              Shared Horizons
             </a>
             <a
               href="#privacy"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1"
             >
-              Your Privacy
+              Your Control
             </a>
           </div>
 
-          <div className="pt-2 flex flex-col gap-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                onOpenAiModal('gemini');
-              }}
-              className="w-full py-2.5 rounded-full bg-brand-terracotta text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm"
-            >
-              <Sparkles size={14} />
-              <span>Connect What AI Knows</span>
-            </button>
+          <div className="pt-2">
             <Link
               href="/radar"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full py-2.5 rounded-full bg-brand-deep-green text-white font-bold text-xs flex items-center justify-center gap-2 text-center shadow-sm"
+              className="w-full py-3 rounded-full bg-brand-deep-green text-white font-bold text-xs flex items-center justify-center gap-2 text-center shadow-sm"
             >
-              <span>Launch Live Radar</span>
+              <span>Try It Now</span>
               <ArrowRight size={14} />
             </Link>
           </div>

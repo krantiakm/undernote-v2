@@ -1,76 +1,120 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Lock, EyeOff, Download, Trash2, ShieldCheck, Sparkles } from 'lucide-react';
-
-const ITEMS = [
-  {
-    icon: Lock,
-    title: '100% Local-First',
-    desc: 'Your context stays encrypted on your own device. Zero cloud surveillance.',
-  },
-  {
-    icon: EyeOff,
-    title: 'Zero Data Brokering',
-    desc: 'We never sell your profiles, searches, or family rules to third-party ad networks.',
-  },
-  {
-    icon: Download,
-    title: '1-Click Portable Export',
-    desc: 'Export your verified lifestyle profile to ChatGPT, Claude, or Gemini anytime.',
-  },
-  {
-    icon: Trash2,
-    title: 'Granular Control',
-    desc: 'Transparent audit list. Edit, override, or delete any single rule in seconds.',
-  },
-];
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, ShieldCheck, Lock, Download, Trash2, Key } from 'lucide-react';
 
 export const SovereigntySection: React.FC = () => {
   return (
-    <section id="privacy" className="py-20 sm:py-32 bg-brand-ivory relative">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-16">
-        {/* Header */}
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-brand-terracotta">
-            <ShieldCheck size={14} className="text-emerald-600" />
-            <span>Privacy & Ownership</span>
-          </div>
-          <h2 className="font-serif text-3xl sm:text-5xl font-normal text-brand-ink leading-tight">
-            Your context.{' '}
-            <span className="relative italic font-medium text-brand-deep-green">
-              Your control.
-              <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-terracotta rounded-full" />
-            </span>
+    <section id="privacy" className="py-20 sm:py-28 bg-[#F7F3EC] border-t border-brand-warm-stone/40">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
+        
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-brand-deep-green font-bold">
+            Data Sovereignty &amp; Privacy
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink">
+            Your context. Your sovereign control.
           </h2>
-          <p className="text-sm sm:text-base text-brand-ink-light leading-relaxed">
-            Unlike big-tech feeds that hoard your data to target you with ads, Undernote operates as a sovereign layer owned entirely by you.
+          <p className="text-sm sm:text-base text-brand-ink/70 leading-relaxed font-sans">
+            In an internet built on surveillance capitalism and behavioral tracking, Undernote is built on the radical premise that your taste belongs solely to you.
           </p>
         </div>
 
-        {/* 4 Items Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {ITEMS.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: idx * 0.08 }}
-                className="bg-white rounded-3xl p-6 border border-brand-warm-stone/70 space-y-3 shadow-soft hover:shadow-card transition-all"
-              >
-                <div className="w-10 h-10 rounded-2xl bg-brand-ivory text-brand-deep-green flex items-center justify-center">
-                  <Icon size={20} />
-                </div>
-                <h4 className="font-serif font-bold text-base text-brand-ink">{item.title}</h4>
-                <p className="text-xs text-brand-ink-light leading-relaxed">{item.desc}</p>
-              </motion.div>
-            );
-          })}
+        {/* 2-Column Split: Image on Left, Deep Principles on Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          
+          {/* Left: Atmospheric Still Life Photo (Key, Sealed Envelope, Linen) */}
+          <div className="lg:col-span-5 relative aspect-[4/3] lg:aspect-auto lg:h-[460px] rounded-3xl overflow-hidden shadow-xs border border-brand-warm-stone/60">
+            <Image
+              src="/images/landing_sovereignty_vault.jpg"
+              alt="Data Sovereignty Antique Brass Key and Sealed Envelope"
+              fill
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-4 left-4 right-4 text-white">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-brand-sage font-bold block">
+                The Sovereign Standard
+              </span>
+              <p className="font-serif text-sm font-bold mt-0.5">
+                Encrypted locally. Zero ad networks. Always portable.
+              </p>
+            </div>
+          </div>
+
+          {/* Right: 4 Core Sovereignty Guarantees */}
+          <div className="lg:col-span-7 space-y-4">
+            
+            {/* Pillar 1 */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-brand-warm-stone/50 shadow-xs space-y-1.5">
+              <div className="flex items-center gap-2 text-brand-deep-green">
+                <Lock className="w-4 h-4 text-brand-terracotta" />
+                <h3 className="font-serif text-base font-bold text-brand-ink">
+                  Zero Ad Surveillance or Tracking Cookies
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-brand-ink/70 leading-relaxed font-sans pl-6">
+                We never sell attention, serve banner ads, or partner with commercial ad networks. Our matching engine works strictly on your behalf to protect your calm.
+              </p>
+            </div>
+
+            {/* Pillar 2 */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-brand-warm-stone/50 shadow-xs space-y-1.5">
+              <div className="flex items-center gap-2 text-brand-deep-green">
+                <Key className="w-4 h-4 text-brand-terracotta" />
+                <h3 className="font-serif text-base font-bold text-brand-ink">
+                  On-Device Storage &amp; Client-Side Keys
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-brand-ink/70 leading-relaxed font-sans pl-6">
+                Your extracted preferences, non-negotiables, and horizons are encrypted on your local device. Undernote runs private matching without harvesting your identity.
+              </p>
+            </div>
+
+            {/* Pillar 3 */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-brand-warm-stone/50 shadow-xs space-y-1.5">
+              <div className="flex items-center gap-2 text-brand-deep-green">
+                <Download className="w-4 h-4 text-brand-terracotta" />
+                <h3 className="font-serif text-base font-bold text-brand-ink">
+                  1-Click Portable Context Passport
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-brand-ink/70 leading-relaxed font-sans pl-6">
+                Never get locked in. At any moment, export your entire profile as a clean Markdown Context Passport ready to paste into ChatGPT, Claude, or any future AI tool.
+              </p>
+            </div>
+
+            {/* Pillar 4 */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-brand-warm-stone/50 shadow-xs space-y-1.5">
+              <div className="flex items-center gap-2 text-brand-deep-green">
+                <Trash2 className="w-4 h-4 text-brand-terracotta" />
+                <h3 className="font-serif text-base font-bold text-brand-ink">
+                  Immediate 1-Tap Data Oblivion
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-brand-ink/70 leading-relaxed font-sans pl-6">
+                If you ever want to reset, a single tap completely purges all local storage and session tokens from your browser. No lingering ghost data.
+              </p>
+            </div>
+
+          </div>
+
         </div>
+
+        {/* Bottom CTA */}
+        <div className="text-center pt-2">
+          <Link
+            href="/radar"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95"
+          >
+            <span>Try It Now</span>
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+
       </div>
     </section>
   );

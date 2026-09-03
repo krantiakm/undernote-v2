@@ -1,62 +1,46 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { LandingHeader } from '@/components/landing/LandingHeader';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { BenefitPillars } from '@/components/landing/BenefitPillars';
-import { RelevanceManifesto } from '@/components/landing/RelevanceManifesto';
 import { HowItWorks } from '@/components/landing/HowItWorks';
 import { DualHorizonShowcase } from '@/components/landing/DualHorizonShowcase';
 import { MultiPlayerSection } from '@/components/landing/MultiPlayerSection';
+import { RelevanceManifesto } from '@/components/landing/RelevanceManifesto';
 import { SovereigntySection } from '@/components/landing/SovereigntySection';
 import { LandingFooter } from '@/components/landing/LandingFooter';
-import { AiPromptModal } from '@/components/landing/AiPromptModal';
 import { Toast } from '@/components/ui/Toast';
 
 export default function LandingPage() {
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
-  const [selectedProvider, setSelectedProvider] = useState<'gemini' | 'chatgpt' | 'claude' | 'voice'>('gemini');
-
-  const handleOpenAiModal = (provider: 'gemini' | 'chatgpt' | 'claude' | 'voice' = 'gemini') => {
-    setSelectedProvider(provider);
-    setIsAiModalOpen(true);
-  };
-
   return (
-    <div className="min-h-screen bg-brand-ivory text-brand-ink selection:bg-brand-terracotta selection:text-white antialiased overflow-x-hidden">
-      {/* 1. Sticky Navigation Header */}
-      <LandingHeader onOpenAiModal={handleOpenAiModal} />
+    <div className="min-h-screen bg-[#F7F3EC] text-brand-ink selection:bg-brand-terracotta selection:text-white antialiased overflow-x-hidden">
+      {/* 1. Sticky Navigation Header with single "Try It Now" */}
+      <LandingHeader />
 
-      {/* 2. Hero Section with Animated Morphing Hook, AI Buttons & Launch App CTAs */}
-      <HeroSection onOpenAiModal={handleOpenAiModal} />
+      {/* 2. Editorial Hero with Animated Rotating Underline & Singular CTA */}
+      <HeroSection />
 
-      {/* 3. 4 Lifestyle Benefit Pillars (Travel, Coffee, Culture, Hardware) */}
+      {/* 3. The 4 Focused Pilot Categories (Travel, Books, Events, Hardware) */}
       <BenefitPillars />
 
-      {/* 4. The Relevance Manifesto (The Real Estate Spam vs Perfect Timing Analogy) */}
-      <RelevanceManifesto />
+      {/* 4. How It Works in 3 Quiet Human Steps */}
+      <HowItWorks />
 
-      {/* 5. How It Works in 3 Quiet Steps */}
-      <HowItWorks onOpenAiModal={handleOpenAiModal} />
-
-      {/* 6. Dual Horizon Architecture (Persistent Bedrock vs Active Focus) */}
+      {/* 5. Horizon Architecture: Longer Duration Persistence vs. Current Interests */}
       <DualHorizonShowcase />
 
-      {/* 7. Multi-Player Context Fusion (Group Travel, Dining, Gifting) */}
+      {/* 6. Multi-Player Shared Horizons with Rich Group Dining Imagery */}
       <MultiPlayerSection />
 
-      {/* 8. 100% Data Sovereignty & Local Privacy */}
+      {/* 7. Honest Ads vs. Genuine Relevance Comparison */}
+      <RelevanceManifesto />
+
+      {/* 8. Data Sovereignty: Your Context, Your Control (With Vault Imagery) */}
       <SovereigntySection />
 
-      {/* 9. Landing Footer & Final Brand Manifesto */}
-      <LandingFooter onOpenAiModal={handleOpenAiModal} />
-
-      {/* Interactive AI Extraction Prompt Studio Modal */}
-      <AiPromptModal
-        isOpen={isAiModalOpen}
-        onClose={() => setIsAiModalOpen(false)}
-        initialProvider={selectedProvider}
-      />
+      {/* 9. Elaborate Luxury Publication Footer */}
+      <LandingFooter />
 
       {/* System Toast Notification */}
       <Toast />

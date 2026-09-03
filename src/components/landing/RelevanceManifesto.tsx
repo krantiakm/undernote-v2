@@ -1,85 +1,87 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles, PhoneCall, Check, X, VolumeX } from 'lucide-react';
+import { XCircle, CheckCircle2 } from 'lucide-react';
 
 export const RelevanceManifesto: React.FC = () => {
   return (
-    <section id="relevance" className="py-20 sm:py-28 bg-brand-deep-green text-brand-ivory relative overflow-hidden">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-12">
+    <section className="py-16 sm:py-20 bg-[#F2EDE4] border-t border-brand-warm-stone/40">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
+        
         {/* Header */}
-        <div className="text-center space-y-3">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-terracotta/20 text-[10px] font-bold uppercase tracking-wider text-brand-terracotta-light">
-            <Sparkles size={11} />
-            <span>The Relevance Standard</span>
+        <div className="text-center space-y-2 max-w-xl mx-auto">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-brand-terracotta font-bold">
+            The Difference
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-normal">
-            Commercial discovery isn&apos;t broken.{' '}
-            <span className="italic text-brand-terracotta-light">Irrelevant timing is.</span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-ink">
+            Ads vs. Genuine Relevance
           </h2>
-          <p className="text-xs sm:text-sm text-brand-sage-light max-w-lg mx-auto leading-relaxed">
-            Nobody hates finding great things. We only hate getting interrupted by offers that know nothing about our lives.
+          <p className="text-xs sm:text-sm text-brand-ink/70 leading-relaxed font-sans">
+            Ads show you what someone paid to put in front of you. Undernote shows you what you actually love, when the timing is right.
           </p>
         </div>
 
-        {/* Crisp Visual Contrast */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Cold Call Spam */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-brand-deep-green-dark/70 rounded-3xl p-6 border border-white/10 space-y-4"
-          >
-            <div className="flex items-center justify-between text-xs text-red-400 font-bold">
-              <span className="flex items-center gap-1.5">
-                <PhoneCall size={14} />
-                <span>The Cold Call Problem</span>
-              </span>
-              <span className="text-[10px] font-mono text-white/40">SPAM</span>
+        {/* Crisp Side-by-Side Comparison */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          
+          {/* Column 1: Online Ads */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-white/70 border border-stone-300 space-y-3">
+            <div className="flex items-center gap-2 text-rose-700">
+              <XCircle className="w-4 h-4" />
+              <h3 className="font-serif text-base font-bold text-brand-ink">
+                Everyday Online Ads
+              </h3>
             </div>
-            <p className="font-serif text-base text-white">
-              &ldquo;Are you looking to buy a villa in a distant suburb?&rdquo;
-            </p>
-            <p className="text-xs text-brand-sage-light leading-relaxed">
-              Irritating because you aren&apos;t looking for property and it fits none of your rules.
-            </p>
-          </motion.div>
-
-          {/* Undernote Fit */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="bg-white/10 rounded-3xl p-6 border border-brand-terracotta/40 space-y-4 shadow-soft"
-          >
-            <div className="flex items-center justify-between text-xs text-brand-terracotta-light font-bold">
-              <span className="flex items-center gap-1.5">
-                <Sparkles size={14} />
-                <span>The Undernote Fit</span>
-              </span>
-              <span className="text-[10px] font-mono text-emerald-300">SERENDIPITY</span>
-            </div>
-            <p className="font-serif text-base text-brand-ivory">
-              &ldquo;Direct BLR flight to Colombo just dropped for your Dec 20–27 window.&rdquo;
-            </p>
-            <p className="text-xs text-brand-ivory/80 leading-relaxed">
-              When you <em>are</em> planning a family trip, perfect context and timing feels like magic.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Proactive Silence Callout */}
-        <div className="bg-brand-deep-green-dark/40 rounded-2xl p-4 sm:p-5 border border-white/10 flex items-center justify-between gap-4 text-xs text-brand-sage-light">
-          <div className="flex items-center gap-3">
-            <VolumeX size={18} className="text-brand-terracotta-light shrink-0" />
-            <span>
-              <strong>Proactive Silence:</strong> Undernote only surfaces 3 to 8 opportunities. If nothing matches 100% of your rules, it stays quiet.
-            </span>
+            <ul className="space-y-2 text-xs text-brand-ink/75 font-sans">
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Prioritizes highest bidder over your taste</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Tracks your browsing across the web</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Fake countdown clocks &amp; artificial urgency</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">✕</span>
+                <span>Interrupts your attention when you want calm</span>
+              </li>
+            </ul>
           </div>
+
+          {/* Column 2: Undernote */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-white border border-brand-deep-green/30 shadow-xs space-y-3">
+            <div className="flex items-center gap-2 text-brand-deep-green">
+              <CheckCircle2 className="w-4 h-4 text-brand-deep-green" />
+              <h3 className="font-serif text-base font-bold text-brand-ink">
+                Undernote Relevance
+              </h3>
+            </div>
+            <ul className="space-y-2 text-xs text-brand-ink/85 font-sans">
+              <li className="flex items-start gap-2">
+                <span className="text-brand-deep-green font-bold">✓</span>
+                <span>Zero sponsored placement. Strictly your standards</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-brand-deep-green font-bold">✓</span>
+                <span>100% on-device private context</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-brand-deep-green font-bold">✓</span>
+                <span>Honest price monitoring &amp; route compliance</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-brand-deep-green font-bold">✓</span>
+                <span>Arrives quietly only when criteria are met</span>
+              </li>
+            </ul>
+          </div>
+
         </div>
+
       </div>
     </section>
   );
