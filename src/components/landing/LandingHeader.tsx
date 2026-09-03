@@ -29,32 +29,32 @@ export const LandingHeader: React.FC = () => {
         {/* Brand Logo */}
         <Logo size="md" type="full" variant="green" />
 
-        {/* Desktop Nav Links */}
+        {/* Desktop Nav Links (Pure in-page anchors) */}
         <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-brand-ink/70 tracking-wide">
-          <Link
-            href="/radar"
+          <a
+            href="#for-you"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
             For You
-          </Link>
-          <Link
-            href="/capsules"
+          </a>
+          <a
+            href="#together"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
             Together
-          </Link>
+          </a>
           <a
             href="#how-it-works"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
             How it works
           </a>
-          <Link
-            href="/data"
+          <a
+            href="#your-context"
             className="hover:text-brand-ink transition-colors hover:underline underline-offset-4 decoration-brand-terracotta decoration-2"
           >
             Your Context
-          </Link>
+          </a>
         </nav>
 
         {/* Right Action CTA: Clean "Try Undernote" */}
@@ -86,24 +86,24 @@ export const LandingHeader: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer (Pure in-page anchors) */}
       {mobileMenuOpen && (
         <div className="sm:hidden bg-[#F7F3EC] border-b border-brand-warm-stone/60 px-6 py-5 space-y-4 animate-fade-in shadow-xl">
           <div className="flex flex-col space-y-3 text-sm font-semibold text-brand-ink">
-            <Link
-              href="/radar"
+            <a
+              href="#for-you"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1 border-b border-brand-warm-stone/30"
             >
               For You
-            </Link>
-            <Link
-              href="/capsules"
+            </a>
+            <a
+              href="#together"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1 border-b border-brand-warm-stone/30"
             >
               Together
-            </Link>
+            </a>
             <a
               href="#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
@@ -111,13 +111,13 @@ export const LandingHeader: React.FC = () => {
             >
               How it works
             </a>
-            <Link
-              href="/data"
+            <a
+              href="#your-context"
               onClick={() => setMobileMenuOpen(false)}
               className="py-1"
             >
               Your Context
-            </Link>
+            </a>
           </div>
 
           <div className="pt-2">

@@ -7,7 +7,7 @@ import { ShieldCheck, ArrowRight, Share2, Edit3, FileJson } from 'lucide-react';
 
 export const SovereigntySection: React.FC = () => {
   return (
-    <section id="privacy" className="relative py-14 sm:py-20 overflow-hidden">
+    <section id="your-context" className="relative py-14 sm:py-20 overflow-hidden">
       {/* Full Bleed Atmospheric Background Image */}
       <div className="absolute inset-0 z-0">
         <Image

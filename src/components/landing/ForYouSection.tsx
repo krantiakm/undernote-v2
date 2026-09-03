@@ -62,7 +62,7 @@ export const ForYouSection: React.FC = () => {
   };
 
   return (
-    <section className="py-12 sm:py-16 bg-[#F7F3EC] border-t border-brand-warm-stone/40 overflow-hidden">
+    <section id="for-you" className="py-12 sm:py-16 bg-[#F7F3EC] border-t border-brand-warm-stone/40 overflow-hidden">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
         
         {/* Header with swipe indicator on mobile */}
