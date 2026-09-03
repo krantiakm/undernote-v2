@@ -792,6 +792,165 @@ export const allCards: CardData[] = [
       }
     ]
   },
+  {
+    id: "card-in-coffee",
+    type: "curated-find",
+    geography: "india-blr",
+    originType: "proactive",
+    domain: "food-drink",
+    title: "Anaerobic Single-Origin Micro-Lot",
+    subtitle: "Subko Specialty Roasters · 250g Whole Bean",
+    summary: "Wild-fermented heirloom varietal grown under silver oak shade canopies at 1,450m elevation. Delicately roasted in small batches to preserve bright notes of dried stone fruit and raw mountain honey.",
+    whyNow: "Only 60 bags packaged from this seasonal harvest; roasted 48 hours ago and resting for peak extraction.",
+    heroImage: "/images/specialty_coffee_roaster.jpg",
+    imageAlt: "Kraft paper bag of anaerobic natural Ethiopian coffee on wooden counter with ceramic cup",
+    accentColor: "#C66E45",
+    relevanceReason: [
+      "Artisan Roasting: Light-medium profile with zero bitter dark roast carbon",
+      "Traceability: Direct farm-gate sourcing with complete lot transparency",
+      "Timing: Freshly rested whole bean ready for manual pour-over"
+    ],
+    contextIds: ["ctx-coffee-1"],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.95,
+    freshnessScore: 0.97,
+    confidenceScore: 0.96,
+    actionabilityScore: 0.93,
+    noveltyScore: 0.90,
+    createdAt: "2026-09-02T19:00:00Z",
+    status: "active",
+    deepDive: {
+      description: "Subko’s anaerobic natural series represents the pinnacle of contemporary specialty roasting. Fermented in sealed stainless tanks for 72 hours before slow drying on raised beds, this coffee yields extraordinary clarity without sourness.",
+      keyHighlights: [
+        "100% Arabica heirloom micro-lot (Gedeb, Ethiopia)",
+        "Notes of wild strawberry jam, cacao nibs, and bergamot",
+        "Roasted on Loring eco-roasters with zero carbon scorching"
+      ],
+      specsOrDetails: [
+        { label: "Elevation", value: "1,950–2,100 meters" },
+        { label: "Process", value: "72-Hour Anaerobic Natural" },
+        { label: "Roast Date", value: "September 01, 2026" }
+      ],
+      pricingBreakdown: "Bag price: ₹850 (250g whole bean with airtight valve).",
+      directActionUrl: "https://subko.example.com",
+      directActionLabel: "Order Beans ↗"
+    },
+    sourceEvidence: [
+      {
+        title: "Subko Direct Roastery Store",
+        url: "https://subko.example.com",
+        retrievedAt: "2026-09-02T18:00:00Z",
+        price: "₹850"
+      }
+    ]
+  },
+  {
+    id: "card-in-tea",
+    type: "curated-find",
+    geography: "india-blr",
+    originType: "proactive",
+    domain: "shopping",
+    title: "Hand-Thrown Stoneware Kyusu",
+    subtitle: "Tokoname Clay Atelier · Single-Serving Side-Handle",
+    summary: "Thrown on a manual foot-wheel using iron-rich mineral clay that mellows natural tannins. Designed with a built-in ceramic clay strainer for pristine leaf circulation without metallic mesh contact.",
+    whyNow: "Wood-fired kiln run yielded 12 teapots with natural ash glaze accents; imported directly.",
+    heroImage: "/images/ceramic_teapot_tea.jpg",
+    imageAlt: "Matte black ceramic Kyusu teapot with rising steam on rustic cedar tray",
+    accentColor: "#24483F",
+    relevanceReason: [
+      "Tactile Craft: Wheel-thrown unglazed ceramic by third-generation potter",
+      "No Plastic / No Mesh: 100% clay construction for purest hot water contact",
+      "Human Scale: 220ml volume ideal for contemplative morning tea rituals"
+    ],
+    contextIds: ["ctx-tea-1"],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.92,
+    freshnessScore: 0.89,
+    confidenceScore: 0.94,
+    actionabilityScore: 0.88,
+    noveltyScore: 0.92,
+    createdAt: "2026-09-02T19:30:00Z",
+    status: "active",
+    deepDive: {
+      description: "Tokoname teapots have been celebrated for centuries for their ability to round out the astringency of high-grade green tea. The ergonomic side-handle allows wrist pouring with zero strain.",
+      keyHighlights: [
+        "Authentic Tokoname red-iron reduction fired clay",
+        "Zero plastic seals, silicone rings, or metal wire strainers",
+        "Ages gracefully with tea oils over decades of use"
+      ],
+      specsOrDetails: [
+        { label: "Capacity", value: "220ml (1–2 cups)" },
+        { label: "Material", value: "Unglazed Tokoname Red Clay" },
+        { label: "Origin", value: "Aichi Prefecture, Japan" }
+      ],
+      pricingBreakdown: "Direct import price: ₹6,400 with protective paulownia wooden box.",
+      directActionUrl: "https://tokoname.example.com",
+      directActionLabel: "Explore Teapot ↗"
+    },
+    sourceEvidence: [
+      {
+        title: "Japanese Ceramic Craft Network",
+        url: "https://tokoname.example.com",
+        retrievedAt: "2026-09-02T18:30:00Z",
+        price: "₹6,400"
+      }
+    ]
+  },
+  {
+    id: "card-in-rail",
+    type: "travel-window",
+    geography: "india-blr",
+    originType: "proactive",
+    domain: "travel",
+    title: "Vistadome Mountain Rail Journey",
+    subtitle: "South Western Heritage Route · Panoramic Glass Observation",
+    summary: "A contemplative overland rail escape traversing misty Western Ghats rainforests and historic stone viaducts. Features 360-degree rotatable reclining seats beneath curved glass skylights.",
+    whyNow: "Post-monsoon waterfall viewings at peak beauty; weekend observation car reservations open today.",
+    heroImage: "/images/scenic_alpine_rail.jpg",
+    imageAlt: "Scenic panoramic observation train car with passengers looking out at misty alpine forest",
+    accentColor: "#24483F",
+    relevanceReason: [
+      "Zero Airport Friction: Board leisurely from city station without baggage screenings",
+      "Landscape Immersion: Curved glass skylights and observation viewing gallery",
+      "Family Journey: Unhurried daylight transit with spacious reclining seats"
+    ],
+    contextIds: ["ctx-rail-1"],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.97,
+    freshnessScore: 0.96,
+    confidenceScore: 0.98,
+    actionabilityScore: 0.94,
+    noveltyScore: 0.95,
+    createdAt: "2026-09-02T20:00:00Z",
+    status: "active",
+    deepDive: {
+      description: "Trading cramped security lines for wide-angle wilderness views, the Vistadome journey through the Sakleshpur mountain pass features 58 tunnels and over 100 bridges. Passengers can order local warm filter coffee and snacks directly to their rotating armchair.",
+      keyHighlights: [
+        "Curved glass ceiling and panoramic rear observation balcony",
+        "180-degree rotatable luxury plush armchairs",
+        "Daylight journey through lush biodiversity corridor"
+      ],
+      specsOrDetails: [
+        { label: "Route", value: "Yeshwantpur (YPR) → Mangalore (MAQ)" },
+        { label: "Duration", value: "7h 15m scenic daytime departure (07:00 AM)" },
+        { label: "Class", value: "Executive Vistadome AC (EV)" }
+      ],
+      pricingBreakdown: "Pass fare: ₹1,525 per seat (Official IRCTC railway booking).",
+      directActionUrl: "https://irctc.co.in",
+      directActionLabel: "Book Journey ↗"
+    },
+    sourceEvidence: [
+      {
+        title: "IRCTC Official Heritage Vistadome Portal",
+        url: "https://irctc.co.in",
+        retrievedAt: "2026-09-02T19:00:00Z",
+        price: "₹1,525"
+      }
+    ]
+  },
 
   // --- SINGAPORE (SIN) CARDS ---
   {

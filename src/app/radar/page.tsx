@@ -30,24 +30,24 @@ export default function ForYouPage() {
         {/* 1. Top Header */}
         <TopHeader />
 
-        {/* 2. Editorial Heading */}
-        <div className="px-4 pt-3.5 pb-1.5 space-y-1">
+        {/* 2. Editorial Heading - Consumer-friendly phrasing per feedback */}
+        <div className="px-4 pt-3.5 pb-1 space-y-0.5">
           <h1 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-brand-ink">
             Chosen for you.
           </h1>
-          <p className="text-xs text-brand-ink/75 font-sans leading-relaxed">
-            Quietly matched against your enduring standards and open horizons.
+          <p className="text-xs text-brand-ink/75 font-sans">
+            Matched against your preferences.
           </p>
         </div>
 
-        {/* 3. Collapsible Category Selector */}
+        {/* 3. Collapsible Category Selector (All > expands to the right) */}
         <div className="pt-1">
           <CategoryChips />
         </div>
 
         {/* 4. For You Discovery Feed */}
-        <div className="px-4 pt-2 pb-6 flex-1">
-          <div className="flex items-center justify-between pb-3 px-1">
+        <div className="px-4 pt-1.5 pb-6 flex-1">
+          <div className="flex items-center justify-between pb-2.5 px-1">
             <span className="text-xs font-semibold text-brand-ink flex items-center gap-1.5 font-serif">
               <Sparkles size={13} className="text-brand-terracotta" />
               <span>Recommendations</span>
@@ -69,7 +69,7 @@ export default function ForYouPage() {
                 Tuning your feed...
               </p>
               <p className="text-xs text-brand-ink/65 max-w-xs">
-                Applying your enduring preferences and active watches.
+                Applying your preferences and active watches.
               </p>
             </div>
           ) : visibleCards.length > 0 ? (
@@ -79,58 +79,64 @@ export default function ForYouPage() {
                 <React.Fragment key={card.id}>
                   <DiscoveryCard card={card} index={index} />
 
-                  {/* Refinement Checkpoint 1: After 4th card (Dining & Ambient Volume) */}
+                  {/* Refinement Checkpoint 1: After 4th card (Dietary baseline: Veg, Non-veg, Vegan, Gluten-free) */}
                   {index === 3 && domainFilter === 'all' && (
                     <InlineContextRefinement
-                      id="refine-dining-volume"
-                      title="What is your volume tolerance when dining out?"
-                      rationale="We know you enjoy natural wine bistros, but haven’t captured your acoustic noise preference for dinner."
+                      id="refine-dietary-baseline"
+                      title="What is your dietary preference when dining out?"
+                      rationale="Ensures recommendations strictly respect your diet when suggesting places to eat."
                       options={[
                         {
-                          label: 'Strictly quiet (< 60dB)',
-                          key: 'Dining Acoustics',
-                          value: 'Strictly quiet & intimate acoustic atmosphere (< 60dB); avoid loud music or echo',
+                          label: 'Vegetarian',
+                          key: 'Dietary Baseline',
+                          value: 'Strictly Vegetarian; requires dedicated meatless kitchens or menus',
                           domain: 'food-drink',
                         },
                         {
-                          label: 'Gentle neighborhood hum',
-                          key: 'Dining Acoustics',
-                          value: 'Prefers gentle neighborhood conversational hum with warm acoustic finishes',
+                          label: 'Plant-forward / Vegan',
+                          key: 'Dietary Baseline',
+                          value: 'Plant-forward and 100% vegan friendly with dairy-free options',
                           domain: 'food-drink',
                         },
                         {
-                          label: 'Lively & energetic',
-                          key: 'Dining Acoustics',
-                          value: 'Enjoys open energetic room atmosphere with high social presence',
+                          label: 'Non-vegetarian',
+                          key: 'Dietary Baseline',
+                          value: 'Omnivore; open to artisan seafood, poultry, and local farm meats',
+                          domain: 'food-drink',
+                        },
+                        {
+                          label: 'Gluten-free preference',
+                          key: 'Dietary Baseline',
+                          value: 'Gluten-free preference; prioritize gluten-aware sourdough and alternative grains',
                           domain: 'food-drink',
                         },
                       ]}
                     />
                   )}
 
-                  {/* Refinement Checkpoint 2: After 6th card (Transit & Flight Radius) */}
-                  {index === 5 && domainFilter === 'all' && (
+                  {/* Refinement Checkpoint 2: After 7th card (Family Travel Transit preference) */}
+                  {index === 6 && domainFilter === 'all' && (
                     <InlineContextRefinement
-                      id="refine-flight-radius"
-                      title="For spontaneous weekend trips, what is your transit limit?"
-                      rationale="Helps filter short-hop flights and family weekend escape recommendations."
+                      id="refine-travel-mode"
+                      title="When a weekend opens up, how do you prefer to travel?"
+                      rationale="Refines regional flight alerts, scenic train routes, and weekend escape windows."
                       options={[
                         {
-                          label: 'Direct flight < 2.5 hours',
-                          key: 'Weekend Flight Limit',
-                          value: 'Strictly non-stop regional flights under 2.5 hours to avoid family fatigue',
+                          label: 'Direct flights only (no layovers)',
+                          key: 'Transit Preference',
+                          value: 'Strictly direct non-stop flights under 3.5 hours; discard connecting flights',
                           domain: 'travel',
                         },
                         {
-                          label: 'Up to 4h non-stop',
-                          key: 'Weekend Flight Limit',
-                          value: 'Direct non-stop flights up to 4 hours with comfortable morning departures',
+                          label: 'Scenic overland train or drive',
+                          key: 'Transit Preference',
+                          value: 'Prefers overland journeys by scenic train or road trip within 4 hours',
                           domain: 'travel',
                         },
                         {
-                          label: 'Overland driving only',
-                          key: 'Weekend Flight Limit',
-                          value: 'Prefers overland road trips under 3 hours instead of airport transit',
+                          label: 'Stay local in the city',
+                          key: 'Transit Preference',
+                          value: 'Favors staycations and urban cultural anchors over long transit',
                           domain: 'travel',
                         },
                       ]}
