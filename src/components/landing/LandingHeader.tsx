@@ -21,8 +21,8 @@ export const LandingHeader: React.FC = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#F7F3EC]/95 backdrop-blur-md shadow-xs border-b border-brand-warm-stone/40 py-3.5'
-          : 'bg-transparent py-5'
+          ? 'bg-[#F7F3EC]/95 backdrop-blur-md shadow-xs border-b border-brand-warm-stone/40 py-2.5 sm:py-3.5'
+          : 'bg-[#F7F3EC]/80 backdrop-blur-xs py-3 sm:py-4'
       }`}
     >
       <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between">

@@ -80,16 +80,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAiModal }) => {
   const activeCategory = TUNED_CATEGORIES[currentIndex];
 
   return (
-    <section className="relative pt-20 pb-10 sm:pt-24 sm:pb-14 overflow-hidden bg-[#F7F3EC]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 space-y-4 sm:space-y-6">
+    <section className="relative pt-28 pb-10 sm:pt-36 sm:pb-14 overflow-hidden bg-[#F7F3EC]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 space-y-5 sm:space-y-7">
         
-        {/* Concise Header - slightly smaller font to fit within the mobile fold */}
-        <div className="text-center space-y-2 max-w-xl mx-auto">
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-brand-ink leading-[1.15]">
+        {/* Header - with generous breathing room below the navbar */}
+        <div className="text-center space-y-3 sm:space-y-4 max-w-xl mx-auto pt-2">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-brand-ink leading-[1.18]">
             A world in tune with you.
           </h1>
 
-          <p className="text-xs sm:text-sm md:text-base text-brand-ink/80 max-w-md mx-auto font-sans leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-brand-ink/80 max-w-md mx-auto font-sans leading-relaxed">
             Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.
           </p>
         </div>
