@@ -96,7 +96,7 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'undernote_app_state_v2';
+const STORAGE_KEY = 'undernote_app_state_v3';
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [geography, setGeographyState] = useState<GeographyAnchor>('india-blr');
@@ -166,14 +166,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Local Storage hydration
+  // Local Storage hydration with smart fresh card merge
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        const currentGeo = parsed.geography || 'india-blr';
         if (parsed.geography) setGeographyState(parsed.geography);
-        if (parsed.cards) setCards(parsed.cards);
+        
+        // Smart merge: ensure newly added cards from allCards are never hidden by old localStorage cache
+        const freshGeoCards = allCards.filter((c) => c.geography === currentGeo);
+        if (parsed.cards && Array.isArray(parsed.cards)) {
+          const cachedIds = new Set(parsed.cards.map((c: CardData) => c.id));
+          const newUncachedCards = freshGeoCards.filter((c) => !cachedIds.has(c.id));
+          setCards([...parsed.cards, ...newUncachedCards]);
+        } else {
+          setCards(freshGeoCards);
+        }
+
         if (parsed.contextItems) setContextItems(parsed.contextItems);
         if (parsed.watches) setWatches(parsed.watches);
         if (parsed.intents) setIntents(parsed.intents);
