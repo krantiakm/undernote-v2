@@ -41,7 +41,12 @@ export const TogetherSection: React.FC = () => {
             Together
           </span>
           <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-brand-ink">
-            Find somewhere everyone will actually like.
+            Find somewhere everyone will{' '}
+            <span className="relative inline-block">
+              actually like
+              <span className="absolute -bottom-0.5 sm:-bottom-1 left-0 right-0 h-[3px] bg-brand-terracotta rounded-full" />
+            </span>
+            .
           </h2>
           <p className="text-xs sm:text-sm text-brand-ink/75 leading-relaxed font-sans">
             Start with what Undernote knows about you. Invite the people you’re going with, and let each person share only what matters for this plan.

@@ -71,7 +71,12 @@ export const ForYouSection: React.FC = () => {
             For You
           </span>
           <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-brand-ink">
-            Things worth your attention.
+            Things{' '}
+            <span className="relative inline-block">
+              worth
+              <span className="absolute -bottom-0.5 sm:-bottom-1 left-0 right-0 h-[3px] bg-brand-terracotta rounded-full" />
+            </span>{' '}
+            your attention.
           </h2>
           <p className="text-xs sm:text-sm text-brand-ink/75 leading-relaxed font-sans">
             Undernote quietly looks across the world and brings forward a small number of things that make unusual sense for you.

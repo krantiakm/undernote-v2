@@ -15,7 +15,12 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ onOpenAiModal 
         
         <div className="space-y-2.5">
           <h2 className="font-serif text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-brand-ink leading-tight">
-            See what the world looks like when it knows you better.
+            See what the world looks like when it{' '}
+            <span className="relative inline-block">
+              knows you better
+              <span className="absolute -bottom-0.5 sm:-bottom-1.5 left-0 right-0 h-[3px] sm:h-[4px] bg-brand-terracotta rounded-full" />
+            </span>
+            .
           </h2>
           <p className="text-xs sm:text-base text-brand-ink/75 max-w-md mx-auto font-sans">
             Bring what your AI already knows and let Undernote start finding things for you.

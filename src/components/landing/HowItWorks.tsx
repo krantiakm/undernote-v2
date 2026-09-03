@@ -35,7 +35,12 @@ export const HowItWorks: React.FC = () => {
             How It Works
           </span>
           <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-brand-ink">
-            It gets better without becoming work.
+            It gets better{' '}
+            <span className="relative inline-block">
+              without becoming work
+              <span className="absolute -bottom-0.5 sm:-bottom-1 left-0 right-0 h-[3px] bg-brand-terracotta rounded-full" />
+            </span>
+            .
           </h2>
         </div>
 

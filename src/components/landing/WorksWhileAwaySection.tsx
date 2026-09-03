@@ -14,7 +14,12 @@ export const WorksWhileAwaySection: React.FC = () => {
             Quiet Background Intelligence
           </span>
           <h2 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-ink">
-            You don't have to keep checking.
+            You don't have to{' '}
+            <span className="relative inline-block">
+              keep checking
+              <span className="absolute -bottom-0.5 sm:-bottom-1 left-0 right-0 h-[3px] bg-brand-terracotta rounded-full" />
+            </span>
+            .
           </h2>
           <p className="text-xs sm:text-sm text-brand-ink/75 font-sans">
             Undernote notices when something becomes relevant, so you never miss what matters.

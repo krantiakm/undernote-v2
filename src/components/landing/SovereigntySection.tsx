@@ -29,7 +29,12 @@ export const SovereigntySection: React.FC = () => {
             Privacy &amp; Control
           </span>
           <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-white">
-            Your context belongs to you.
+            Your context{' '}
+            <span className="relative inline-block">
+              belongs to you
+              <span className="absolute -bottom-0.5 sm:-bottom-1 left-0 right-0 h-[3px] bg-brand-terracotta rounded-full" />
+            </span>
+            .
           </h2>
           <p className="text-xs sm:text-sm text-[#D1C9BE] leading-relaxed font-sans">
             See everything it knows, edit anything, and share only what you choose.

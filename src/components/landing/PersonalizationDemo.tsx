@@ -97,7 +97,12 @@ export const PersonalizationDemo: React.FC = () => {
             One world. Different for everyone.
           </span>
           <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-brand-ink">
-            The same world. A completely different fit.
+            The same world. A completely{' '}
+            <span className="relative inline-block">
+              different fit
+              <span className="absolute -bottom-0.5 sm:-bottom-1 left-0 right-0 h-[3px] bg-brand-terracotta rounded-full" />
+            </span>
+            .
           </h2>
           <p className="text-xs sm:text-sm text-brand-ink/75 font-sans">
             What deserves your attention changes depending on who you are.
