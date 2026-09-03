@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/live",
+      "destination": "https://undernote-live.vercel.app/live"
+    },
+    {
+      "source": "/live/:path*",
+      "destination": "https://undernote-live.vercel.app/live/:path*"
+    }
+  ]
+}
