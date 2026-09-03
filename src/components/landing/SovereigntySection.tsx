@@ -2,111 +2,80 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Download, Edit3, Trash2, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Download, Edit3, Trash2, ArrowRight, Lock, FileJson } from 'lucide-react';
 
 export const SovereigntySection: React.FC = () => {
   return (
-    <section id="privacy" className="py-20 sm:py-28 bg-[#F7F3EC] border-t border-brand-warm-stone/40">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-10">
+    <section id="privacy" className="py-16 sm:py-24 bg-[#F7F3EC] border-t border-brand-warm-stone/40">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
         
-        {/* Header */}
-        <div className="text-center space-y-3 max-w-xl mx-auto">
+        {/* Header rewritten in natural, confident English */}
+        <div className="text-center space-y-2.5 max-w-xl mx-auto">
           <span className="text-[10px] font-mono uppercase tracking-widest text-brand-deep-green font-bold">
-            Yours
+            Privacy &amp; Control
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-brand-ink">
-            What knows you should belong to you.
+          <h2 className="font-serif text-2xl sm:text-4xl font-bold tracking-tight text-brand-ink">
+            Your context belongs to you.
           </h2>
-          <p className="text-sm text-brand-ink/75 leading-relaxed font-sans">
-            See it. Change it. Take it with you. Delete it.
+          <p className="text-xs sm:text-sm text-brand-ink/75 leading-relaxed font-sans">
+            See everything it knows, edit anything, and take it with you whenever you want.
           </p>
         </div>
 
-        {/* Tangible Context Interface Display per Section 15 */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-brand-warm-stone/60 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-brand-warm-stone/30 pb-3">
-            <span className="text-xs font-mono uppercase tracking-wider text-brand-deep-green font-bold">
-              Your Active Context
-            </span>
-            <span className="text-[10px] font-mono text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full font-bold">
-              Stored locally by default
-            </span>
+        {/* Clean, elegant 3-guarantee grid — zero clumsy chip clutter */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-3xl p-5 border border-brand-warm-stone/60 shadow-xs space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-brand-ivory text-brand-deep-green flex items-center justify-center border border-brand-warm-stone/50">
+              <Lock size={15} />
+            </div>
+            <h3 className="font-serif font-bold text-sm text-brand-ink">
+              Stored on your device
+            </h3>
+            <p className="text-xs text-brand-ink/70 font-sans leading-relaxed">
+              Your preferences are evaluated locally against public web signals. We never broker your profile or sell ad space.
+            </p>
           </div>
 
-          <div className="space-y-3">
-            {/* Context Item 1 */}
-            <div className="p-4 rounded-2xl bg-[#F7F3EC] border border-brand-warm-stone/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div className="space-y-0.5">
-                <h4 className="font-serif font-bold text-sm text-brand-ink">
-                  Direct flights when travelling with family
-                </h4>
-                <p className="text-stone-600 font-sans">
-                  You usually prefer direct flights when travelling as a family.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1 rounded-full bg-white border border-brand-warm-stone text-brand-ink text-xs font-medium hover:bg-stone-50">
-                  Edit
-                </button>
-                <button className="px-3 py-1 rounded-full bg-white border border-rose-200 text-rose-600 text-xs font-medium hover:bg-rose-50">
-                  Remove
-                </button>
-              </div>
+          <div className="bg-white rounded-3xl p-5 border border-brand-warm-stone/60 shadow-xs space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-brand-ivory text-brand-deep-green flex items-center justify-center border border-brand-warm-stone/50">
+              <Edit3 size={15} />
             </div>
-
-            {/* Context Item 2 */}
-            <div className="p-4 rounded-2xl bg-[#F7F3EC] border border-brand-warm-stone/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div className="space-y-0.5">
-                <h4 className="font-serif font-bold text-sm text-brand-ink">
-                  Concise explanations
-                </h4>
-                <p className="text-stone-600 font-sans">
-                  You generally prefer a short answer first without unnecessary filler.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1 rounded-full bg-white border border-brand-warm-stone text-brand-ink text-xs font-medium hover:bg-stone-50">
-                  Edit
-                </button>
-                <button className="px-3 py-1 rounded-full bg-white border border-rose-200 text-rose-600 text-xs font-medium hover:bg-rose-50">
-                  Remove
-                </button>
-              </div>
-            </div>
-
-            {/* Context Item 3 */}
-            <div className="p-4 rounded-2xl bg-[#F7F3EC] border border-brand-warm-stone/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div className="space-y-0.5">
-                <h4 className="font-serif font-bold text-sm text-brand-ink">
-                  Ergonomic hardware sizing
-                </h4>
-                <p className="text-stone-600 font-sans">
-                  Displays under 6.3 inches for true single-handed comfort.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <button className="px-3 py-1 rounded-full bg-white border border-brand-warm-stone text-brand-ink text-xs font-medium hover:bg-stone-50">
-                  Edit
-                </button>
-                <button className="px-3 py-1 rounded-full bg-white border border-rose-200 text-rose-600 text-xs font-medium hover:bg-rose-50">
-                  Remove
-                </button>
-              </div>
-            </div>
+            <h3 className="font-serif font-bold text-sm text-brand-ink">
+              Always editable
+            </h3>
+            <p className="text-xs text-brand-ink/70 font-sans leading-relaxed">
+              Tastes evolve. If a preference no longer applies, correct it or delete it in seconds without questions.
+            </p>
           </div>
 
-          <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-brand-warm-stone/30">
-            <Link
-              href="/data"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-deep-green hover:underline"
-            >
-              <Download size={13} />
-              <span>Export my context</span>
-            </Link>
-            <span className="text-[11px] font-mono text-stone-400">
-              No sponsored ranking. No selling your attention.
+          <div className="bg-white rounded-3xl p-5 border border-brand-warm-stone/60 shadow-xs space-y-2.5">
+            <div className="w-8 h-8 rounded-xl bg-brand-ivory text-brand-deep-green flex items-center justify-center border border-brand-warm-stone/50">
+              <FileJson size={15} />
+            </div>
+            <h3 className="font-serif font-bold text-sm text-brand-ink">
+              Portable &amp; erasable
+            </h3>
+            <p className="text-xs text-brand-ink/70 font-sans leading-relaxed">
+              Export your synthesized context into standard JSON or Markdown anytime, or wipe everything with one tap.
+            </p>
+          </div>
+        </div>
+
+        {/* Clean Context Preview Banner */}
+        <div className="bg-white rounded-2xl p-4 border border-brand-warm-stone/60 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={16} className="text-brand-deep-green shrink-0" />
+            <span className="text-brand-ink font-medium">
+              Zero sponsored ranking. Zero profile auctions.
             </span>
           </div>
+          <Link
+            href="/data"
+            className="inline-flex items-center gap-1.5 font-bold text-brand-deep-green hover:underline shrink-0"
+          >
+            <span>View &amp; export your context</span>
+            <ArrowRight size={12} />
+          </Link>
         </div>
 
       </div>

@@ -1,7 +1,6 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
+import { Logo } from '@/components/ui/Logo';
 
 interface LandingFooterProps {
   onOpenAiModal?: (provider?: 'gemini' | 'chatgpt' | 'claude' | 'voice') => void;
@@ -21,9 +20,7 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenAiModal }) =
           
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-4 space-y-3">
-            <span className="font-serif text-3xl font-bold tracking-tight text-white block">
-              undernote
-            </span>
+            <Logo size="lg" type="full" variant="white" />
             <p className="font-serif italic text-base text-brand-terracotta">
               A world in tune with you.
             </p>
