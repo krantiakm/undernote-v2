@@ -16,11 +16,77 @@ const satoshi = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Undernote — A world in tune with you',
+  metadataBase: new URL('https://undernote.co'),
+  title: {
+    default: 'Undernote — A world in tune with you',
+    template: '%s | Undernote',
+  },
   description:
-    'Bring what your AI already knows about you. Undernote uses it to find films, reads, places, trips, products and moments that feel unusually right for you.',
+    'Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.',
+  applicationName: 'Undernote',
+  authors: [{ name: 'Undernote' }],
+  creator: 'Undernote',
+  publisher: 'Undernote',
+  keywords: [
+    'Undernote',
+    'personal context',
+    'proactive discovery',
+    'films',
+    'books',
+    'places',
+    'travel',
+    'private AI',
+  ],
+  alternates: {
+    canonical: 'https://undernote.co',
+  },
   icons: {
-    icon: '/undernote.png',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+  },
+  manifest: '/site.webmanifest',
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://undernote.co',
+    siteName: 'Undernote',
+    title: 'Undernote — A world in tune with you',
+    description:
+      'Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Undernote — A world in tune with you',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Undernote — A world in tune with you',
+    description:
+      'Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
