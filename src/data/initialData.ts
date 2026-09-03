@@ -565,7 +565,7 @@ export const allCards: CardData[] = [
       ],
       pricingBreakdown: "Base Price: ₹61,999 less ₹5,500 instant discount on HDFC/ICICI cards = ₹56,499.",
       directActionUrl: "https://flipkart.com",
-      directActionLabel: "View Deal on Flipkart ↗"
+      directActionLabel: "View Deal ↗"
     },
     sourceEvidence: [
       {
@@ -575,6 +575,220 @@ export const allCards: CardData[] = [
         price: "₹56,499",
         baselinePrice: "₹68,999",
         discountPercent: 18
+      }
+    ]
+  },
+  {
+    id: "card-in-food",
+    type: "curated-find",
+    geography: "india-blr",
+    originType: "proactive",
+    domain: "food-drink",
+    title: "Ferment & Vine Courtyard",
+    subtitle: "Natural Wine Bistro & Sourdough Hearth · Indiranagar",
+    summary: "An intimate 24-seat open-air courtyard bistro serving natural low-intervention wines, wild-fermented sourdough, and botanical small plates without loud playlists or commercial crowds.",
+    whyNow: "Weekend courtyard table reservations just released for Friday evening; strict acoustic noise boundary preserved.",
+    heroImage: "/images/for_you_bistro.jpg",
+    imageAlt: "Intimate candlelit bistro courtyard with wine glass and crusty sourdough loaf",
+    accentColor: "#C66E45",
+    relevanceReason: [
+      "Natural Wine & Fermentation: Aligns with organic craft eating preferences",
+      "Acoustic Atmosphere: Sub-65dB ambient conversational sound levels",
+      "Location: 15-minute neighborhood reach in Bangalore"
+    ],
+    contextIds: ["ctx-food-1"],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.95,
+    freshnessScore: 0.94,
+    confidenceScore: 0.96,
+    actionabilityScore: 0.92,
+    noveltyScore: 0.91,
+    createdAt: "2026-09-02T16:00:00Z",
+    status: "active",
+    deepDive: {
+      description: "Ferment & Vine operates on unhurried culinary principles. Every bottle is sourced from small-holding organic vintners, and each dish is built around 36-hour slow-fermented heirloom wheat. Seating is deliberately spaced to preserve conversation.",
+      keyHighlights: [
+        "Unamplified acoustic courtyard with lush foliage",
+        "Rotating organic pet-nat and orange wine cellar list",
+        "Wild-fermented sourdough and hand-churned salted butter"
+      ],
+      specsOrDetails: [
+        { label: "Cuisine", value: "Natural Wine, Sourdough, Seasonal Tapas" },
+        { label: "Atmosphere", value: "Intimate Courtyard (24 seats only)" },
+        { label: "Hours", value: "Wed–Sun · 6:30 PM – 11:00 PM" }
+      ],
+      pricingBreakdown: "Average dinner for two: ₹2,400 including wine pairing.",
+      directActionUrl: "https://fermentandvine.example.com",
+      directActionLabel: "Reserve Table ↗"
+    },
+    sourceEvidence: [
+      {
+        title: "Ferment & Vine Direct Reservation Portal",
+        url: "https://fermentandvine.example.com",
+        retrievedAt: "2026-09-02T12:00:00Z",
+        price: "₹2,400"
+      }
+    ]
+  },
+  {
+    id: "card-in-clothing",
+    type: "curated-find",
+    geography: "india-blr",
+    originType: "proactive",
+    domain: "shopping",
+    title: "Heavy Unlined Linen Chore Jacket",
+    subtitle: "Atelier Tactile Craft · Small-Batch Irish Linen",
+    summary: "Constructed from 380gsm washed unlined linen with genuine horn buttons and French felled seams. Designed to soften and mold to your posture with wear rather than degrade.",
+    whyNow: "Small-batch run of 40 pieces just cut by the atelier; pre-orders ship next Tuesday.",
+    heroImage: "/images/craft_linen_jacket.jpg",
+    imageAlt: "Olive-green washed linen chore coat hanging on sculpted oak hanger against stone wall",
+    accentColor: "#24483F",
+    relevanceReason: [
+      "Natural Materials: 100% Unlined breathable heavyweight linen",
+      "Craft Ethos: Small family-run atelier with durable repairable construction",
+      "Timeless Workwear: Zero branding or trend-driven logos"
+    ],
+    contextIds: ["ctx-craft-1"],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.93,
+    freshnessScore: 0.92,
+    confidenceScore: 0.95,
+    actionabilityScore: 0.90,
+    noveltyScore: 0.89,
+    createdAt: "2026-09-02T15:30:00Z",
+    status: "active",
+    deepDive: {
+      description: "An everyday uniform piece built for decades of wear. The heavy 380gsm linen provides natural structure while allowing breathability in warm climates. Features reinforced patch pockets and horn buttons secured with backer buttons.",
+      keyHighlights: [
+        "Washed 380gsm unlined European flax linen",
+        "Reinforced patch pockets sized for small notebooks",
+        "Hand-attached natural horn buttons"
+      ],
+      specsOrDetails: [
+        { label: "Fabric", value: "100% Irish Linen (380gsm)" },
+        { label: "Fit", value: "Relaxed Boxy Chore Silhouette" },
+        { label: "Care", value: "Cold gentle wash, hang dry" }
+      ],
+      pricingBreakdown: "Direct atelier price: ₹9,200 with complimentary repairs.",
+      directActionUrl: "https://atelieroftactilecraft.example.com",
+      directActionLabel: "View Piece ↗"
+    },
+    sourceEvidence: [
+      {
+        title: "Atelier Studio Official Storefront",
+        url: "https://atelieroftactilecraft.example.com",
+        retrievedAt: "2026-09-02T14:00:00Z",
+        price: "₹9,200"
+      }
+    ]
+  },
+  {
+    id: "card-in-cinema",
+    type: "curated-find",
+    geography: "india-blr",
+    originType: "proactive",
+    domain: "films",
+    title: "Nightfall & Shadows (35mm Archival)",
+    subtitle: "Director’s Cut Master · Weekend Stream Premiere",
+    summary: "A slow-burn neo-noir mystery crafted with natural rain acoustics, unhurried cinematography, and optical film grain. Streaming this weekend on private high-fidelity master.",
+    whyNow: "Restored 4K release with lossless uncompressed audio track available through Sunday.",
+    heroImage: "/images/for_you_indie_cinema.jpg",
+    imageAlt: "Atmospheric 35mm film still of rainy neon streets and vintage coupe",
+    accentColor: "#C66E45",
+    relevanceReason: [
+      "Cinema Style: Slow burn, high spatial craft, contemplative pacing",
+      "Director Match: Follows your interest in quiet neo-noir narratives",
+      "Audio Quality: Lossless uncompressed sound design"
+    ],
+    contextIds: ["ctx-film-1"],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.96,
+    freshnessScore: 0.95,
+    confidenceScore: 0.97,
+    actionabilityScore: 0.94,
+    noveltyScore: 0.93,
+    createdAt: "2026-09-02T17:00:00Z",
+    status: "active",
+    deepDive: {
+      description: "Shot on 35mm Kodak Vision3 film stock, Nightfall & Shadows avoids hyperactive editing and spectacle in favor of meticulous mood, architectural shadows, and evocative foley acoustics.",
+      keyHighlights: [
+        "102-minute runtime with slow, deliberate pacing",
+        "Original analog stereo mix without synthetic sub-bass boost",
+        "Includes director commentary monograph"
+      ],
+      specsOrDetails: [
+        { label: "Runtime", value: "102 minutes" },
+        { label: "Format", value: "4K Remaster · Lossless Audio" },
+        { label: "Language", value: "Original with English subtitles" }
+      ],
+      pricingBreakdown: "Weekend screening access: ₹350 on independent streaming master.",
+      directActionUrl: "https://mubi.example.com",
+      directActionLabel: "Watch Film ↗"
+    },
+    sourceEvidence: [
+      {
+        title: "Curated Cinema Platform",
+        url: "https://mubi.example.com",
+        retrievedAt: "2026-09-02T16:00:00Z",
+        price: "₹350"
+      }
+    ]
+  },
+  {
+    id: "card-in-audio",
+    type: "curated-find",
+    geography: "india-blr",
+    originType: "proactive",
+    domain: "shopping",
+    title: "Open-Back Walnut Reference Monitors",
+    subtitle: "Acoustic Engineering · Neutral Physical Soundstage",
+    summary: "Crafted from solid kiln-dried American walnut and machined aluminum. Open-back acoustic baffles create a natural physical soundstage that mirrors sitting in a live room.",
+    whyNow: "Authorized importer received a 10-unit shipment with ₹4,000 seasonal clearance discount.",
+    heroImage: "/images/for_you_audiophile.jpg",
+    imageAlt: "Minimalist aluminum and walnut open-back headphones resting on warm studio table",
+    accentColor: "#24483F",
+    relevanceReason: [
+      "Acoustic Integrity: Zero DSP artificial bass boost; honest neutral curve",
+      "Repairable Craft: User-replaceable lambskin pads and oxygen-free copper cables",
+      "Tactile Materials: Real hardwood and satin-finished aluminum"
+    ],
+    contextIds: ["ctx-audio-1"],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.94,
+    freshnessScore: 0.91,
+    confidenceScore: 0.95,
+    actionabilityScore: 0.93,
+    noveltyScore: 0.88,
+    createdAt: "2026-09-02T18:00:00Z",
+    status: "active",
+    deepDive: {
+      description: "Designed for listeners who value harmonic truth over artificial excitement. The 50mm biocellulose drivers reproduce acoustic instruments with pristine air, separation, and micro-dynamics.",
+      keyHighlights: [
+        "Open-back planar acoustic architecture",
+        "Solid kiln-dried American walnut earcups",
+        "Detachable braided 3.5mm cable with 6.3mm studio adapter"
+      ],
+      specsOrDetails: [
+        { label: "Driver Size", value: "50mm Biocellulose" },
+        { label: "Impedance", value: "32 Ohms (Easy to drive)" },
+        { label: "Weight", value: "340 grams" }
+      ],
+      pricingBreakdown: "Current price: ₹24,500 (Reduced from ₹28,500).",
+      directActionUrl: "https://headphonezone.example.com",
+      directActionLabel: "View Hardware ↗"
+    },
+    sourceEvidence: [
+      {
+        title: "Official Audio Importer Store",
+        url: "https://headphonezone.example.com",
+        retrievedAt: "2026-09-02T17:00:00Z",
+        price: "₹24,500",
+        baselinePrice: "₹28,500",
+        discountPercent: 14
       }
     ]
   },

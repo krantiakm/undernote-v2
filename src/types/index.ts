@@ -4,6 +4,7 @@ export type RadarDomain =
   | 'events'
   | 'shopping'
   | 'food-drink'
+  | 'films'
   | 'interests'
   | 'what-matters'
   | 'my-world';
