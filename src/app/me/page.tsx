@@ -35,6 +35,35 @@ export default function MePage() {
   const [editedTendency, setEditedTendency] = useState('');
   const [editedFocus, setEditedFocus] = useState('');
 
+  // Contextual Chapter Edit State in Monograph
+  const [editingChapterId, setEditingChapterId] = useState<string | null>(null);
+  const [editedChapterBody, setEditedChapterBody] = useState('');
+
+  const handleStartEditChapter = (chapterId: string, currentBody: string) => {
+    if (editingChapterId === chapterId) {
+      setEditingChapterId(null);
+      setEditedChapterBody('');
+    } else {
+      setEditingChapterId(chapterId);
+      setEditedChapterBody(currentBody);
+    }
+  };
+
+  const handleSaveChapterEdit = (chapterId: string) => {
+    const updatedChapters = persona.lifeNarrative.chapters.map((ch) =>
+      ch.id === chapterId ? { ...ch, body: editedChapterBody } : ch
+    );
+    updatePersona({
+      lifeNarrative: {
+        ...persona.lifeNarrative,
+        chapters: updatedChapters,
+      },
+    });
+    setEditingChapterId(null);
+    setEditedChapterBody('');
+    showToast('Contextual chapter correction saved');
+  };
+
   const handleOpenTile = (tile: LookbookTile) => {
     setSelectedTile(tile);
     setEditedTendency(tile.enduringTendency);
@@ -378,10 +407,10 @@ ${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFoc
       {/* ========================================================================= */}
       <AnimatePresence>
         {isFullPortraitOpen && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-neutral-900/80 flex justify-center backdrop-blur-xs">
-            <div className="w-full max-w-md min-h-screen bg-[#F7F3EC] shadow-2xl relative flex flex-col">
+          <div className="fixed inset-0 z-50 flex justify-center bg-neutral-900/80 backdrop-blur-xs overflow-hidden">
+            <div className="w-full max-w-md h-full overflow-y-auto bg-[#F7F3EC] shadow-2xl relative flex flex-col">
               {/* Sticky Minimal Header */}
-              <div className="sticky top-0 z-20 bg-[#F7F3EC]/95 backdrop-blur-md border-b border-brand-warm-stone/40 px-5 py-3.5 flex items-center justify-between">
+              <div className="sticky top-0 z-30 bg-[#F7F3EC]/95 backdrop-blur-md border-b border-brand-warm-stone/40 px-5 py-3.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="font-serif text-lg font-bold text-brand-deep-green">
                     K
@@ -453,20 +482,29 @@ ${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFoc
                 )}
               </div>
 
-              {/* Interspersed Chapters with Photography */}
+              {/* Interspersed Chapters with Photography and Contextual Edits */}
               <div className="space-y-12">
                 {persona.lifeNarrative.chapters.map((chapter, idx) => (
-                  <article key={chapter.id} className="space-y-4">
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-mono text-brand-terracotta uppercase font-bold tracking-widest">
-                        Chapter {idx + 1}
-                      </span>
-                      <h2 className="font-serif text-2xl font-bold text-brand-ink">
-                        {chapter.title}
-                      </h2>
-                      <p className="text-xs text-brand-ink/60 font-medium">
-                        {chapter.subtitle}
-                      </p>
+                  <article key={chapter.id} className="space-y-4 pt-4 border-t border-brand-warm-stone/30 first:border-t-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono text-brand-terracotta uppercase font-bold tracking-widest">
+                          Chapter {idx + 1}
+                        </span>
+                        <h2 className="font-serif text-xl sm:text-2xl font-bold text-brand-ink">
+                          {chapter.title}
+                        </h2>
+                        <p className="text-xs text-brand-ink/60 font-medium">
+                          {chapter.subtitle}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleStartEditChapter(chapter.id, chapter.body)}
+                        className="inline-flex items-center gap-1 text-[10px] font-medium text-brand-deep-green hover:text-brand-terracotta transition-colors px-2.5 py-1 rounded-full bg-white border border-brand-warm-stone/40 shadow-xs shrink-0"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                        <span>{editingChapterId === chapter.id ? 'Cancel' : 'Calibrate'}</span>
+                      </button>
                     </div>
 
                     {chapter.image && (
@@ -486,9 +524,38 @@ ${persona.lookbookTiles.map((t) => `- [${t.domain.toUpperCase()}] ${t.currentFoc
                       </blockquote>
                     )}
 
-                    <p className="text-xs sm:text-sm leading-relaxed text-brand-ink/80 font-sans">
-                      {chapter.body}
-                    </p>
+                    {editingChapterId === chapter.id ? (
+                      <div className="p-3.5 rounded-2xl bg-white border border-brand-warm-stone/60 space-y-2.5 shadow-xs">
+                        <div className="text-[10px] font-mono uppercase font-bold text-brand-terracotta">
+                          Contextual Correction · Chapter {idx + 1}
+                        </div>
+                        <textarea
+                          rows={6}
+                          value={editedChapterBody}
+                          onChange={(e) => setEditedChapterBody(e.target.value)}
+                          className="w-full p-3 rounded-xl border border-brand-warm-stone/60 bg-brand-ivory text-brand-ink text-xs font-sans leading-relaxed focus:outline-brand-deep-green"
+                          placeholder="Correct or refine how this aspect of your life is described..."
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingChapterId(null)}
+                            className="px-3 py-1.5 rounded-lg border border-brand-warm-stone text-xs font-medium text-stone-600"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleSaveChapterEdit(chapter.id)}
+                            className="px-4 py-1.5 rounded-lg bg-brand-deep-green text-white text-xs font-medium shadow-xs"
+                          >
+                            Save Correction
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-xs sm:text-sm leading-relaxed text-brand-ink/85 font-sans">
+                        {chapter.body}
+                      </p>
+                    )}
                   </article>
                 ))}
               </div>
