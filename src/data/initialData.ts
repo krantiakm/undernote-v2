@@ -510,7 +510,7 @@ export const allCards: CardData[] = [
       ],
       pricingBreakdown: "₹600 per pass (Direct venue ticketing).",
       directActionUrl: "https://rangashankara.org",
-      directActionLabel: "Reserve Passes on Ranga Shankara ↗"
+      directActionLabel: "Reserve Passes ↗"
     },
     sourceEvidence: [
       {

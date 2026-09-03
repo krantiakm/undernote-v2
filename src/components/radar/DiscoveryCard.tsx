@@ -206,12 +206,12 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
         </AnimatePresence>
 
         {/* Action Row */}
-        <div className="pt-2 border-t border-brand-warm-stone/30 flex items-center justify-between gap-2">
+        <div className="pt-2.5 border-t border-brand-warm-stone/40 flex items-center justify-between gap-3">
           <Link
             href={`/radar/${card.id}`}
-            className="text-xs font-semibold text-brand-deep-green hover:text-brand-terracotta flex items-center gap-1 py-1 transition-colors"
+            className="text-xs font-semibold text-brand-ink/70 hover:text-brand-terracotta flex items-center gap-1 py-1 shrink-0 transition-colors"
           >
-            <span>Story & Details</span>
+            <span>Details</span>
             <ArrowUpRight size={13} />
           </Link>
 
@@ -219,7 +219,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
             href={card.deepDive.directActionUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs font-semibold bg-brand-deep-green hover:bg-brand-deep-green-dark text-brand-ivory px-4 py-2 rounded-full shadow-xs transition-all active:scale-95"
+            className="inline-flex items-center justify-center gap-1 text-xs font-bold bg-brand-deep-green hover:bg-[#162B25] text-white px-4 py-2 rounded-full shadow-xs transition-all active:scale-95 shrink-0 whitespace-nowrap"
           >
             <span>{card.deepDive.directActionLabel}</span>
           </a>
