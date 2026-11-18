@@ -1,209 +1,165 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  ShieldCheck,
-  Lock,
-  Download,
-  Trash2,
-  Search,
-  CheckCircle2,
-  RefreshCw,
-  FileJson,
-  KeyRound,
-  ExternalLink,
-  Sliders,
-} from 'lucide-react';
+import Link from 'next/link';
 import { AppShell } from '@/components/shell/AppShell';
 import { useApp } from '@/context/AppContext';
-import { RadarDomain } from '@/types';
+import {
+  IconArrowLeft,
+  IconDownload,
+  IconReset,
+  IconSearch,
+  IconShieldPrivacy,
+  IconTrash,
+} from '@/components/ui/BrandIcons';
 
 export default function DataPage() {
   const { contextItems, deleteContextItem, resetToBaseline, showToast } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDomain, setSelectedDomain] = useState<'all' | RadarDomain>('all');
   const [showRawJson, setShowRawJson] = useState(false);
 
-  const filteredItems = contextItems.filter((item) => {
-    const matchesSearch =
+  const filteredItems = contextItems.filter(
+    (item) =>
       item.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.value.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.provenance.provider.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDomain = selectedDomain === 'all' || item.domain === selectedDomain;
-    return matchesSearch && matchesDomain;
-  });
+      item.value.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleExportJson = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(contextItems, null, 2));
+    const dataStr =
+      'data:text/json;charset=utf-8,' +
+      encodeURIComponent(JSON.stringify(contextItems, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `undernote_sovereign_graph_${Date.now()}.json`);
+    downloadAnchor.setAttribute('download', `undernote_profile_${Date.now()}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    showToast('Encrypted context JSON exported');
+    showToast('Profile JSON exported');
   };
 
   return (
     <AppShell>
-      <div className="flex-1 flex flex-col bg-brand-ivory p-4 space-y-5 pb-8">
-        {/* Header */}
-        <div className="pt-2 space-y-1">
-          <div className="flex items-center gap-1.5">
-            <ShieldCheck size={14} className="text-brand-deep-green" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink/60">
-              Yours to edit · Yours to export · Yours to delete
-            </span>
-          </div>
-          <h1 className="font-serif text-2xl font-bold tracking-tight text-brand-ink">
-            Your Context
-          </h1>
-          <p className="text-xs text-brand-ink/75">
-            The things Undernote currently uses to make your world fit better. You can inspect, correct, remove or export anything here.
-          </p>
-        </div>
+      <div className="flex-1 flex flex-col bg-brand-ivory pb-10">
+        <header className="sticky top-0 z-30 bg-brand-ivory/92 backdrop-blur-md border-b border-brand-warm-stone/55 px-5 py-3.5 flex items-center justify-between">
+          <Link
+            href="/me"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-ink hover:text-brand-deep-green transition-colors"
+          >
+            <IconArrowLeft size={16} />
+            <span>Back to Me</span>
+          </Link>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-terracotta">
+            Data Ownership
+          </span>
+        </header>
 
-        {/* Sovereignty Scorecard */}
-        <div className="bg-white rounded-3xl p-5 border border-brand-warm-stone/60 shadow-soft space-y-3.5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-brand-deep-green uppercase tracking-wider">
-              Privacy Status
-            </span>
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">
-              <CheckCircle2 size={11} />
-              <span>Stored locally by default</span>
-            </span>
+        <div className="px-5 pt-5 space-y-5">
+          <div className="space-y-2">
+            <h1 className="font-serif text-[23px] leading-[1.2] font-medium text-brand-ink">
+              What knows you belongs to you.
+            </h1>
+            <p className="text-[13px] text-brand-ink-light leading-relaxed">
+              Inspect, search, export, or clear every preference Undernote holds for your cultural calendar.
+            </p>
+            <span className="brand-rule" />
           </div>
 
-          <p className="text-[11px] text-brand-ink/70 leading-relaxed">
-            Undernote does not broker your profile to ad networks or third-party brokers. Your context is evaluated client-side against public web signals.
-          </p>
-        </div>
+          {/* Privacy Guarantee Card */}
+          <div className="rounded-[22px] bg-[#F2ECE1] border border-brand-warm-stone/85 p-4 flex items-start gap-3">
+            <IconShieldPrivacy size={18} className="text-brand-deep-green shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-brand-ink">
+                Private on your device by default
+              </p>
+              <p className="text-[11.5px] text-brand-ink-light leading-relaxed">
+                Undernote never sells profile data, runs ad auctions, or accepts paid event placements.
+              </p>
+            </div>
+          </div>
 
-        {/* Search & Filter Bar */}
-        <div className="space-y-2">
+          {/* Search */}
           <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-ink-light" />
+            <IconSearch
+              size={15}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-ink-light"
+            />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search what Undernote knows..."
-              className="w-full text-xs py-2.5 pl-9 pr-3 rounded-2xl border border-brand-warm-stone/60 bg-white font-sans focus:outline-none focus:ring-2 focus:ring-brand-deep-green/30"
+              placeholder="Search your saved preferences…"
+              className="w-full text-xs py-2.5 pl-9 pr-3.5 rounded-full bg-[#FCFBF8] border border-brand-warm-stone/85 text-brand-ink focus:outline-none focus:border-brand-deep-green"
             />
           </div>
 
-          {/* Domain Pill filter */}
-          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none py-1">
-            {[
-              { id: 'all', label: 'All Domains' },
-              { id: 'my-world', label: 'My World' },
-              { id: 'travel', label: 'Travel' },
-              { id: 'shopping', label: 'Hardware' },
-              { id: 'food-drink', label: 'Coffee' },
-              { id: 'interests', label: 'Craft' },
-              { id: 'what-matters', label: 'Values' },
-            ].map((d) => (
-              <button
-                key={d.id}
-                onClick={() => setSelectedDomain(d.id as any)}
-                className={`py-1 px-2.5 rounded-full text-[11px] font-medium whitespace-nowrap border transition-colors ${
-                  selectedDomain === d.id
-                    ? 'bg-brand-deep-green text-white border-brand-deep-green'
-                    : 'bg-white text-brand-ink-muted border-brand-warm-stone/60'
-                }`}
+          {/* Preferences Ledger */}
+          <div className="space-y-2.5">
+            {filteredItems.map((item) => (
+              <div
+                key={item.id}
+                className="editorial-surface rounded-[20px] p-4 flex items-start justify-between gap-3"
               >
-                {d.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Audit Registry Items */}
-        <div className="space-y-2.5">
-          <div className="flex items-center justify-between text-xs text-brand-ink-light px-1">
-            <span>Showing {filteredItems.length} verified context items</span>
-          </div>
-
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="p-4 bg-white rounded-3xl border border-brand-warm-stone/60 shadow-soft space-y-2"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
+                <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-brand-ink">
-                      {item.key}
-                    </span>
-                    <span className="text-[10px] font-mono uppercase bg-brand-ivory text-brand-ink-muted px-2 py-0.5 rounded-md border border-brand-warm-stone/40">
-                      {item.domain}
+                    <span className="text-xs font-semibold text-brand-ink">{item.key}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EFE9DE] text-brand-ink-light">
+                      {item.provenance.provider}
                     </span>
                   </div>
-                  <p className="text-xs text-brand-ink-muted leading-relaxed mt-1">
-                    {item.value}
-                  </p>
+                  <p className="text-xs text-brand-ink/80 leading-relaxed">{item.value}</p>
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => deleteContextItem(item.id)}
-                  className="text-brand-ink-light hover:text-rose-600 p-1 transition-colors"
-                  aria-label="Delete rule"
+                  aria-label="Delete item"
+                  className="p-1 text-brand-ink-light hover:text-brand-terracotta cursor-pointer shrink-0"
                 >
-                  <Trash2 size={13} />
+                  <IconTrash size={14} />
                 </button>
               </div>
-
-              {/* Provenance Metadata */}
-              <div className="pt-2 border-t border-brand-warm-stone/30 flex flex-wrap items-center justify-between gap-2 text-[10px] text-brand-ink-light">
-                <span className="font-mono bg-brand-ivory px-2 py-0.5 rounded">
-                  Provenance: {item.provenance.provider}
-                </span>
-
-                <div className="flex items-center gap-2">
-                  <span>Confidence: {Math.round(item.confidence * 100)}%</span>
-                  <span>•</span>
-                  <span>{item.horizon === 'persistent_long_term' ? '🔒 Bedrock' : '⏱️ Active Horizon'}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Raw Export & System Actions */}
-        <div className="pt-3 space-y-2.5">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleExportJson}
-              className="flex-1 py-2.5 px-4 bg-white hover:bg-brand-ivory border border-brand-warm-stone/70 rounded-2xl text-xs font-semibold text-brand-deep-green flex items-center justify-center gap-1.5 shadow-xs transition-colors"
-            >
-              <Download size={14} />
-              <span>Export Raw JSON</span>
-            </button>
-
-            <button
-              onClick={() => setShowRawJson(!showRawJson)}
-              className="py-2.5 px-4 bg-white hover:bg-brand-ivory border border-brand-warm-stone/70 rounded-2xl text-xs font-semibold text-brand-ink-muted flex items-center justify-center gap-1.5 shadow-xs transition-colors"
-            >
-              <FileJson size={14} />
-              <span>{showRawJson ? 'Hide Code' : 'View Code'}</span>
-            </button>
+            ))}
           </div>
 
-          {showRawJson && (
-            <div className="bg-brand-ink text-brand-ivory p-4 rounded-2xl text-[10px] font-mono overflow-x-auto max-h-60 border border-white/10">
-              <pre>{JSON.stringify(contextItems, null, 2)}</pre>
-            </div>
-          )}
+          {/* Export & Reset */}
+          <div className="space-y-2.5 pt-2">
+            <div className="grid grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={handleExportJson}
+                className="py-2.5 px-4 rounded-full bg-brand-deep-green text-brand-ivory text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <IconDownload size={15} accent="#F7F3EC" />
+                <span>Export JSON</span>
+              </button>
 
-          <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setShowRawJson(!showRawJson)}
+                className="py-2.5 px-4 rounded-full bg-[#FCFBF8] border border-brand-warm-stone text-xs font-semibold text-brand-ink cursor-pointer"
+              >
+                {showRawJson ? 'Hide JSON' : 'Inspect JSON'}
+              </button>
+            </div>
+
+            {showRawJson && (
+              <div className="rounded-2xl bg-brand-ink text-brand-ivory p-4 text-[10.5px] font-mono overflow-x-auto max-h-64">
+                <pre>{JSON.stringify(contextItems, null, 2)}</pre>
+              </div>
+            )}
+
             <button
-              onClick={resetToBaseline}
-              className="w-full py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-2xl text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
+              type="button"
+              onClick={() => {
+                if (window.confirm('Restore baseline preferences and sample events?')) {
+                  resetToBaseline();
+                }
+              }}
+              className="w-full py-2.5 px-4 rounded-full border border-brand-warm-stone text-xs font-medium text-brand-ink-light hover:text-brand-terracotta flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
             >
-              <RefreshCw size={13} />
-              <span>Reset to Master Blueprint Sample Data</span>
+              <IconReset size={14} />
+              <span>Restore Baseline Calendar</span>
             </button>
           </div>
         </div>

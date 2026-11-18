@@ -3,28 +3,36 @@
 import React from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/ui/Logo';
+import { useApp } from '@/context/AppContext';
 
-interface TopHeaderProps {
-  onOpenIngestion?: () => void;
-}
+export const TopHeader: React.FC = () => {
+  const { persona, geography } = useApp();
+  const initialLetter = (persona.monogram || persona.userName || 'K').charAt(0).toUpperCase();
+  const cityLabel = geography === 'singapore-sin' ? 'Singapore' : 'Bangalore';
 
-export const TopHeader: React.FC<TopHeaderProps> = () => {
   return (
-    <header className="sticky top-0 z-30 bg-brand-ivory/95 backdrop-blur-md border-b border-brand-warm-stone/40 px-4 pt-3 pb-2.5">
+    <header className="sticky top-0 z-30 bg-brand-ivory/92 backdrop-blur-md border-b border-brand-warm-stone/55 px-5 pt-3.5 pb-3">
       <div className="flex items-center justify-between">
-        {/* Left: Official Brand Logo */}
-        <Link href="/" className="flex items-center">
-          <Logo size="sm" type="full" variant="green" />
-        </Link>
+        {/* Official Undernote Wordmark */}
+        <Logo size="sm" variant="dark" href="/radar" />
 
-        {/* Right: Clean Profile Avatar leading to Me */}
-        <div className="flex items-center gap-2">
+        {/* Subtle Market Label & Personal Seal */}
+        <div className="flex items-center gap-2.5">
           <Link
             href="/me"
-            className="w-7 h-7 rounded-full bg-brand-deep-green/10 border border-brand-deep-green/30 text-brand-deep-green flex items-center justify-center text-xs font-semibold hover:border-brand-terracotta hover:bg-brand-deep-green hover:text-white transition-all shadow-2xs"
-            aria-label="Profile and context"
+            className="text-[11px] font-medium tracking-wide text-brand-ink-light hover:text-brand-ink transition-colors"
+            title="Home city & taste profile"
           >
-            K
+            {cityLabel}
+          </Link>
+
+          <Link
+            href="/me"
+            className="w-8 h-8 rounded-[10px] bg-brand-deep-green text-brand-ivory flex flex-col items-center justify-center text-xs font-semibold hover:bg-brand-deep-green-dark transition-all shadow-xs relative"
+            aria-label="Your profile and taste lookbook"
+          >
+            <span className="leading-none pb-0.5">{initialLetter}</span>
+            <span className="w-3 h-[1.8px] rounded-full bg-brand-terracotta" />
           </Link>
         </div>
       </div>

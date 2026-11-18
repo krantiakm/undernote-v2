@@ -18,6 +18,7 @@ interface InlineContextRefinementProps {
   title: string;
   rationale: string;
   options: RefinementOption[];
+  onAnswer?: (option: RefinementOption) => void;
 }
 
 export const InlineContextRefinement: React.FC<InlineContextRefinementProps> = ({
@@ -25,12 +26,18 @@ export const InlineContextRefinement: React.FC<InlineContextRefinementProps> = (
   title,
   rationale,
   options,
+  onAnswer,
 }) => {
   const { addContextItem, showToast } = useApp();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   const handleSelect = (option: RefinementOption) => {
     setSelectedOption(option.label);
+
+    if (onAnswer) {
+      onAnswer(option);
+      return;
+    }
 
     addContextItem({
       domain: option.domain,

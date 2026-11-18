@@ -65,28 +65,28 @@ export const LandingFooter: React.FC<LandingFooterProps> = ({ onOpenAiModal }) =
             </h4>
             <ul className="space-y-2 text-xs text-[#a59c8f] font-sans">
               <li>
-                <button
-                  onClick={() => onOpenAiModal && onOpenAiModal('chatgpt')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
+                <Link
+                  href="/import?provider=chatgpt"
+                  className="hover:text-white transition-colors text-left"
                 >
                   Import from ChatGPT
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onOpenAiModal && onOpenAiModal('claude')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
+                <Link
+                  href="/import?provider=claude"
+                  className="hover:text-white transition-colors text-left"
                 >
                   Import from Claude
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => onOpenAiModal && onOpenAiModal('gemini')}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
+                <Link
+                  href="/import?provider=gemini"
+                  className="hover:text-white transition-colors text-left"
                 >
                   Import from Gemini
-                </button>
+                </Link>
               </li>
               <li>
                 <Link href="/me" className="hover:text-white transition-colors">

@@ -3,302 +3,460 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Eye,
-  Target,
-  Plus,
-  Mic,
-  TrendingDown,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  ArrowRight,
-  Pause,
-  Play,
-  ChevronDown,
-  X,
-} from 'lucide-react';
 import { AppShell } from '@/components/shell/AppShell';
+import { TopHeader } from '@/components/shell/TopHeader';
+import { TopographicPattern } from '@/components/ui/TopographicPattern';
+import { Logo } from '@/components/ui/Logo';
 import { useApp } from '@/context/AppContext';
+import { downloadEventIcs, resolveAssetUrl } from '@/lib/assets';
+import { startSpeechRecognition } from '@/lib/voice/speechRecognition';
+import {
+  IconArrowUpRight,
+  IconBookmark,
+  IconCalendar,
+  IconClose,
+  IconMicrophone,
+  IconPause,
+  IconPlay,
+  IconPlus,
+  IconTrash,
+} from '@/components/ui/BrandIcons';
 
 export default function WatchingPage() {
-  const { watches, intents, toggleWatchStatus, addWatch, showToast, geography, persona } = useApp();
+  const {
+    watches,
+    savedCards,
+    saveCard,
+    toggleWatchStatus,
+    deleteWatch,
+    addWatch,
+    geography,
+    persona,
+    showToast,
+  } = useApp();
 
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [expandedWatchId, setExpandedWatchId] = useState<string | null>(null);
-
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const [newEntity, setNewEntity] = useState('');
+  const [newNeighborhood, setNewNeighborhood] = useState('');
   const [newCriteria, setNewCriteria] = useState('');
-  const [newTargetPrice, setNewTargetPrice] = useState('');
-  const [newType, setNewType] = useState<'price' | 'travel' | 'product' | 'availability'>('price');
+  const [watchKind, setWatchKind] = useState<'venue' | 'artist' | 'series'>('venue');
   const [isRecording, setIsRecording] = useState(false);
+  const [speechSession, setSpeechSession] = useState<{ stop: () => void } | null>(null);
 
-  const triggeredCount = watches.filter((w) => w.triggerMet).length;
+  const cityName = geography === 'singapore-sin' ? 'Singapore' : 'Bangalore';
+  const marketWatches = watches.filter((w) => !w.geography || w.geography === geography);
 
-  const handleVoiceAdd = () => {
+  const handleVoiceWatch = () => {
     if (!isRecording) {
       setIsRecording(true);
-      setTimeout(() => {
-        setNewEntity('Sony 24mm F/2.8 G Lens');
-        setNewCriteria('Price drop below ₹45,000');
-        setNewTargetPrice('45000');
-        setNewType('price');
-        setIsRecording(false);
-        showToast('Voice transcribed into tracker');
-      }, 1800);
+      showToast('Listening — name a venue, artist, or series');
+      const session = startSpeechRecognition({
+        onTranscript: (text, isFinal) => {
+          setNewEntity(text);
+          if (!newCriteria) {
+            setNewCriteria(`Alert me when intimate ${cityName} dates open`);
+          }
+          if (isFinal) setIsRecording(false);
+        },
+        onError: (err) => {
+          setIsRecording(false);
+          showToast(err);
+        },
+        onEnd: () => setIsRecording(false),
+      });
+      setSpeechSession(session);
     } else {
+      speechSession?.stop();
       setIsRecording(false);
     }
   };
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleAddWatch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newEntity.trim() || !newCriteria.trim()) return;
+    if (!newEntity.trim()) return;
 
     addWatch({
       geography,
-      type: newType,
+      type: watchKind,
       entity: newEntity.trim(),
-      criteria: newCriteria.trim(),
-      targetPrice: newTargetPrice ? parseFloat(newTargetPrice) : undefined,
-      currentPrice: newTargetPrice ? parseFloat(newTargetPrice) * 1.15 : undefined,
+      neighborhood: newNeighborhood.trim() || cityName,
+      criteria:
+        newCriteria.trim() || 'New dates, small-room releases, or waitlist openings',
       currency: persona.currency.includes('SGD') ? 'SGD' : 'INR',
       status: 'active',
-      checkCadence: 'Every 2 hours',
+      checkCadence: 'Daily morning',
       notificationMode: 'important_only',
     });
 
     setNewEntity('');
+    setNewNeighborhood('');
     setNewCriteria('');
-    setNewTargetPrice('');
-    setIsAddModalOpen(false);
+    setIsAddOpen(false);
   };
 
   return (
     <AppShell>
-      <div className="flex-1 flex flex-col bg-brand-ivory p-4 space-y-4 pb-12">
-        {/* Header */}
-        <div className="flex items-center justify-between pt-2">
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink/60">
-                Active Tracking
-              </span>
-            </div>
-            <h1 className="font-serif text-2xl font-bold tracking-tight text-brand-ink">
-              Watching
-            </h1>
-            <p className="text-xs text-brand-ink/70 mt-0.5">
-              Things Undernote is keeping an eye on for you.
+      <div className="flex-1 flex flex-col bg-brand-ivory">
+        <TopHeader />
+
+        {/* 1. Editorial Header */}
+        <section className="relative px-5 pt-5 pb-4 overflow-hidden">
+          <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.4} />
+          <div className="relative z-10 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-brand-terracotta">
+              Watching · {cityName}
             </p>
+            <h1 className="font-serif text-[24px] leading-[1.2] font-medium text-brand-ink">
+              You don’t have to keep checking.
+            </h1>
+            <p className="text-[13px] text-brand-ink-light leading-relaxed">
+              Your saved calendar at the top—and quiet watches on the halls, studios, and suppers you care about.
+            </p>
+            <div className="pt-0.5">
+              <span className="brand-rule" />
+            </div>
           </div>
+        </section>
 
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 text-xs font-semibold bg-brand-deep-green text-white px-3.5 py-2 rounded-full shadow-xs hover:bg-brand-deep-green-dark transition-all active:scale-95"
-          >
-            <Plus size={14} />
-            <span>New Watch</span>
-          </button>
-        </div>
+        <div className="px-5 pb-8 space-y-7 flex-1">
+          {/* ================================================================
+              SECTION 1: SAVED TO YOUR CALENDAR
+             ================================================================ */}
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-ink-light">
+                Saved Gatherings ({savedCards.length})
+              </span>
+              {savedCards.length > 0 && (
+                <span className="text-[11px] text-brand-deep-green font-medium">
+                  Ready for `.ics` export
+                </span>
+              )}
+            </div>
 
-        {/* Compact Status Pills */}
-        <div className="flex items-center gap-2 text-xs">
-          <span className="flex-1 bg-white p-2.5 rounded-2xl border border-brand-warm-stone/50 shadow-soft text-center font-medium text-brand-ink">
-            <strong>{watches.length}</strong> Active Monitors
-          </span>
-          <span className="flex-1 bg-emerald-50 p-2.5 rounded-2xl border border-emerald-200 shadow-soft text-center font-semibold text-emerald-800 flex items-center justify-center gap-1">
-            <Sparkles size={12} className="text-emerald-600" />
-            <span><strong>{triggeredCount}</strong> Targets Met</span>
-          </span>
-        </div>
+            {savedCards.length > 0 ? (
+              <div className="space-y-2.5">
+                {savedCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="editorial-surface rounded-[20px] p-3.5 flex items-center gap-3.5"
+                  >
+                    <Link
+                      href={`/radar/${card.id}`}
+                      className="w-16 h-16 rounded-2xl overflow-hidden bg-[#EFE9DE] shrink-0"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={resolveAssetUrl(card.heroImage)}
+                        alt={card.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </Link>
 
-        {/* 1. LIVE BACKGROUND MONITORS */}
-        <div className="space-y-3">
-          {watches.map((w) => {
-            const isMet = w.triggerMet;
-            const isExpanded = expandedWatchId === w.id;
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-brand-terracotta block truncate">
+                        {card.eventMeta
+                          ? `${card.eventMeta.dayLabel} · ${card.eventMeta.timeLabel}`
+                          : 'Saved Event'}
+                      </span>
+                      <Link href={`/radar/${card.id}`} className="block">
+                        <h3 className="text-xs font-semibold text-brand-ink truncate hover:text-brand-deep-green">
+                          {card.title}
+                        </h3>
+                      </Link>
+                      <p className="text-[11px] text-brand-ink-light truncate">
+                        {card.eventMeta
+                          ? `${card.eventMeta.venue}, ${card.eventMeta.neighborhood}`
+                          : card.subtitle}
+                      </p>
+                    </div>
 
-            return (
-              <div
-                key={w.id}
-                className={`p-4 rounded-3xl border transition-all shadow-soft bg-white ${
-                  isMet ? 'border-emerald-300 ring-1 ring-emerald-200' : 'border-brand-warm-stone/60'
-                }`}
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          downloadEventIcs(card);
+                          showToast('Calendar invite (.ics) downloaded');
+                        }}
+                        title="Download .ics calendar invite"
+                        className="w-8 h-8 rounded-full bg-[#EFE9DE] hover:bg-brand-deep-green hover:text-brand-ivory text-brand-deep-green flex items-center justify-center transition-colors cursor-pointer"
+                      >
+                        <IconCalendar size={14} />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => saveCard(card.id)}
+                        title="Remove from saved"
+                        className="w-8 h-8 rounded-full text-brand-terracotta hover:bg-[#EFE9DE] flex items-center justify-center transition-colors cursor-pointer"
+                      >
+                        <IconBookmark size={15} filled />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[20px] border border-dashed border-brand-warm-stone bg-[#FCFBF8]/65 p-5 text-center space-y-1.5">
+                <p className="text-xs font-semibold text-brand-ink">
+                  Nothing bookmarked yet
+                </p>
+                <p className="text-[11.5px] text-brand-ink-light leading-relaxed">
+                  Tap the bookmark mark on any gathering in{' '}
+                  <Link href="/radar" className="text-brand-deep-green underline font-medium">
+                    For You
+                  </Link>{' '}
+                  to keep a shortlist here.
+                </p>
+              </div>
+            )}
+          </section>
+
+          {/* ================================================================
+              SECTION 2: QUIET VENUE, ARTIST & TICKET WATCHES
+              Modeled on Section 6 ("NAVIGATION / NOTIFICATION CARD") of Brand Book
+             ================================================================ */}
+          <section className="space-y-3.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-ink-light">
+                Active Venue & Series Watches
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsAddOpen(true)}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-deep-green text-brand-ivory text-[11px] font-semibold hover:bg-brand-deep-green-dark transition-colors cursor-pointer"
               >
-                {/* Top Row: Entity & Status */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-xs font-bold text-brand-ink">{w.entity}</h4>
-                      {isMet && (
-                        <span className="text-[9px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.2 rounded-full">
-                          Target Met
+                <IconPlus size={12} />
+                <span>Add Watch</span>
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {marketWatches.map((watch) => {
+                const latestObs = watch.observations[0];
+                const isPaused = watch.status === 'paused';
+
+                return (
+                  <article
+                    key={watch.id}
+                    className={`editorial-surface rounded-[22px] p-4 space-y-3 transition-opacity ${
+                      isPaused ? 'opacity-60' : ''
+                    }`}
+                  >
+                    {/* Brand Book Notification Header */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Logo type="mark" size="sm" clickable={false} />
+                        <div>
+                          <span className="text-[10px] font-semibold uppercase tracking-[0.09em] text-brand-ink-light block leading-none">
+                            {watch.neighborhood || cityName}
+                          </span>
+                          <span className="text-[11px] text-brand-ink-light">
+                            {watch.lastChecked}
+                          </span>
+                        </div>
+                      </div>
+
+                      {watch.triggerMet && !isPaused ? (
+                        <span className="px-2.5 py-1 rounded-full bg-brand-terracotta/14 text-brand-terracotta text-[10.5px] font-semibold">
+                          Seats Open
+                        </span>
+                      ) : (
+                        <span className="px-2.5 py-1 rounded-full bg-[#EFE9DE] text-brand-ink-light text-[10.5px] font-medium">
+                          {isPaused ? 'Paused' : 'Quietly Watching'}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-brand-ink-muted leading-tight">
-                      {w.criteria}
-                    </p>
-                  </div>
 
-                  <button
-                    onClick={() => toggleWatchStatus(w.id)}
-                    className="p-1 rounded-full bg-brand-ivory text-brand-ink-light hover:text-brand-ink border border-brand-warm-stone/40"
-                    title={w.status === 'active' ? 'Pause' : 'Resume'}
-                  >
-                    {w.status === 'active' ? <Pause size={12} /> : <Play size={12} />}
-                  </button>
-                </div>
-
-                {/* Price Comparisons */}
-                {w.targetPrice && w.currentPrice && (
-                  <div className="mt-3 p-2.5 rounded-2xl bg-brand-ivory flex items-center justify-between text-xs border border-brand-warm-stone/30">
-                    <div>
-                      <span className="text-[10px] text-brand-ink-light block">Current Price</span>
-                      <span className="font-bold text-brand-deep-green text-sm">
-                        ₹{w.currentPrice.toLocaleString('en-IN')}
-                      </span>
+                    {/* Entity & Criteria */}
+                    <div className="space-y-1">
+                      <h3 className="font-sans text-[15.5px] font-semibold text-brand-ink leading-snug">
+                        {watch.entity}
+                      </h3>
+                      <p className="text-xs text-brand-ink-light leading-relaxed">
+                        {watch.criteria}
+                      </p>
                     </div>
-                    <div className="text-right">
-                      <span className="text-[10px] text-brand-ink-light block">Target</span>
-                      <span className="font-medium text-brand-ink text-xs">
-                        ₹{w.targetPrice.toLocaleString('en-IN')}
-                      </span>
+
+                    {/* Latest Observation */}
+                    {latestObs && (
+                      <div className="rounded-2xl bg-[#F2ECE1] px-3.5 py-3 space-y-1 border border-brand-warm-stone/65">
+                        <p className="text-xs font-semibold text-brand-deep-green">
+                          {latestObs.availability}
+                        </p>
+                        {latestObs.notes && (
+                          <p className="font-serif text-[12px] text-brand-ink/80 leading-relaxed">
+                            {latestObs.notes}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Footer: Signature Rule + Open Event / Controls */}
+                    <div className="pt-1 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <span className="brand-rule-sm" />
+                        {watch.matchedCardId && (
+                          <Link
+                            href={`/radar/${watch.matchedCardId}`}
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-brand-deep-green hover:text-brand-terracotta transition-colors"
+                          >
+                            <span>View gathering</span>
+                            <IconArrowUpRight size={13} />
+                          </Link>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => toggleWatchStatus(watch.id)}
+                          aria-label={isPaused ? 'Resume watch' : 'Pause watch'}
+                          className="w-7 h-7 rounded-full hover:bg-[#EFE9DE] text-brand-ink-light hover:text-brand-ink flex items-center justify-center transition-colors cursor-pointer"
+                        >
+                          {isPaused ? <IconPlay size={13} /> : <IconPause size={13} />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteWatch(watch.id)}
+                          aria-label="Remove watch"
+                          className="w-7 h-7 rounded-full hover:bg-[#EFE9DE] text-brand-ink-light hover:text-brand-terracotta flex items-center justify-center transition-colors cursor-pointer"
+                        >
+                          <IconTrash size={13.5} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Tap to Reveal History */}
-                <button
-                  onClick={() => setExpandedWatchId(isExpanded ? null : w.id)}
-                  className="w-full mt-2 pt-2 border-t border-brand-warm-stone/25 flex items-center justify-between text-[11px] text-brand-ink-light hover:text-brand-ink"
-                >
-                  <span className="flex items-center gap-1">
-                    <Clock size={11} className="text-brand-terracotta" />
-                    <span>Checked {w.lastChecked}</span>
-                  </span>
-                  <span className="font-semibold text-brand-deep-green flex items-center gap-0.5">
-                    <span>{isExpanded ? 'Hide Log' : 'History'}</span>
-                    <ChevronDown size={12} className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-                  </span>
-                </button>
-
-                {/* REVEALED LOG ON TAP */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className="mt-2 pt-2 border-t border-brand-warm-stone/20 space-y-1.5 text-[11px]"
-                    >
-                      {w.observations.map((obs, idx) => (
-                        <div key={idx} className="p-2 bg-brand-ivory rounded-xl flex items-center justify-between text-brand-ink-muted">
-                          <span>{obs.notes}</span>
-                          <span className="font-bold text-brand-deep-green">{obs.price ? `₹${obs.price.toLocaleString('en-IN')}` : obs.availability}</span>
-                        </div>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* 2. ACTIVE PLANNING INTENTS */}
-        <div className="space-y-2.5 pt-2">
-          <h3 className="font-serif text-sm font-bold text-brand-ink">
-            Active Planning Horizons
-          </h3>
-
-          {intents.map((intent) => (
-            <div
-              key={intent.id}
-              className="bg-white rounded-3xl p-4 border border-brand-warm-stone/60 shadow-soft space-y-2"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <h4 className="text-xs font-bold text-brand-ink">{intent.title}</h4>
-                <span className="text-[10px] font-semibold bg-amber-100 text-amber-900 px-2 py-0.2 rounded-full shrink-0">
-                  {intent.daysRemaining}d left
-                </span>
-              </div>
-              <p className="text-[11px] text-brand-ink-muted leading-tight">{intent.description}</p>
-              <div className="w-full h-1.5 bg-brand-warm-stone/30 rounded-full overflow-hidden">
-                <div className="h-full bg-brand-deep-green rounded-full" style={{ width: `${intent.progressPercent}%` }} />
-              </div>
+                  </article>
+                );
+              })}
             </div>
-          ))}
+          </section>
         </div>
 
-        {/* ADD MODAL */}
+        {/* Add Watch Bottom Sheet */}
         <AnimatePresence>
-          {isAddModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          {isAddOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-end justify-center"
+              onClick={() => setIsAddOpen(false)}
+            >
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="w-full max-w-sm bg-brand-ivory rounded-3xl p-5 border border-brand-warm-stone shadow-2xl space-y-3.5"
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-[430px] bg-brand-ivory rounded-t-[28px] p-6 space-y-4 border-t border-brand-warm-stone shadow-elevated"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-base font-bold text-brand-ink">
-                    Create Proactive Tracker
+                  <h3 className="font-serif text-xl font-medium text-brand-ink">
+                    Watch a Venue or Series
                   </h3>
-                  <button onClick={() => setIsAddModalOpen(false)} className="w-7 h-7 rounded-full bg-brand-warm-stone/40 flex items-center justify-center">
-                    <X size={15} />
+                  <button
+                    type="button"
+                    onClick={() => setIsAddOpen(false)}
+                    className="w-8 h-8 rounded-full bg-[#EFE9DE] flex items-center justify-center text-brand-ink cursor-pointer"
+                  >
+                    <IconClose size={15} />
                   </button>
                 </div>
 
-                <form onSubmit={handleAddSubmit} className="space-y-3">
-                  <div>
-                    <label className="text-xs font-semibold text-brand-ink block mb-1">Product or Route</label>
+                <form onSubmit={handleAddWatch} className="space-y-3.5">
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {[
+                      { id: 'venue', label: 'Venue' },
+                      { id: 'artist', label: 'Artist / Ensemble' },
+                      { id: 'series', label: 'Format / Supper' },
+                    ].map((kind) => (
+                      <button
+                        key={kind.id}
+                        type="button"
+                        onClick={() => setWatchKind(kind.id as typeof watchKind)}
+                        className={`py-2 px-2.5 rounded-full text-[11px] font-semibold border transition-all cursor-pointer ${
+                          watchKind === kind.id
+                            ? 'bg-brand-deep-green text-brand-ivory border-brand-deep-green'
+                            : 'bg-[#FCFBF8] text-brand-ink border-brand-warm-stone'
+                        }`}
+                      >
+                        {kind.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      What should Undernote watch?
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        value={newEntity}
+                        onChange={(e) => setNewEntity(e.target.value)}
+                        placeholder={
+                          geography === 'singapore-sin'
+                            ? 'e.g., Victoria Concert Hall Chamber Nights'
+                            : 'e.g., Jagriti Theatre or BIC Architecture Talks'
+                        }
+                        className="w-full text-xs py-2.5 pl-3.5 pr-9 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVoiceWatch}
+                        aria-label="Dictate watch"
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full cursor-pointer ${
+                          isRecording
+                            ? 'bg-brand-terracotta text-brand-ivory animate-pulse'
+                            : 'text-brand-ink-light hover:text-brand-deep-green'
+                        }`}
+                      >
+                        <IconMicrophone size={15} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      Neighborhood (optional)
+                    </label>
                     <input
                       type="text"
-                      value={newEntity}
-                      onChange={(e) => setNewEntity(e.target.value)}
-                      placeholder="e.g. 'Sony FE 40mm Prime'"
-                      className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                      required
+                      value={newNeighborhood}
+                      onChange={(e) => setNewNeighborhood(e.target.value)}
+                      placeholder={
+                        geography === 'singapore-sin'
+                          ? 'e.g., Civic District or Tiong Bahru'
+                          : 'e.g., Domlur, Indiranagar, or JP Nagar'
+                      }
+                      className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-xs font-semibold text-brand-ink block mb-1">Target Price (₹)</label>
-                    <input
-                      type="number"
-                      value={newTargetPrice}
-                      onChange={(e) => setNewTargetPrice(e.target.value)}
-                      placeholder="e.g. 45000"
-                      className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-semibold text-brand-ink block mb-1">Criteria</label>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      Only alert me when…
+                    </label>
                     <input
                       type="text"
                       value={newCriteria}
                       onChange={(e) => setNewCriteria(e.target.value)}
-                      placeholder="e.g. 'Price drop under ₹45,000'"
-                      className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                      required
+                      placeholder="e.g., Unamplified Fri/Sat evenings under 300 seats"
+                      className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
                     />
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-1">
-                    <button type="button" onClick={() => setIsAddModalOpen(false)} className="text-xs text-brand-ink-light px-3 py-2">
-                      Cancel
-                    </button>
-                    <button type="submit" className="text-xs font-semibold bg-brand-deep-green text-white px-4 py-2 rounded-xl shadow-xs">
-                      Activate Watch
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-full bg-brand-deep-green hover:bg-brand-deep-green-dark text-brand-ivory text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                  >
+                    Start Quiet Watch
+                  </button>
                 </form>
               </motion.div>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

@@ -1,437 +1,560 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import {
-  Users,
-  Plus,
-  Share2,
-  Sparkles,
-  ShieldCheck,
-  CheckCircle2,
-  Lock,
-  Utensils,
-  Plane,
-  Gift,
-  Copy,
-  Check,
-  ExternalLink,
-  ArrowRight,
-} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AppShell } from '@/components/shell/AppShell';
+import { TopHeader } from '@/components/shell/TopHeader';
+import { TopographicPattern } from '@/components/ui/TopographicPattern';
 import { useApp } from '@/context/AppContext';
-import { GroupCapsuleData, RadarDomain } from '@/types';
+import { BASE_PATH, resolveAssetUrl } from '@/lib/assets';
+import {
+  IconArrowUpRight,
+  IconCheck,
+  IconClose,
+  IconCopy,
+  IconPlus,
+  IconShieldPrivacy,
+  IconTogether,
+} from '@/components/ui/BrandIcons';
 
-export default function CapsulesPage() {
+export default function TogetherPage() {
   const {
     groupCapsules,
     createGroupCapsule,
     joinGroupCapsule,
+    geography,
+    persona,
+    cards,
     showToast,
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'all' | 'trip' | 'dining' | 'gifting'>('all');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [filterType, setFilterType] = useState<'all' | 'evening' | 'weekend'>('all');
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isJoinOpen, setIsJoinOpen] = useState(false);
 
-  // Create form state
-  const [capsuleTitle, setCapsuleTitle] = useState('');
-  const [capsuleType, setCapsuleType] = useState<'trip' | 'dining' | 'gifting'>('trip');
-  const [selectedDomains, setSelectedDomains] = useState<RadarDomain[]>(['travel', 'food-drink']);
+  // Create Plan Form
+  const [planTitle, setPlanTitle] = useState('');
+  const [planType, setPlanType] = useState<'evening' | 'weekend'>('evening');
+  const [whenLabel, setWhenLabel] = useState('This Friday Evening');
+  const [companionName, setCompanionName] = useState('');
+  const [sharedNote, setSharedNote] = useState('Quiet acoustic or seated room · Vegetarian friendly');
 
-  // Join form state
+  // Join Plan Form
   const [inviteCodeInput, setInviteCodeInput] = useState('');
-  const [joinNameInput, setJoinNameInput] = useState('Kranti');
+  const [guestNameInput, setGuestNameInput] = useState('');
+  const [guestTasteInput, setGuestTasteInput] = useState('');
 
-  const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const filteredCapsules =
-    activeTab === 'all'
-      ? groupCapsules
-      : groupCapsules.filter((c) => c.type === activeTab);
+  const cityName = geography === 'singapore-sin' ? 'Singapore' : 'Bangalore';
 
-  const handleCopyInviteLink = (code: string) => {
-    const link = `https://undernote.ai/fuse/${code}`;
-    navigator.clipboard.writeText(link);
-    setCopiedCodeId(code);
-    showToast('Invite link copied! Share via WhatsApp or iMessage');
-    setTimeout(() => setCopiedCodeId(null), 2500);
+  const visiblePlans = groupCapsules.filter((plan) => {
+    if (plan.geography && plan.geography !== geography) return false;
+    if (filterType === 'all') return true;
+    if (filterType === 'evening') return plan.type === 'evening' || plan.type === 'dining';
+    return plan.type === 'weekend' || plan.type === 'family' || plan.type === 'trip';
+  });
+
+  const handleCopyInvite = (code: string, id: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://undernote.co';
+    navigator.clipboard.writeText(`${origin}${BASE_PATH}/capsules?invite=${code}`);
+    setCopiedId(id);
+    showToast('Invite link copied to share');
+    setTimeout(() => setCopiedId(null), 2200);
   };
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleCreatePlan = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!capsuleTitle.trim()) return;
+    if (!planTitle.trim()) return;
+
+    const userInitial = (persona.monogram || persona.userName || 'K').charAt(0).toUpperCase();
+    const members = [
+      {
+        userId: 'user-host',
+        name: persona.userName || 'Kranti',
+        avatar: userInitial,
+        isPcpUser: true,
+        contributedRuleIds: [],
+        tasteSummary: sharedNote,
+        status: 'joined' as const,
+      },
+    ];
+
+    if (companionName.trim()) {
+      members.push({
+        userId: `guest-${Date.now()}`,
+        name: companionName.trim(),
+        avatar: companionName.trim().charAt(0).toUpperCase(),
+        isPcpUser: false,
+        contributedRuleIds: [],
+        tasteSummary: 'Invited to weigh in on picks',
+        status: 'joined' as const,
+      });
+    }
+
+    const matchedPicks = cards
+      .filter((c) => c.status !== 'dismissed')
+      .filter((c) =>
+        planType === 'weekend'
+          ? c.eventMeta?.timeWindow === 'weekend' || c.eventMeta?.category === 'walks'
+          : c.eventMeta?.timeWindow !== 'upcoming'
+      )
+      .slice(0, 2);
 
     createGroupCapsule({
-      type: capsuleType,
-      title: capsuleTitle.trim(),
-      hostUserId: 'user-kranti',
-      scopedDomains: selectedDomains,
-      members: [
-        {
-          userId: 'user-kranti',
-          name: 'Kranti (Host)',
-          avatar: 'K',
-          isPcpUser: true,
-          contributedRuleIds: ['ctx-1', 'ctx-3'],
-          status: 'joined',
-        },
-      ],
+      type: planType,
+      geography,
+      whenLabel,
+      title: planTitle.trim(),
+      hostUserId: 'user-host',
+      scopedDomains: ['events'],
+      members,
       overlapHighlights: [
-        'Scoped privacy active: Only relevant travel/dining rules shared',
-        'Automatic constraint overlap solver running',
+        sharedNote,
+        `Scoped to ${cityName} gatherings that fit everyone’s schedule`,
       ],
-      fusedOpportunities: [],
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      fusedOpportunities: matchedPicks.length > 0 ? matchedPicks : cards.slice(0, 2),
+      expiresAt: new Date(Date.now() + 10 * 86400000).toISOString(),
     });
 
-    setCapsuleTitle('');
-    setIsCreateModalOpen(false);
+    setPlanTitle('');
+    setCompanionName('');
+    setIsCreateOpen(false);
   };
 
   const handleJoinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inviteCodeInput.trim()) return;
-
-    const success = joinGroupCapsule(inviteCodeInput, joinNameInput || 'Friend');
-    if (success) {
+    if (!inviteCodeInput.trim() || !guestNameInput.trim()) return;
+    const ok = joinGroupCapsule(inviteCodeInput, guestNameInput, guestTasteInput);
+    if (ok) {
       setInviteCodeInput('');
-      setIsJoinModalOpen(false);
+      setGuestNameInput('');
+      setGuestTasteInput('');
+      setIsJoinOpen(false);
     }
   };
 
   return (
     <AppShell>
-      <div className="flex-1 flex flex-col bg-brand-ivory p-4 space-y-5 pb-8">
-        {/* Header */}
-        <div className="flex items-center justify-between pt-2">
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-brand-terracotta" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink-light">
-                Shared Decisions
-              </span>
-            </div>
-            <h1 className="font-serif text-2xl font-bold tracking-tight text-brand-ink">
-              Together
-            </h1>
-            <p className="text-xs text-brand-ink/70 pt-0.5">
-              Make a plan that fits everyone.
+      <div className="flex-1 flex flex-col bg-brand-ivory">
+        <TopHeader />
+
+        {/* 1. Editorial Header */}
+        <section className="relative px-5 pt-5 pb-4 overflow-hidden">
+          <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.4} />
+          <div className="relative z-10 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-brand-terracotta">
+              Together · {cityName}
             </p>
+            <h1 className="font-serif text-[24px] leading-[1.2] font-medium text-brand-ink">
+              Find somewhere everyone will actually enjoy.
+            </h1>
+            <p className="text-[13px] text-brand-ink-light leading-relaxed">
+              Each person shares only what matters for this outing—timing, atmosphere, food—so choosing an evening feels effortless.
+            </p>
+            <div className="pt-0.5">
+              <span className="brand-rule" />
+            </div>
+          </div>
+        </section>
+
+        {/* 2. Primary Action Row + Filter Pills */}
+        <div className="px-5 pb-3 space-y-3">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsCreateOpen(true)}
+              className="flex-1 py-2.5 px-4 rounded-full bg-brand-deep-green hover:bg-brand-deep-green-dark text-brand-ivory text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+            >
+              <IconPlus size={14} />
+              <span>New Outing Plan</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsJoinOpen(true)}
+              className="py-2.5 px-4 rounded-full bg-[#FCFBF8] hover:bg-[#EFE9DE] border border-brand-warm-stone/85 text-xs font-semibold text-brand-ink transition-colors cursor-pointer"
+            >
+              Join Code
+            </button>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setIsJoinModalOpen(true)}
-              className="text-xs font-semibold bg-white text-brand-deep-green border border-brand-warm-stone/80 px-3 py-2 rounded-full shadow-xs hover:bg-brand-ivory transition-all active:scale-95"
-            >
-              Join plan
-            </button>
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center gap-1 text-xs font-semibold bg-brand-deep-green text-white px-3.5 py-2 rounded-full shadow-xs hover:bg-brand-deep-green-dark transition-all active:scale-95"
-            >
-              <Plus size={14} />
-              <span>Start a plan</span>
-            </button>
+            {[
+              { id: 'all', label: 'All Plans' },
+              { id: 'evening', label: 'Evenings' },
+              { id: 'weekend', label: 'Weekend Mornings' },
+            ].map((tab) => {
+              const active = filterType === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setFilterType(tab.id as typeof filterType)}
+                  className={`px-3.5 py-1.5 rounded-full text-[11.5px] transition-all cursor-pointer border ${
+                    active
+                      ? 'bg-brand-terracotta text-brand-ivory border-brand-terracotta font-semibold'
+                      : 'bg-[#FCFBF8] text-brand-ink/75 border-brand-warm-stone/75 font-medium'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Hero Visual Card */}
-        <div className="relative rounded-3xl overflow-hidden aspect-[16/8] bg-brand-deep-green shadow-soft">
-          <Image
-            src="/images/landing_group_dining.jpg"
-            alt="Group Planning"
-            fill
-            className="object-cover opacity-65"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-          <div className="absolute bottom-3.5 left-4 right-4 text-white space-y-1">
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-brand-terracotta text-white px-2 py-0.5 rounded-full">
-              <Sparkles size={10} />
-              <span>Shared Decisions</span>
-            </span>
-            <h3 className="font-serif text-lg font-bold leading-tight drop-shadow-sm">
-              What works for everyone
-            </h3>
-            <p className="text-xs text-white/85 line-clamp-1">
-              Start with what you like, invite the others, and get a shortlist that works for the whole group.
-            </p>
-          </div>
-        </div>
-
-        {/* Scoped Privacy Callout */}
-        <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white border border-brand-warm-stone/60 text-xs text-brand-ink-muted shadow-soft">
-          <ShieldCheck size={16} className="text-brand-deep-green shrink-0 mt-0.5" />
-          <p className="text-[11px] leading-relaxed">
-            <strong>Scoped Context Privacy:</strong> Only the specific domains required (e.g. dietary or flight rules) are shared. Personal finances, health, and private watches are strictly excluded.
-          </p>
-        </div>
-
-        {/* Category Tabs */}
-        <div className="flex p-1 bg-brand-warm-stone/30 rounded-2xl border border-brand-warm-stone/50 gap-1">
-          {[
-            { id: 'all', label: 'All', icon: Sparkles },
-            { id: 'trip', label: 'Group Trips', icon: Plane },
-            { id: 'dining', label: 'Dining', icon: Utensils },
-            { id: 'gifting', label: 'Wishlists', icon: Gift },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex-1 py-1.5 text-xs font-medium rounded-xl flex items-center justify-center gap-1 transition-all ${
-                  isActive
-                    ? 'bg-white text-brand-deep-green font-semibold shadow-xs'
-                    : 'text-brand-ink-light hover:text-brand-ink'
-                }`}
+        {/* 3. Shared Outing Cards */}
+        <div className="px-5 pb-8 space-y-4 flex-1">
+          {visiblePlans.length > 0 ? (
+            visiblePlans.map((plan) => (
+              <article
+                key={plan.id}
+                className="editorial-surface rounded-[24px] p-5 space-y-4"
               >
-                <Icon size={12} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Capsules List */}
-        <div className="space-y-4">
-          {filteredCapsules.map((capsule) => {
-            const isTrip = capsule.type === 'trip';
-            const isDining = capsule.type === 'dining';
-
-            return (
-              <div
-                key={capsule.id}
-                className="bg-white rounded-3xl p-5 border border-brand-warm-stone/60 shadow-soft space-y-3.5"
-              >
-                {/* Header info */}
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-terracotta flex items-center gap-1">
-                      {isTrip ? <Plane size={11} /> : isDining ? <Utensils size={11} /> : <Gift size={11} />}
-                      <span>{capsule.type.toUpperCase()} CAPSULE</span>
+                {/* Top Meta + Invite Code */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-brand-terracotta block">
+                      {plan.whenLabel || 'Upcoming Outing'}
                     </span>
-                    <h3 className="font-serif text-base font-bold text-brand-ink mt-0.5">
-                      {capsule.title}
-                    </h3>
+                    <h2 className="font-sans text-[18px] font-semibold text-brand-ink leading-snug">
+                      {plan.title}
+                    </h2>
                   </div>
 
-                  {/* Share Invite Button */}
                   <button
-                    onClick={() => handleCopyInviteLink(capsule.inviteCode)}
-                    className="flex items-center gap-1 text-[11px] font-medium bg-brand-ivory hover:bg-brand-warm-stone/40 text-brand-deep-green px-2.5 py-1 rounded-full border border-brand-warm-stone/60 transition-colors shadow-xs"
+                    type="button"
+                    onClick={() => handleCopyInvite(plan.inviteCode, plan.id)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EFE9DE] hover:bg-brand-warm-stone/70 text-[11px] font-semibold text-brand-deep-green transition-colors shrink-0 cursor-pointer"
+                    title="Copy invite link"
                   >
-                    {copiedCodeId === capsule.inviteCode ? (
+                    {copiedId === plan.id ? (
                       <>
-                        <Check size={11} className="text-emerald-600" />
-                        <span>Link Copied</span>
+                        <IconCheck size={13} />
+                        <span>Copied</span>
                       </>
                     ) : (
                       <>
-                        <Share2 size={11} />
-                        <span>Invite</span>
+                        <IconCopy size={13} />
+                        <span>{plan.inviteCode}</span>
                       </>
                     )}
                   </button>
                 </div>
 
-                {/* Members Avatars */}
-                <div className="flex items-center gap-2">
-                  <div className="flex -space-x-2 overflow-hidden">
-                    {capsule.members.map((m, idx) => (
-                      <div
-                        key={idx}
-                        className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-brand-deep-green text-brand-ivory text-xs font-bold ring-2 ring-white"
-                        title={m.name}
+                {/* People & Individual Context */}
+                <div className="space-y-2">
+                  {plan.members.map((member) => (
+                    <div
+                      key={member.userId}
+                      className="flex items-center gap-3 p-2.5 rounded-2xl bg-brand-ivory/75 border border-brand-warm-stone/50"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-brand-deep-green text-brand-ivory text-xs font-semibold flex items-center justify-center shrink-0">
+                        {member.avatar}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold text-brand-ink leading-tight">
+                          {member.name}
+                        </p>
+                        {member.tasteSummary && (
+                          <p className="text-[11px] text-brand-ink-light truncate mt-0.5">
+                            {member.tasteSummary}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Plain-Language Shared Ground */}
+                <div className="rounded-[18px] bg-[#F2ECE1] p-3.5 space-y-2 border border-brand-warm-stone/65">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-brand-deep-green block">
+                    Shared Ground
+                  </span>
+                  <ul className="space-y-1.5">
+                    {plan.overlapHighlights.map((line, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-2 text-xs text-brand-ink/85 leading-snug"
                       >
-                        {m.avatar}
-                      </div>
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-terracotta mt-1.5 shrink-0" />
+                        <span>{line}</span>
+                      </li>
                     ))}
-                  </div>
-                  <span className="text-xs text-brand-ink-light font-medium">
-                    {capsule.members.length} members contributing rules
-                  </span>
+                  </ul>
                 </div>
 
-                {/* Overlap Highlights Box */}
-                <div className="bg-brand-ivory p-3 rounded-2xl border border-brand-warm-stone/40 space-y-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-deep-green block">
-                    Constraint Overlap Sweet Spot:
-                  </span>
-                  <div className="space-y-1">
-                    {capsule.overlapHighlights.map((hl, idx) => (
-                      <div key={idx} className="flex items-start gap-1.5 text-xs text-brand-ink leading-snug">
-                        <CheckCircle2 size={13} className="text-brand-deep-green shrink-0 mt-0.5" />
-                        <span>{hl}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Fused Finds Preview */}
-                {capsule.fusedOpportunities.length > 0 && (
-                  <div className="space-y-2 pt-1">
-                    <span className="text-[10px] font-semibold text-brand-ink-light block">
-                      Recommended Matches Satisfying 100% of Rules:
+                {/* Matched Event Picks for This Plan */}
+                {plan.fusedOpportunities.length > 0 && (
+                  <div className="space-y-2.5 pt-1">
+                    <span className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-brand-ink-light block">
+                      Strongest Matches for Both of You
                     </span>
-                    {capsule.fusedOpportunities.map((opp) => (
-                      <Link
-                        key={opp.id}
-                        href={`/radar/${opp.id}`}
-                        className="flex items-center justify-between p-2.5 rounded-2xl bg-brand-ivory-light hover:bg-white border border-brand-warm-stone/50 transition-colors group"
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <div className="relative w-10 h-10 rounded-xl overflow-hidden shrink-0">
-                            <Image
-                              src={opp.heroImage}
-                              alt={opp.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div>
-                            <h5 className="text-xs font-bold text-brand-ink group-hover:text-brand-deep-green transition-colors">
-                              {opp.title}
-                            </h5>
-                            <span className="text-[10px] text-brand-ink-light">
-                              {opp.subtitle || opp.summary}
+                    <div className="space-y-2.5">
+                      {plan.fusedOpportunities.map((opp) => (
+                        <Link
+                          key={opp.id}
+                          href={`/radar/${opp.id}`}
+                          className="flex items-center gap-3 p-2.5 rounded-[18px] bg-brand-ivory/60 hover:bg-[#EFE9DE]/80 border border-brand-warm-stone/60 transition-colors group"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={resolveAssetUrl(opp.heroImage)}
+                            alt={opp.title}
+                            className="w-14 h-14 rounded-xl object-cover shrink-0 bg-[#EFE9DE]"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-brand-terracotta block truncate">
+                              {opp.eventMeta
+                                ? `${opp.eventMeta.dayLabel} · ${opp.eventMeta.priceLabel}`
+                                : opp.entityType}
                             </span>
+                            <p className="text-xs font-semibold text-brand-ink truncate group-hover:text-brand-deep-green">
+                              {opp.title}
+                            </p>
+                            <p className="text-[11px] text-brand-ink-light truncate">
+                              {opp.eventMeta?.venue || opp.subtitle}
+                            </p>
                           </div>
-                        </div>
-
-                        <ArrowRight size={14} className="text-brand-ink-light group-hover:text-brand-deep-green transition-colors" />
-                      </Link>
-                    ))}
+                          <IconArrowUpRight
+                            size={15}
+                            className="text-brand-ink-light group-hover:text-brand-deep-green shrink-0 mr-1"
+                          />
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
+
+                {/* Scoped Privacy Whisper */}
+                <div className="pt-2 border-t border-brand-warm-stone/45 flex items-center gap-2 text-[11px] text-brand-ink-light">
+                  <IconShieldPrivacy size={14} className="text-brand-deep-green shrink-0" />
+                  <span>Only outing preferences are shared—your full profile stays private.</span>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="editorial-surface rounded-[24px] p-8 text-center space-y-3">
+              <div className="w-11 h-11 rounded-full bg-[#EFE9DE] flex items-center justify-center mx-auto text-brand-deep-green">
+                <IconTogether size={20} />
               </div>
-            );
-          })}
+              <h3 className="font-serif text-lg font-medium text-brand-ink">
+                No shared outings in this view yet.
+              </h3>
+              <p className="text-xs text-brand-ink-light max-w-[250px] mx-auto leading-relaxed">
+                Start a plan for a Friday evening or weekend morning and share the code with a friend.
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* CREATE CAPSULE MODAL */}
-        {isCreateModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="w-full max-w-sm bg-brand-ivory rounded-3xl p-5 border border-brand-warm-stone shadow-2xl space-y-4">
-              <h3 className="font-serif text-base font-bold text-brand-ink">
-                Create Multi-Player Capsule
-              </h3>
-
-              <form onSubmit={handleCreateSubmit} className="space-y-3">
-                <div>
-                  <label className="text-xs font-semibold text-brand-ink block mb-1">
-                    Capsule Type
-                  </label>
-                  <select
-                    value={capsuleType}
-                    onChange={(e) => setCapsuleType(e.target.value as any)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                  >
-                    <option value="trip">Group Trip / Weekend Away</option>
-                    <option value="dining">Group Dining / Night Out</option>
-                    <option value="gifting">Gift Wishlist Capsule</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-brand-ink block mb-1">
-                    Capsule Title
-                  </label>
-                  <input
-                    type="text"
-                    value={capsuleTitle}
-                    onChange={(e) => setCapsuleTitle(e.target.value)}
-                    placeholder="e.g. 'Coorg Coffee Harvest Escape'"
-                    className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                    required
-                  />
-                </div>
-
-                <div className="p-3 bg-white/70 rounded-2xl border border-brand-warm-stone/40 text-[11px] text-brand-ink-muted">
-                  <ShieldCheck size={14} className="text-brand-deep-green inline mr-1" />
-                  Generating an invite link allows friends to fuse their travel or dining rules in 1 tap without revealing private data.
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-2">
+        {/* Create Shared Plan Sheet */}
+        <AnimatePresence>
+          {isCreateOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-end justify-center"
+              onClick={() => setIsCreateOpen(false)}
+            >
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-[430px] bg-brand-ivory rounded-t-[28px] p-6 space-y-4 border-t border-brand-warm-stone shadow-elevated"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif text-xl font-medium text-brand-ink">
+                    Start an Outing Plan
+                  </h3>
                   <button
                     type="button"
-                    onClick={() => setIsCreateModalOpen(false)}
-                    className="text-xs text-brand-ink-light px-3 py-2"
+                    onClick={() => setIsCreateOpen(false)}
+                    className="w-8 h-8 rounded-full bg-[#EFE9DE] flex items-center justify-center text-brand-ink cursor-pointer"
                   >
-                    Cancel
+                    <IconClose size={15} />
                   </button>
+                </div>
+
+                <form onSubmit={handleCreatePlan} className="space-y-3.5">
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'evening', label: 'Evening Out', defaultWhen: 'This Friday Evening' },
+                      {
+                        id: 'weekend',
+                        label: 'Weekend Morning',
+                        defaultWhen: 'Saturday Morning',
+                      },
+                    ].map((opt) => (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setPlanType(opt.id as 'evening' | 'weekend');
+                          setWhenLabel(opt.defaultWhen);
+                        }}
+                        className={`py-2.5 px-3 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                          planType === opt.id
+                            ? 'bg-brand-deep-green text-brand-ivory border-brand-deep-green'
+                            : 'bg-[#FCFBF8] text-brand-ink border-brand-warm-stone'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      What’s the occasion?
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={planTitle}
+                      onChange={(e) => setPlanTitle(e.target.value)}
+                      placeholder="e.g., Quiet Friday recital & dinner"
+                      className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-semibold text-brand-ink-light">When</label>
+                      <input
+                        type="text"
+                        value={whenLabel}
+                        onChange={(e) => setWhenLabel(e.target.value)}
+                        className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-semibold text-brand-ink-light">
+                        Going with (optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={companionName}
+                        onChange={(e) => setCompanionName(e.target.value)}
+                        placeholder="e.g., Maya"
+                        className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      Boundaries for this outing
+                    </label>
+                    <input
+                      type="text"
+                      value={sharedNote}
+                      onChange={(e) => setSharedNote(e.target.value)}
+                      className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                    />
+                  </div>
+
                   <button
                     type="submit"
-                    className="text-xs font-semibold bg-brand-deep-green text-white px-4 py-2 rounded-xl shadow-xs hover:bg-brand-deep-green-dark transition-colors"
+                    className="w-full py-3 rounded-full bg-brand-deep-green hover:bg-brand-deep-green-dark text-brand-ivory text-xs font-semibold shadow-sm transition-all cursor-pointer"
                   >
-                    Create & Generate Link
+                    Create Plan & Generate Matches
                   </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        {/* JOIN MODAL */}
-        {isJoinModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="w-full max-w-sm bg-brand-ivory rounded-3xl p-5 border border-brand-warm-stone shadow-2xl space-y-4">
-              <h3 className="font-serif text-base font-bold text-brand-ink">
-                Join Group Capsule
-              </h3>
-
-              <form onSubmit={handleJoinSubmit} className="space-y-3">
-                <div>
-                  <label className="text-xs font-semibold text-brand-ink block mb-1">
-                    Your Display Name
-                  </label>
-                  <input
-                    type="text"
-                    value={joinNameInput}
-                    onChange={(e) => setJoinNameInput(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-brand-ink block mb-1">
-                    Invite Code or Link Slug
-                  </label>
-                  <input
-                    type="text"
-                    value={inviteCodeInput}
-                    onChange={(e) => setInviteCodeInput(e.target.value)}
-                    placeholder="e.g. 'SL-DEC26-FUSE'"
-                    className="w-full text-xs p-2.5 rounded-xl border border-brand-warm-stone/60 bg-white font-mono uppercase"
-                    required
-                  />
-                </div>
-
-                <div className="flex items-center justify-end gap-2 pt-2">
+        {/* Join Shared Plan Sheet */}
+        <AnimatePresence>
+          {isJoinOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-end justify-center"
+              onClick={() => setIsJoinOpen(false)}
+            >
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-[430px] bg-brand-ivory rounded-t-[28px] p-6 space-y-4 border-t border-brand-warm-stone shadow-elevated"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif text-xl font-medium text-brand-ink">
+                    Join an Outing Plan
+                  </h3>
                   <button
                     type="button"
-                    onClick={() => setIsJoinModalOpen(false)}
-                    className="text-xs text-brand-ink-light px-3 py-2"
+                    onClick={() => setIsJoinOpen(false)}
+                    className="w-8 h-8 rounded-full bg-[#EFE9DE] flex items-center justify-center text-brand-ink cursor-pointer"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="text-xs font-semibold bg-brand-deep-green text-white px-4 py-2 rounded-xl shadow-xs hover:bg-brand-deep-green-dark transition-colors"
-                  >
-                    Join Capsule
+                    <IconClose size={15} />
                   </button>
                 </div>
-              </form>
-            </div>
-          </div>
-        )}
+
+                <form onSubmit={handleJoinSubmit} className="space-y-3.5">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      Invite Code
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={inviteCodeInput}
+                      onChange={(e) => setInviteCodeInput(e.target.value)}
+                      placeholder="e.g., BLR-74K"
+                      className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink uppercase tracking-wider focus:outline-none focus:border-brand-deep-green"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={guestNameInput}
+                      onChange={(e) => setGuestNameInput(e.target.value)}
+                      placeholder="Your first name"
+                      className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-brand-ink-light">
+                      Anything that matters for this outing? (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={guestTasteInput}
+                      onChange={(e) => setGuestTasteInput(e.target.value)}
+                      placeholder="e.g., Prefer seated music, vegetarian food"
+                      className="w-full text-xs py-2.5 px-3.5 rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-full bg-brand-deep-green hover:bg-brand-deep-green-dark text-brand-ivory text-xs font-semibold shadow-sm transition-all cursor-pointer"
+                  >
+                    Join Outing
+                  </button>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </AppShell>
   );

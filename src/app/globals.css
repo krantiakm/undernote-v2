@@ -4,18 +4,55 @@
 
 @layer base {
   :root {
-    --background: 43 38% 95%; /* #F7F3EC */
-    --foreground: 168 16% 11%; /* #17201E */
-    --primary: 166 33% 21%; /* #24483F */
-    --accent: 19 55% 52%; /* #C66E45 */
+    --background: 40 33% 95%; /* #F7F3EC Ivory */
+    --foreground: 167 16% 11%; /* #17201E Ink */
+    --primary: 165 33% 21%; /* #24483F Deep Green */
+    --accent: 19 53% 52%; /* #C66E45 Terracotta */
+    --sage: 149 16% 66%; /* #9DB6A9 Sage */
+    --warm-stone: 37 20% 83%; /* #DDD6CB Warm Stone */
+    --font-satoshi: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-lora: 'Lora', Georgia, Cambria, serif;
+  }
+
+  html {
+    background-color: #E8E1D5;
+    scroll-behavior: smooth;
   }
 
   body {
-    background-color: #17201E;
+    background-color: #E8E1D5;
     color: #17201E;
-    font-family: var(--font-satoshi), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-satoshi);
+    font-feature-settings: 'ss01' on, 'cv01' on;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@layer components {
+  /* Signature short terracotta horizontal rule from Undernote Brand Book */
+  .brand-rule {
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    border-radius: 9999px;
+    background-color: #C66E45;
+  }
+
+  .brand-rule-sm {
+    display: inline-block;
+    width: 16px;
+    height: 1.75px;
+    border-radius: 9999px;
+    background-color: #C66E45;
+  }
+
+  /* Subtle tactile card surface */
+  .editorial-surface {
+    background-color: #FCFBF8;
+    border: 1px solid rgba(221, 214, 203, 0.72);
+    box-shadow: 0 6px 24px -6px rgba(23, 32, 30, 0.055), 0 1px 2px rgba(23, 32, 30, 0.03);
   }
 }
 
@@ -26,6 +63,6 @@
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .scrollbar-none {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

@@ -9,6 +9,43 @@ export type RadarDomain =
   | 'what-matters'
   | 'my-world';
 
+export type EventCategory =
+  | 'music'
+  | 'theatre'
+  | 'talks'
+  | 'art'
+  | 'workshops'
+  | 'walks'
+  | 'supper-cinema';
+
+export type EventTimeWindow = 'tonight' | 'weekend' | 'week' | 'upcoming';
+
+export type EventAvailabilityState =
+  | 'open'
+  | 'few-left'
+  | 'rsvp'
+  | 'waitlist';
+
+export interface EventScheduleMeta {
+  category: EventCategory;
+  categoryLabel: string;
+  timeWindow: EventTimeWindow;
+  startIso: string;
+  endIso: string;
+  dayLabel: string;        // e.g. "Sat, 14 Nov"
+  timeLabel: string;       // e.g. "7:00 PM – 8:45 PM"
+  doorsNote?: string;      // e.g. "Doors close strictly at 7:00 PM"
+  venue: string;           // e.g. "Ranga Shankara"
+  neighborhood: string;    // e.g. "JP Nagar"
+  cityLabel: string;       // e.g. "Bangalore" or "Singapore"
+  settingNote: string;     // e.g. "Intimate · 320 seats · Unamplified"
+  priceLabel: string;      // e.g. "₹350" or "Free · RSVP" or "S$38"
+  availabilityState: EventAvailabilityState;
+  availabilityLabel?: string; // e.g. "14 seats left" or "RSVP Open"
+  personalFitLine: string; // Calm 1-line "Why this fits your world"
+  featured?: boolean;
+}
+
 export type ContextHorizon = 'persistent_long_term' | 'active_short_term';
 export type RecommendationOrigin = 'proactive' | 'requested';
 export type GeographyAnchor = 'india-blr' | 'singapore-sin';
@@ -16,7 +53,17 @@ export type GeographyAnchor = 'india-blr' | 'singapore-sin';
 export interface ContextItemData {
   id: string;
   domain: RadarDomain;
-  type: 'fact' | 'preference' | 'dislike' | 'constraint' | 'goal' | 'value' | 'relationship' | 'behavior_pattern' | 'decision_rule' | 'routine';
+  type:
+    | 'fact'
+    | 'preference'
+    | 'dislike'
+    | 'constraint'
+    | 'goal'
+    | 'value'
+    | 'relationship'
+    | 'behavior_pattern'
+    | 'decision_rule'
+    | 'routine';
   key: string;
   value: string;
   durability: 'durable' | 'medium_lived';
@@ -31,7 +78,7 @@ export interface ContextItemData {
   createdAt: string;
   updatedAt: string;
   provenance: {
-    provider: string; // e.g. "ChatGPT", "Claude", "Voice Note"
+    provider: string;
     importId?: string;
     evidence?: string;
     sourceUrl?: string;
@@ -62,6 +109,8 @@ export interface CardData {
   requestedTriggerLabel?: string;
   geography: GeographyAnchor;
   domain: RadarDomain;
+  entityType?: string;
+  eventMeta?: EventScheduleMeta;
   title: string;
   subtitle?: string;
   summary: string;
@@ -118,9 +167,10 @@ export interface StoryPulse {
 
 export interface WatchData {
   id: string;
-  type: 'price' | 'availability' | 'route' | 'product' | 'travel';
+  type: 'venue' | 'artist' | 'tickets' | 'series' | 'price' | 'availability' | 'route' | 'product' | 'travel';
   geography: GeographyAnchor;
   entity: string;
+  neighborhood?: string;
   criteria: string;
   targetPrice?: number;
   currentPrice?: number;
@@ -130,6 +180,7 @@ export interface WatchData {
   checkCadence: string;
   notificationMode: 'important_only' | 'digest' | 'all';
   triggerMet: boolean;
+  matchedCardId?: string;
   observations: Array<{
     timestamp: string;
     price?: number;
@@ -154,7 +205,9 @@ export interface IntentData {
 
 export interface GroupCapsuleData {
   id: string;
-  type: 'trip' | 'dining' | 'gifting';
+  type: 'evening' | 'weekend' | 'family' | 'trip' | 'dining' | 'gifting';
+  geography?: GeographyAnchor;
+  whenLabel?: string;
   title: string;
   hostUserId: string;
   inviteCode: string;
@@ -165,6 +218,7 @@ export interface GroupCapsuleData {
     avatar: string;
     isPcpUser: boolean;
     contributedRuleIds: string[];
+    tasteSummary?: string;
     status: 'joined' | 'pending';
   }>;
   overlapHighlights: string[];
@@ -186,13 +240,15 @@ export interface DomainMoodboardCapsule {
 }
 
 export interface LookbookTile {
-  domain: 'travel' | 'books' | 'events' | 'shopping';
+  domain: string;
+  pillarName?: string;
+  foundationBadge?: string;
   title: string;
   pullQuote: string;
   heroImage: string;
   aspectRatio: 'tall' | 'square';
-  enduringTendency: string; // Longer Horizon (e.g. non-stop direct flights, tactile hardcover craft)
-  currentFocus: string; // Shorter Horizon (e.g. December beach retreat, Pixel 11 clearance)
+  enduringTendency: string;
+  currentFocus: string;
   localAnchor: string;
 }
 
@@ -206,6 +262,8 @@ export interface LifeNarrativeChapter {
 }
 
 export interface PersonaArchetype {
+  userName?: string;
+  monogram?: string;
   title: string;
   tagline: string;
   locationAnchor: string;

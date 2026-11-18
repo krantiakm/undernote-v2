@@ -1,162 +1,195 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import { AppShell } from '@/components/shell/AppShell';
 import { TopHeader } from '@/components/shell/TopHeader';
-import { CategoryChips } from '@/components/radar/CategoryChips';
-import { DiscoveryCard } from '@/components/radar/DiscoveryCard';
-import { InlineContextRefinement } from '@/components/radar/InlineContextRefinement';
+import { EventFilterStrip } from '@/components/events/EventFilterStrip';
+import { FeaturedEventCard } from '@/components/events/FeaturedEventCard';
+import { EditorialEventRowCard } from '@/components/events/EditorialEventRowCard';
+import { TasteCheckInCard } from '@/components/events/TasteCheckInCard';
+import { TopographicPattern } from '@/components/ui/TopographicPattern';
+import {
+  IconArrowRight,
+  IconCalendar,
+  IconSparkNote,
+} from '@/components/ui/BrandIcons';
 import { useApp } from '@/context/AppContext';
-import { Sparkles, Inbox } from 'lucide-react';
 
-export default function ForYouPage() {
+function getEditorialGreeting(): string {
+  if (typeof window === 'undefined') return 'Good evening';
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+export default function ForYouEventsPage() {
   const {
     cards,
-    domainFilter,
+    geography,
+    timeFilter,
+    categoryFilter,
+    setTimeFilter,
+    setCategoryFilter,
     isMorphing,
+    hasPersonalized,
+    persona,
+    calibrationQuestions,
+    answerCalibrationQuestion,
   } = useApp();
 
-  // Apply domain filter and active cards
+  const cityName = geography === 'singapore-sin' ? 'Singapore' : 'Bangalore';
+  const userName = persona.userName || 'Kranti';
+
   const visibleCards = cards.filter((card) => {
     if (card.status === 'dismissed') return false;
-    if (domainFilter !== 'all' && card.domain !== domainFilter) return false;
+    if (timeFilter !== 'all' && card.eventMeta?.timeWindow !== timeFilter) return false;
+    if (categoryFilter !== 'all' && card.eventMeta?.category !== categoryFilter) return false;
     return true;
   });
 
+  const leadCard = visibleCards[0];
+  const remainingCards = visibleCards.slice(1);
+
   return (
     <AppShell>
-      <div className="flex-1 flex flex-col bg-[#F7F3EC]">
-        {/* 1. Top Header */}
+      <div className="flex-1 flex flex-col bg-brand-ivory">
+        {/* 1. Sticky Top Header */}
         <TopHeader />
 
-        {/* 2. Editorial Heading - Consumer-friendly phrasing per feedback */}
-        <div className="px-4 pt-3.5 pb-1 space-y-0.5">
-          <h1 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-brand-ink">
-            Chosen for you.
-          </h1>
-          <p className="text-xs text-brand-ink/75 font-sans">
-            Matched against your preferences.
-          </p>
-        </div>
+        {/* 2. Warm Brand-Book Editorial Greeting */}
+        <section className="relative px-5 pt-5 pb-3 overflow-hidden">
+          <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.42} />
 
-        {/* 3. Collapsible Category Selector (All > expands to the right) */}
-        <div className="pt-1">
-          <CategoryChips />
-        </div>
-
-        {/* 4. For You Discovery Feed */}
-        <div className="px-4 pt-1.5 pb-6 flex-1">
-          <div className="flex items-center justify-between pb-2.5 px-1">
-            <span className="text-xs font-semibold text-brand-ink flex items-center gap-1.5 font-serif">
-              <Sparkles size={13} className="text-brand-terracotta" />
-              <span>Recommendations</span>
-            </span>
-
-            <span className="text-[10px] text-brand-ink/55 font-mono">
-              {visibleCards.length} finds
-            </span>
+          <div className="relative z-10 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-brand-terracotta">
+              {cityName} · Cultural Brief
+            </p>
+            <h1 className="font-serif text-[25px] leading-[1.2] font-medium tracking-[-0.01em] text-brand-ink">
+              {getEditorialGreeting()}, {userName}.
+            </h1>
+            <p className="text-[13px] text-brand-ink-light leading-relaxed max-w-[340px]">
+              Here’s what feels worth stepping out for—chosen quietly around your evenings, mornings, and pace.
+            </p>
+            <div className="pt-0.5">
+              <span className="brand-rule" />
+            </div>
           </div>
+        </section>
 
-          {/* Morphing Loading State */}
+        {/* 3. Subtle Personalization Invite (compact, calm, never noisy) */}
+        {!hasPersonalized && (
+          <div className="px-5 pb-2">
+            <Link
+              href="/import"
+              className="editorial-surface rounded-[20px] px-4 py-3.5 flex items-center justify-between gap-3 group hover:border-brand-terracotta/50 transition-all"
+            >
+              <div className="flex items-start gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#EFE9DE] flex items-center justify-center text-brand-deep-green shrink-0 mt-0.5">
+                  <IconSparkNote size={16} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-brand-ink">
+                    Bring in what your AI already knows
+                  </p>
+                  <p className="text-[11.5px] text-brand-ink-light leading-snug mt-0.5">
+                    Paste from ChatGPT, Claude, or Gemini in 60 seconds to tune every pick.
+                  </p>
+                </div>
+              </div>
+              <span className="w-7 h-7 rounded-full bg-brand-deep-green text-brand-ivory flex items-center justify-center shrink-0 group-hover:translate-x-0.5 transition-transform">
+                <IconArrowRight size={14} />
+              </span>
+            </Link>
+          </div>
+        )}
+
+        {/* 4. Time Window & Cultural Format Filters */}
+        <EventFilterStrip />
+
+        {/* 5. Curated Events Feed */}
+        <div className="px-5 pt-2 pb-8 flex-1 space-y-4">
           {isMorphing ? (
             <div className="py-20 flex flex-col items-center justify-center text-center space-y-3">
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full border-3 border-brand-terracotta/20 border-t-brand-terracotta animate-spin" />
-                <Sparkles size={18} className="absolute inset-0 m-auto text-brand-deep-green" />
-              </div>
-              <p className="font-serif text-sm font-bold text-brand-deep-green">
-                Tuning your feed...
+              <div className="w-10 h-10 rounded-full border-2 border-brand-warm-stone border-t-brand-terracotta animate-spin" />
+              <p className="font-serif text-base text-brand-ink">
+                Listening to what matters to you…
               </p>
-              <p className="text-xs text-brand-ink/65 max-w-xs">
-                Applying your preferences and active watches.
+              <p className="text-xs text-brand-ink-light max-w-[240px]">
+                Selecting gatherings in {cityName} that fit your pace and boundaries.
               </p>
             </div>
           ) : visibleCards.length > 0 ? (
-            /* Cards Feed with Interactive Context Calibration checkpoints */
-            <div className="space-y-4">
-              {visibleCards.map((card, index) => (
-                <React.Fragment key={card.id}>
-                  <DiscoveryCard card={card} index={index} />
+            <>
+              {/* Lead Feature Pick */}
+              {leadCard && <FeaturedEventCard card={leadCard} />}
 
-                  {/* Refinement Checkpoint 1: After 4th card (Dietary baseline: Veg, Non-veg, Vegan, Gluten-free) */}
-                  {index === 3 && domainFilter === 'all' && (
-                    <InlineContextRefinement
-                      id="refine-dietary-baseline"
-                      title="What is your dietary preference when dining out?"
-                      rationale="Ensures recommendations strictly respect your diet when suggesting places to eat."
-                      options={[
-                        {
-                          label: 'Vegetarian',
-                          key: 'Dietary Baseline',
-                          value: 'Strictly Vegetarian; requires dedicated meatless kitchens or menus',
-                          domain: 'food-drink',
-                        },
-                        {
-                          label: 'Plant-forward / Vegan',
-                          key: 'Dietary Baseline',
-                          value: 'Plant-forward and 100% vegan friendly with dairy-free options',
-                          domain: 'food-drink',
-                        },
-                        {
-                          label: 'Non-vegetarian',
-                          key: 'Dietary Baseline',
-                          value: 'Omnivore; open to artisan seafood, poultry, and local farm meats',
-                          domain: 'food-drink',
-                        },
-                        {
-                          label: 'Gluten-free preference',
-                          key: 'Dietary Baseline',
-                          value: 'Gluten-free preference; prioritize gluten-aware sourdough and alternative grains',
-                          domain: 'food-drink',
-                        },
-                      ]}
-                    />
-                  )}
+              {/* Section Subheader when multiple items follow */}
+              {remainingCards.length > 0 && (
+                <div className="pt-2 flex items-center justify-between">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-ink-light">
+                    Also Worth Your Time
+                  </span>
+                  <span className="text-[11px] text-brand-ink-light">
+                    {visibleCards.length} {visibleCards.length === 1 ? 'gathering' : 'gatherings'}
+                  </span>
+                </div>
+              )}
 
-                  {/* Refinement Checkpoint 2: After 7th card (Family Travel Transit preference) */}
-                  {index === 6 && domainFilter === 'all' && (
-                    <InlineContextRefinement
-                      id="refine-travel-mode"
-                      title="When a weekend opens up, how do you prefer to travel?"
-                      rationale="Refines regional flight alerts, scenic train routes, and weekend escape windows."
-                      options={[
-                        {
-                          label: 'Direct flights only (no layovers)',
-                          key: 'Transit Preference',
-                          value: 'Strictly direct non-stop flights under 3.5 hours; discard connecting flights',
-                          domain: 'travel',
-                        },
-                        {
-                          label: 'Scenic overland train or drive',
-                          key: 'Transit Preference',
-                          value: 'Prefers overland journeys by scenic train or road trip within 4 hours',
-                          domain: 'travel',
-                        },
-                        {
-                          label: 'Stay local in the city',
-                          key: 'Transit Preference',
-                          value: 'Favors staycations and urban cultural anchors over long transit',
-                          domain: 'travel',
-                        },
-                      ]}
-                    />
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-          ) : (
-            /* Empty State */
-            <div className="bg-white rounded-3xl p-8 text-center border border-brand-warm-stone/60 shadow-soft my-6 space-y-3">
-              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center mx-auto text-brand-ink/60 border border-brand-warm-stone/50">
-                <Inbox size={22} />
+              {/* Magazine-paced Feed: Horizontal Editorial Cards + Periodic Feature Card */}
+              <div className="space-y-3.5">
+                {remainingCards.map((card, idx) => (
+                  <React.Fragment key={card.id}>
+                    {idx === 3 ? (
+                      <FeaturedEventCard card={card} />
+                    ) : (
+                      <EditorialEventRowCard card={card} index={idx} />
+                    )}
+
+                    {/* Gentle Check-In after 2nd row card */}
+                    {idx === 1 &&
+                      timeFilter === 'all' &&
+                      categoryFilter === 'all' &&
+                      calibrationQuestions[0] && (
+                        <TasteCheckInCard
+                          id={calibrationQuestions[0].id}
+                          title={calibrationQuestions[0].title}
+                          rationale={calibrationQuestions[0].rationale}
+                          options={calibrationQuestions[0].options}
+                          onAnswer={(opt) =>
+                            answerCalibrationQuestion(calibrationQuestions[0].id, opt)
+                          }
+                        />
+                      )}
+                  </React.Fragment>
+                ))}
               </div>
-              <h4 className="font-serif text-base font-bold text-brand-ink">
-                Quiet in this category
-              </h4>
-              <p className="text-xs text-brand-ink/70 max-w-xs mx-auto leading-relaxed">
-                No opportunities currently satisfy 100% of your constraints. Undernote favors silence over noisy, low-confidence spam.
+            </>
+          ) : (
+            /* Quiet Brand-Faithful Empty State */
+            <div className="editorial-surface rounded-[24px] p-8 text-center my-4 space-y-3">
+              <div className="w-11 h-11 rounded-full bg-[#EFE9DE] flex items-center justify-center mx-auto text-brand-deep-green">
+                <IconCalendar size={20} />
+              </div>
+              <h3 className="font-serif text-lg font-medium text-brand-ink">
+                Nothing worth disturbing your quiet here.
+              </h3>
+              <p className="text-xs text-brand-ink-light max-w-[260px] mx-auto leading-relaxed">
+                No {cityName} gatherings match this exact filter right now. We’d rather leave space than show filler.
               </p>
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTimeFilter('all');
+                    setCategoryFilter('all');
+                  }}
+                  className="px-4 py-2 rounded-full border border-brand-warm-stone text-xs font-medium text-brand-deep-green hover:bg-[#EFE9DE] transition-colors cursor-pointer"
+                >
+                  Show all upcoming dates
+                </button>
+              </div>
             </div>
           )}
         </div>

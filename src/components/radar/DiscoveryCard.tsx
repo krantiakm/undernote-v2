@@ -10,13 +10,47 @@ import {
   Target,
   ArrowUpRight,
   Heart,
+  BookOpen,
+  Compass,
+  Coffee,
+  Film,
+  Ticket,
+  Package,
+  Plane,
 } from 'lucide-react';
-import { CardData } from '@/types';
+import { CardData, RadarDomain } from '@/types';
 import { useApp } from '@/context/AppContext';
 
 interface DiscoveryCardProps {
   card: CardData;
   index: number;
+}
+
+function getCategoryMeta(domain: RadarDomain, entityType?: string, title?: string, subtitle?: string) {
+  const text = `${entityType || ''} ${title || ''} ${subtitle || ''}`.toLowerCase();
+  
+  if (domain === 'books' || text.includes('book') || text.includes('author') || text.includes('hardcover') || text.includes('novel')) {
+    return { label: entityType || 'Book', icon: BookOpen, color: 'bg-amber-950/85 text-amber-200 border-amber-500/40' };
+  }
+  if (domain === 'travel' || text.includes('hotel') || text.includes('villa') || text.includes('stay') || text.includes('sanctuary') || text.includes('resort')) {
+    return { label: entityType || 'Travel & Stay', icon: Compass, color: 'bg-sky-950/85 text-sky-200 border-sky-400/40' };
+  }
+  if (text.includes('flight') || text.includes('airline') || text.includes('transit')) {
+    return { label: entityType || 'Flight & Route', icon: Plane, color: 'bg-blue-950/85 text-blue-200 border-blue-400/40' };
+  }
+  if (domain === 'food-drink' || text.includes('coffee') || text.includes('roaster') || text.includes('dining') || text.includes('restaurant') || text.includes('pour-over') || text.includes('oven')) {
+    return { label: entityType || 'Coffee & Dining', icon: Coffee, color: 'bg-stone-950/85 text-orange-200 border-orange-400/40' };
+  }
+  if (domain === 'films' || text.includes('film') || text.includes('movie') || text.includes('cinema') || text.includes('documentary')) {
+    return { label: entityType || 'Cinema & Arts', icon: Film, color: 'bg-purple-950/85 text-purple-200 border-purple-400/40' };
+  }
+  if (domain === 'events' || text.includes('concert') || text.includes('recital') || text.includes('theatre') || text.includes('exhibition') || text.includes('walk')) {
+    return { label: entityType || 'Experience', icon: Ticket, color: 'bg-rose-950/85 text-rose-200 border-rose-400/40' };
+  }
+  if (domain === 'shopping' || text.includes('hardware') || text.includes('headphone') || text.includes('jacket') || text.includes('keyboard') || text.includes('desk') || text.includes('apparel') || text.includes('gear')) {
+    return { label: entityType || 'Hardware & Gear', icon: Package, color: 'bg-emerald-950/85 text-emerald-200 border-emerald-400/40' };
+  }
+  return { label: entityType || 'Curated Find', icon: Sparkles, color: 'bg-neutral-900/85 text-neutral-200 border-white/30' };
 }
 
 export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => {
@@ -26,6 +60,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
   const isTracked = card.originType === 'requested';
   const isSaved = card.status === 'saved';
   const priceEvidence = card.sourceEvidence?.[0];
+  const catMeta = getCategoryMeta(card.domain, card.entityType, card.title, card.subtitle);
 
   const handleDoubleTap = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -57,7 +92,7 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
             priority={index < 2}
           />
           {/* Cinematic gradient vignette */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/30" />
         </Link>
 
         {/* Double-tap animated heart burst */}
@@ -74,19 +109,19 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
           )}
         </AnimatePresence>
 
-        {/* Top Badges */}
+        {/* Top Badges: Category Chip on Left + Save on Right */}
         <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between z-10 pointer-events-none">
-          {/* Origin Pill */}
-          <div className="pointer-events-auto">
-            {isTracked ? (
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide bg-emerald-900/85 text-emerald-100 backdrop-blur-md px-3 py-1 rounded-full shadow-sm border border-emerald-500/30">
-                <Target size={11} className="text-emerald-400" />
-                <span>You’re watching this</span>
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide bg-brand-deep-green/90 text-brand-ivory backdrop-blur-md px-3 py-1 rounded-full shadow-sm border border-white/20">
-                <Sparkles size={11} className="text-brand-terracotta" />
-                <span>Picked for you</span>
+          {/* Prominent Category & Entity Pill */}
+          <div className="pointer-events-auto flex items-center gap-1.5">
+            <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wide uppercase backdrop-blur-md px-3 py-1 rounded-full shadow-md border ${catMeta.color}`}>
+              <catMeta.icon size={12} strokeWidth={2.5} className="shrink-0" />
+              <span>{catMeta.label}</span>
+            </span>
+
+            {isTracked && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold tracking-wide bg-emerald-900/85 text-emerald-100 backdrop-blur-md px-2.5 py-1 rounded-full shadow-sm border border-emerald-500/30">
+                <Target size={10} className="text-emerald-400" />
+                <span>Watching</span>
               </span>
             )}
           </div>
@@ -109,14 +144,19 @@ export const DiscoveryCard: React.FC<DiscoveryCardProps> = ({ card, index }) => 
           </button>
         </div>
 
-        {/* Bottom Hero Overlay: Title, Subtitle, Price */}
+        {/* Bottom Hero Overlay: Category, Title, Subtitle, Price */}
         <div className="absolute bottom-3.5 left-3.5 right-3.5 z-10 text-white flex items-end justify-between gap-3 pointer-events-none">
           <div className="flex-1 drop-shadow-md">
-            {card.subtitle && (
-              <span className="text-[11px] font-medium text-brand-ivory/85 tracking-wide block line-clamp-1 mb-0.5">
-                {card.subtitle}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-sm text-brand-ivory border border-white/20">
+                {catMeta.label}
               </span>
-            )}
+              {card.subtitle && (
+                <span className="text-[11px] font-medium text-brand-ivory/85 tracking-wide line-clamp-1">
+                  {card.subtitle}
+                </span>
+              )}
+            </div>
             <h3 className="font-serif text-lg sm:text-xl font-bold tracking-tight text-white leading-tight drop-shadow-sm">
               {card.title}
             </h3>

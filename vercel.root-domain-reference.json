@@ -7,6 +7,14 @@
     {
       "source": "/live/:path*",
       "destination": "https://undernote-live.vercel.app/live/:path*"
+    },
+    {
+      "source": "/v2",
+      "destination": "https://undernote-v2.vercel.app/v2"
+    },
+    {
+      "source": "/v2/:path*",
+      "destination": "https://undernote-v2.vercel.app/v2/:path*"
     }
   ]
 }

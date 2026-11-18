@@ -29,13 +29,13 @@ export const FinalCtaSection: React.FC<FinalCtaSectionProps> = ({ onOpenAiModal 
 
         {/* Single confident primary CTA button per user feedback */}
         <div className="pt-2 flex flex-col items-center justify-center gap-3">
-          <button
-            onClick={onOpenAiModal}
+          <Link
+            href="/import"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 group cursor-pointer"
           >
             <span>Start my Undernote</span>
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-brand-terracotta" />
-          </button>
+          </Link>
           
           <Link
             href="/radar"

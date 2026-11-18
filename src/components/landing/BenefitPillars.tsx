@@ -45,14 +45,14 @@ const CATEGORIES = [
   {
     id: 'hardware',
     category: 'Everyday Tools & Hardware',
-    title: 'Ergonomic Hardware for Human Hands',
-    pullQuote: 'Tools designed for human anatomy, not algorithms.',
+    title: 'Tactile Instruments Made to Endure',
+    pullQuote: 'Tools designed for human focus, not algorithms.',
     description:
-      'We reject oversized phablets and disposable electronics. We track compact flagships under 6.3 inches, lightweight travel camera bodies, and tactile instruments made to endure.',
+      'We reject disposable electronics and planned obsolescence. We track repairable tactile instruments, enduring acoustic gear, and tools built to last.',
     image: '/images/hero_pixel11_compact.jpg',
     aspectRatio: 'aspect-[4/3]',
     icon: Smartphone,
-    enduringTendency: 'Displays strictly <6.3" · Stock clean software',
+    enduringTendency: 'Tactile instruments · Enduring craftsmanship',
   },
 ];
 

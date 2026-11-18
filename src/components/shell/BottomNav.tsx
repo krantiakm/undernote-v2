@@ -3,80 +3,94 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Compass, Eye, Users, Fingerprint, ShieldCheck } from 'lucide-react';
+import {
+  IconCompass,
+  IconTogether,
+  IconRadarWatch,
+  IconProfileSeal,
+} from '@/components/ui/BrandIcons';
 import { useApp } from '@/context/AppContext';
 
 export const BottomNav: React.FC = () => {
   const pathname = usePathname();
-  const { watches, groupCapsules } = useApp();
+  const { watches, savedCards, groupCapsules } = useApp();
 
-  const triggeredWatchesCount = watches.filter((w) => w.triggerMet).length;
+  const watchingCount =
+    savedCards.length + watches.filter((w) => w.status === 'active' && w.triggerMet).length;
 
   const navItems = [
     {
       label: 'For You',
       href: '/radar',
-      icon: Compass,
+      Icon: IconCompass,
       isActive: pathname.startsWith('/radar'),
     },
     {
       label: 'Together',
       href: '/capsules',
-      icon: Users,
+      Icon: IconTogether,
       isActive: pathname.startsWith('/capsules'),
       badge: groupCapsules.length > 0 ? groupCapsules.length : undefined,
     },
     {
       label: 'Watching',
       href: '/watching',
-      icon: Eye,
+      Icon: IconRadarWatch,
       isActive: pathname.startsWith('/watching'),
-      badge: triggeredWatchesCount > 0 ? triggeredWatchesCount : undefined,
+      badge: watchingCount > 0 ? watchingCount : undefined,
     },
     {
       label: 'Me',
       href: '/me',
-      icon: Fingerprint,
-      isActive: pathname.startsWith('/me'),
+      Icon: IconProfileSeal,
+      isActive: pathname.startsWith('/me') || pathname.startsWith('/import') || pathname.startsWith('/data'),
     },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto bg-brand-ivory/95 backdrop-blur-md border-t border-brand-warm-stone/50 px-3 py-2">
+    <nav
+      aria-label="Primary navigation"
+      className="fixed bottom-0 left-0 right-0 z-40 max-w-[430px] mx-auto bg-[#FAF7F2]/95 backdrop-blur-md border-t border-brand-warm-stone/65 px-3 pt-2 pb-2.5"
+    >
       <div className="flex items-center justify-around">
         {navItems.map((item) => {
-          const Icon = item.icon;
           const active = item.isActive;
+          const Icon = item.Icon;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`relative flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all duration-200 group ${
-                active
-                  ? 'text-brand-deep-green font-medium'
-                  : 'text-brand-ink/60 hover:text-brand-ink'
+              className={`relative flex flex-col items-center justify-center py-1 px-3.5 rounded-2xl transition-all duration-200 group ${
+                active ? 'text-brand-deep-green' : 'text-brand-ink/55 hover:text-brand-ink'
               }`}
             >
               <div className="relative">
                 <Icon
-                  size={21}
-                  strokeWidth={active ? 2.4 : 1.75}
+                  size={22}
+                  strokeWidth={active ? 1.75 : 1.5}
+                  accent={active ? '#C66E45' : '#9DB6A9'}
                   className={`transition-transform duration-200 ${
-                    active ? 'scale-110' : 'group-hover:scale-105'
+                    active ? 'scale-105' : 'group-hover:scale-105'
                   }`}
                 />
                 {item.badge !== undefined && (
-                  <span className="absolute -top-1.5 -right-2.5 min-w-[17px] h-[17px] bg-brand-terracotta text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 shadow-sm animate-pulse">
+                  <span className="absolute -top-1 -right-2.5 min-w-[16px] h-[16px] bg-brand-terracotta text-brand-ivory text-[9.5px] font-semibold rounded-full flex items-center justify-center px-1 shadow-xs">
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span className={`text-[10px] mt-1 tracking-tight ${active ? 'font-semibold text-brand-deep-green' : ''}`}>
+              <span
+                className={`text-[10.5px] mt-1 tracking-[0.01em] ${
+                  active ? 'font-semibold text-brand-deep-green' : 'font-medium'
+                }`}
+              >
                 {item.label}
               </span>
-              {active && (
-                <span className="w-1.5 h-1.5 bg-brand-terracotta rounded-full mt-0.5" />
-              )}
+              <span
+                className={`h-[2px] rounded-full mt-0.5 transition-all duration-200 ${
+                  active ? 'w-3.5 bg-brand-terracotta' : 'w-0 bg-transparent'
+                }`}
+              />
             </Link>
           );
         })}

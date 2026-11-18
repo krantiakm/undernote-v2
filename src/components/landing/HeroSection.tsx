@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ShieldCheck, Plane, ShoppingBag, Film, BookOpen, Sparkles } from 'lucide-react';
 
@@ -27,9 +28,9 @@ const TUNED_CATEGORIES = [
     card: {
       image: '/images/hero_pixel11_compact.jpg',
       title: 'Compact Flagship Phone',
-      description: 'Sub-6.3" ergonomic hardware with clean stock software, now at target price.',
+      description: 'Ergonomic tactile hardware with clean stock software, now at target price.',
       badge: 'Target price met',
-      chips: ['Under 6.3"', 'Stock OS', 'Price clearance'],
+      chips: ['Compact footprint', 'Clean OS', 'Price clearance'],
     },
   },
   {
@@ -179,13 +180,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenAiModal }) => {
 
         {/* Primary CTA Placed Directly Below the Showcase */}
         <div className="pt-2 text-center space-y-2">
-          <button
-            onClick={onOpenAiModal}
+          <Link
+            href="/import"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 group cursor-pointer"
           >
             <span>Start my Undernote</span>
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-brand-terracotta" />
-          </button>
+          </Link>
 
           <div className="text-[11px] text-brand-ink/60 font-sans flex items-center justify-center gap-1.5">
             <ShieldCheck size={12} className="text-emerald-700" />

@@ -1,19 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Lora, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/context/AppContext';
-
-const lora = Lora({
-  subsets: ['latin'],
-  variable: '--font-lora',
-  display: 'swap',
-});
-
-const satoshi = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-satoshi',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://undernote.co'),
@@ -22,19 +9,18 @@ export const metadata: Metadata = {
     template: '%s | Undernote',
   },
   description:
-    'Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.',
+    'Undernote understands you in depth and brings you cultural gatherings, recitals, talks, walks, and intimate events that feel meant for you.',
   applicationName: 'Undernote',
   authors: [{ name: 'Undernote' }],
   creator: 'Undernote',
   publisher: 'Undernote',
   keywords: [
     'Undernote',
+    'cultural events',
+    'Bangalore events',
+    'Singapore events',
     'personal context',
-    'proactive discovery',
-    'films',
-    'books',
-    'places',
-    'travel',
+    'curated gatherings',
     'private AI',
   ],
   alternates: {
@@ -60,7 +46,7 @@ export const metadata: Metadata = {
     siteName: 'Undernote',
     title: 'Undernote — A world in tune with you',
     description:
-      'Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.',
+      'Relevant cultural finds, intimate recitals, salons, and gatherings chosen quietly around your life.',
     images: [
       {
         url: '/og-image.jpg',
@@ -70,24 +56,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Undernote — A world in tune with you',
-    description:
-      'Bring what your AI already knows. Undernote turns it into a world that feels better chosen for you.',
-    images: ['/og-image.jpg'],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
 };
 
 export const viewport: Viewport = {
@@ -95,7 +63,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#24483F',
+  themeColor: '#F7F3EC',
 };
 
 export default function RootLayout({
@@ -104,11 +72,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${satoshi.variable} ${lora.variable}`}>
-      <body className="antialiased bg-[#17201E] text-brand-ink">
-        <AppProvider>
-          {children}
-        </AppProvider>
+    <html lang="en">
+      <head>
+        <link
+          rel="preconnect"
+          href="https://api.fontshare.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..600;1,400..600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased bg-[#E8E1D5] text-brand-ink">
+        <AppProvider>{children}</AppProvider>
       </body>
     </html>
   );

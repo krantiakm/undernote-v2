@@ -11,8 +11,8 @@ interface ImportHookProps {
 
 // Exactly 3 clean, high-impact statements per user request
 const SAMPLE_UNDERSTOOD = [
-  { id: '1', statement: 'Direct flights when travelling with family.' },
-  { id: '2', statement: 'Compact phones under 6.3" screen size.' },
+  { id: '1', statement: 'Organic heirloom seeds & living soil on the terrace.' },
+  { id: '2', statement: 'Restorative quiet mornings with zero notification chimes.' },
   { id: '3', statement: 'Clothbound architecture and systems monographs.' },
 ];
 
@@ -99,13 +99,13 @@ export const ImportHook: React.FC<ImportHookProps> = ({ onOpenAiModal }) => {
 
           {/* Action Row */}
           <div className="pt-2 flex items-center justify-between gap-3">
-            <button
-              onClick={onOpenAiModal}
+            <Link
+              href="/import"
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-brand-deep-green hover:bg-[#162B25] text-white text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer"
             >
               <Sparkles size={13} className="text-brand-terracotta" />
               <span>Bring in my context</span>
-            </button>
+            </Link>
             <Link
               href="/radar"
               className="text-xs font-semibold text-brand-deep-green hover:text-brand-ink flex items-center gap-1 group"

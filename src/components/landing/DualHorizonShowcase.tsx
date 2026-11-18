@@ -70,7 +70,7 @@ export const DualHorizonShowcase: React.FC = () => {
                   <CheckCircle2 className="w-4 h-4 text-brand-deep-green shrink-0 mt-0.5" />
                   <div>
                     <strong className="text-brand-ink font-semibold block">Ergonomics &amp; Tactile Standards:</strong>
-                    <span className="text-brand-ink/70">Phone displays strictly &lt;6.3" for true single-handed comfort.</span>
+                    <span className="text-brand-ink/70">Physical tools that prioritize tactile ergonomics and deep focus.</span>
                   </div>
                 </div>
               </div>
