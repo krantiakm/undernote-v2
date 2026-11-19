@@ -30,11 +30,13 @@ export type OnboardingStatus = 'unseen' | 'tuned' | 'skipped';
 
 export interface SwipeTasteCardData {
   id: string;
-  stepLabel: string; // e.g. "Atmosphere" or "Boundary"
+  stepLabel: string;
   kind: 'vibe' | 'boundary';
   title: string;
   subtitle: string;
   image: string;
+  yesLabel: string;
+  noLabel: string;
   yesStamp: string;
   noStamp: string;
   onYesRule?: {

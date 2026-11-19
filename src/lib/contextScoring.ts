@@ -100,9 +100,10 @@ export function scoreEventsAgainstContext(
   );
   const wantsChildFriendly = /child|daughter|kid|family/.test(ruleCorpus);
 
-  const vetoLoudCrowds = /no loud|skip loud|standing crowd|dj club|standing nightlife/.test(
-    ruleCorpus
-  );
+  const vetoLoudCrowds =
+    /no loud|skip loud|standing crowd|standing bars|large festival crowds|dj club|standing nightlife/.test(
+      ruleCorpus
+    );
   const vetoLateFinish = /9:15 pm|9:30 pm|9:45 pm|early weeknight|before 10|after 8:30 pm/.test(
     ruleCorpus
   );

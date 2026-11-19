@@ -15,7 +15,6 @@ import { startSpeechRecognition } from '@/lib/voice/speechRecognition';
 import {
   IconCheck,
   IconClose,
-  IconHeart,
   IconMicrophone,
   IconSparkNote,
 } from '@/components/ui/BrandIcons';
@@ -31,24 +30,28 @@ interface SwipeTasteDeckProps {
     }>
   ) => void;
   onVoiceSubmit: (transcript: string) => Promise<void>;
-  onSkip: () => void;
 }
 
-interface DraggableTopCardProps {
+interface PosterSceneCardProps {
   card: SwipeTasteCardData;
+  isFirst: boolean;
   onDecide: (choice: 'yes' | 'no') => void;
 }
 
-const DraggableTopCard: React.FC<DraggableTopCardProps> = ({ card, onDecide }) => {
+const PosterSceneCard: React.FC<PosterSceneCardProps> = ({
+  card,
+  isFirst,
+  onDecide,
+}) => {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-180, 0, 180], [-9, 0, 9]);
-  const yesOpacity = useTransform(x, [20, 95], [0, 1]);
-  const noOpacity = useTransform(x, [-95, -20], [1, 0]);
+  const rotate = useTransform(x, [-190, 0, 190], [-7, 0, 7]);
+  const rightStampOpacity = useTransform(x, [25, 95], [0, 1]);
+  const leftStampOpacity = useTransform(x, [-95, -25], [1, 0]);
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (info.offset.x > 85 || info.velocity.x > 450) {
+    if (info.offset.x > 80 || info.velocity.x > 420) {
       onDecide('yes');
-    } else if (info.offset.x < -85 || info.velocity.x < -450) {
+    } else if (info.offset.x < -80 || info.velocity.x < -420) {
       onDecide('no');
     }
   };
@@ -61,13 +64,13 @@ const DraggableTopCard: React.FC<DraggableTopCardProps> = ({ card, onDecide }) =
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.85}
       onDragEnd={handleDragEnd}
-      initial={{ opacity: 0, scale: 0.96, y: 12 }}
+      initial={{ opacity: 0, scale: 0.97, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.18 } }}
+      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.16 } }}
       transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-      className="relative w-full h-[360px] rounded-[26px] overflow-hidden shadow-elevated border border-brand-warm-stone/60 select-none cursor-grab active:cursor-grabbing bg-[#17201E]"
+      className="absolute inset-0 rounded-[28px] overflow-hidden shadow-elevated border border-brand-warm-stone/50 select-none cursor-grab active:cursor-grabbing bg-[#141C1A]"
     >
-      {/* Full-Bleed Scene Photograph */}
+      {/* Full-Bleed Poster Photography */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={resolveAssetUrl(card.image)}
@@ -76,49 +79,72 @@ const DraggableTopCard: React.FC<DraggableTopCardProps> = ({ card, onDecide }) =
         className="w-full h-full object-cover pointer-events-none"
       />
 
-      {/* High-Contrast Top & Bottom Scrims */}
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/65 via-black/20 to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/90 via-black/55 to-transparent pointer-events-none" />
+      {/* Top & Bottom Editorial Vignettes */}
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/68 via-black/22 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-[#0E1513]/96 via-[#0E1513]/72 to-transparent pointer-events-none" />
 
-      {/* Top Step Pill */}
-      <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none">
-        <span className="px-3 py-1 rounded-full bg-[#141C1A]/82 backdrop-blur-md text-[#FAF7F2] text-[10.5px] font-semibold uppercase tracking-[0.08em] border border-white/20 shadow-sm">
-          {card.stepLabel}
+      {/* Top Metadata Bar */}
+      <div className="absolute top-3.5 left-4 right-4 flex items-center justify-between pointer-events-none">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#121917]/86 backdrop-blur-md text-white text-[10.5px] font-semibold uppercase tracking-[0.08em] border border-white/22 shadow-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#E68860]" />
+          <span>{card.stepLabel}</span>
         </span>
-        <span
-          className={`px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide backdrop-blur-md border shadow-sm ${
-            card.kind === 'boundary'
-              ? 'bg-brand-terracotta/90 text-white border-white/25'
-              : 'bg-[#141C1A]/75 text-[#FAF7F2] border-white/20'
-          }`}
-        >
-          {card.kind === 'boundary' ? 'Sharp Signal' : 'Vibe Check'}
-        </span>
+
+        {isFirst && (
+          <span className="px-2.5 py-1 rounded-full bg-[#121917]/76 backdrop-blur-md text-white/85 text-[10px] font-medium border border-white/18">
+            Swipe or tap below
+          </span>
+        )}
       </div>
 
-      {/* Live Swipe Stamps */}
+      {/* Live Drag Stamps */}
       <motion.div
-        style={{ opacity: yesOpacity }}
-        className="absolute top-14 left-4 px-3.5 py-1.5 rounded-xl bg-brand-deep-green/95 text-brand-ivory border-2 border-brand-sage-light text-xs font-bold tracking-[0.1em] uppercase -rotate-6 shadow-lg pointer-events-none"
+        style={{ opacity: rightStampOpacity }}
+        className="absolute top-16 left-4 px-3.5 py-1.5 rounded-xl bg-brand-deep-green/95 text-brand-ivory border border-white/40 text-[11px] font-bold tracking-[0.09em] uppercase -rotate-6 shadow-lg pointer-events-none"
       >
         {card.yesStamp}
       </motion.div>
 
       <motion.div
-        style={{ opacity: noOpacity }}
-        className="absolute top-14 right-4 px-3.5 py-1.5 rounded-xl bg-brand-terracotta/95 text-white border-2 border-white/70 text-xs font-bold tracking-[0.1em] uppercase rotate-6 shadow-lg pointer-events-none"
+        style={{ opacity: leftStampOpacity }}
+        className="absolute top-16 right-4 px-3.5 py-1.5 rounded-xl bg-[#141C1A]/95 text-white border border-white/40 text-[11px] font-bold tracking-[0.09em] uppercase rotate-6 shadow-lg pointer-events-none"
       >
         {card.noStamp}
       </motion.div>
 
-      {/* Bottom Copy */}
-      <div className="absolute bottom-4 left-4 right-4 text-white space-y-1.5 pointer-events-none">
-        <h2 className="font-sans text-[21px] font-semibold leading-[1.2] tracking-[-0.015em] text-white drop-shadow-sm">
-          {card.title}
-        </h2>
-        <p className="font-serif text-[13px] text-white/88 leading-[1.48]">
-          {card.subtitle}
-        </p>
+      {/* Bottom Dock: Poster Typography + Two Unbiased Integrated Choices */}
+      <div className="absolute inset-x-4 bottom-4 flex flex-col gap-3.5">
+        <div className="space-y-1.5 pointer-events-none">
+          <h2 className="font-sans text-[23px] sm:text-[25px] font-semibold leading-[1.16] tracking-[-0.02em] text-white drop-shadow-xs">
+            {card.title}
+          </h2>
+          <p className="font-serif text-[13.5px] text-white/86 leading-[1.48]">
+            {card.subtitle}
+          </p>
+        </div>
+
+        {/* Two Equal-Dignity Choice Pills (stopPropagation prevents drag conflict on tap) */}
+        <div
+          className="grid grid-cols-2 gap-2.5 pt-0.5"
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={() => onDecide('no')}
+            className="py-3 px-3 rounded-2xl bg-white/14 hover:bg-white/24 active:scale-[0.98] backdrop-blur-md border border-white/28 text-white text-[12px] font-medium leading-tight transition-all cursor-pointer text-center"
+          >
+            {card.noLabel}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onDecide('yes')}
+            className="py-3 px-3 rounded-2xl bg-[#FAF7F2] hover:bg-white active:scale-[0.98] text-brand-ink text-[12px] font-semibold leading-tight shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-terracotta shrink-0" />
+            <span>{card.yesLabel}</span>
+          </button>
+        </div>
       </div>
     </motion.div>
   );
@@ -129,7 +155,6 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
   cityName,
   onComplete,
   onVoiceSubmit,
-  onSkip,
 }) => {
   const [index, setIndex] = useState(0);
   const [collectedRules, setCollectedRules] = useState<
@@ -164,11 +189,10 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
     }
 
     if (index >= cards.length - 1) {
-      // Ensure at least one baseline preference if user swiped left on all vibes
       if (nextRules.length === 0) {
         nextRules.push({
-          key: 'Curated Small-Group Gatherings',
-          value: `Surface thoughtful, well-hosted cultural evenings and weekends in ${cityName}.`,
+          key: 'Curated Gatherings',
+          value: `Surface well-hosted cultural evenings and weekends in ${cityName}.`,
           type: 'preference',
         });
       }
@@ -199,45 +223,42 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between px-5 pt-2 pb-5 space-y-3.5">
-      {/* 1. Concise Two-Part Framing */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <span className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-brand-terracotta">
-            Personal Context · {index + 1} of {cards.length}
+    <div className="flex-1 min-h-0 flex flex-col">
+      {/* 1. Compact Subhead + Segmented Progress (fits tightly at top) */}
+      <div className="px-4 pb-2.5 space-y-2 shrink-0">
+        <div className="flex items-baseline justify-between gap-2">
+          <h1 className="font-serif text-[17.5px] leading-snug font-medium text-brand-ink">
+            Shape a Personal Context that’s yours.
+          </h1>
+          <span className="text-[11px] font-semibold tabular-nums text-brand-terracotta shrink-0">
+            {index + 1} / {cards.length}
           </span>
-          {/* Segmented Progress Bar */}
-          <div className="flex items-center gap-1">
-            {cards.map((c, i) => (
-              <span
-                key={c.id}
-                className={`h-1 rounded-full transition-all duration-200 ${
-                  i === index
-                    ? 'w-4 bg-brand-terracotta'
-                    : i < index
-                    ? 'w-2 bg-brand-deep-green'
-                    : 'w-2 bg-brand-warm-stone'
-                }`}
-              />
-            ))}
-          </div>
         </div>
 
-        <h1 className="font-serif text-[21px] leading-[1.22] font-medium text-brand-ink">
-          Shape a context that belongs to you.
-        </h1>
-        <p className="text-[12px] text-brand-ink-light leading-relaxed">
-          Swipe right on what fits your life. You control your context—{cityName} events are the first example of it working for you.
-        </p>
+        {/* Full-Width Segmented Progress Strip */}
+        <div className="grid grid-cols-8 gap-1">
+          {cards.map((c, i) => (
+            <span
+              key={c.id}
+              className={`h-[3px] rounded-full transition-colors duration-200 ${
+                i === index
+                  ? 'bg-brand-terracotta'
+                  : i < index
+                  ? 'bg-brand-deep-green'
+                  : 'bg-brand-warm-stone/80'
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* 2. Interactive Visual Card Stack */}
-      <div className="relative h-[366px] flex items-center justify-center">
-        {/* Next card peeking underneath */}
+      {/* 2. Expansive Poster Card Stack (Fills ~76% of the mobile viewport!) */}
+      <div className="flex-1 min-h-0 relative mx-3">
+        {/* Next card peeking subtly behind */}
         {nextCard && (
           <div
             key={`peek-${nextCard.id}`}
-            className="absolute inset-x-3 top-3 h-[354px] rounded-[26px] overflow-hidden opacity-55 scale-[0.96] pointer-events-none border border-brand-warm-stone/50 bg-[#17201E]"
+            className="absolute inset-x-2.5 top-2 bottom-0 rounded-[28px] overflow-hidden opacity-45 scale-[0.97] pointer-events-none bg-[#17201E]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -250,64 +271,38 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
 
         <AnimatePresence mode="popLayout">
           {activeCard && (
-            <DraggableTopCard
+            <PosterSceneCard
               key={activeCard.id}
               card={activeCard}
+              isFirst={index === 0}
               onDecide={handleDecision}
             />
           )}
         </AnimatePresence>
       </div>
 
-      {/* 3. Tactile Left / Right Tap Controls */}
-      <div className="flex items-center justify-center gap-5 pt-0.5">
-        <button
-          type="button"
-          onClick={() => handleDecision('no')}
-          className="flex items-center gap-2 py-2.5 px-5 rounded-full bg-[#FCFBF8] hover:bg-[#EFE9DE] border border-brand-warm-stone text-xs font-semibold text-brand-ink shadow-xs active:scale-95 transition-all cursor-pointer"
-        >
-          <IconClose size={15} className="text-brand-ink-light" />
-          <span>{activeCard?.noStamp ? 'Not me' : 'Pass'}</span>
-        </button>
+      {/* 3. Always-Above-the-Fold Secondary Bar: Bring from AI + Speak */}
+      <div className="px-3 pt-2.5 pb-[max(12px,env(safe-area-inset-bottom))] shrink-0">
+        <div className="rounded-2xl bg-[#EFE9DE]/90 border border-brand-warm-stone/80 p-1.5 flex items-center gap-1.5">
+          <span className="text-[10.5px] font-medium text-brand-ink-light pl-2.5 pr-1 shrink-0">
+            Faster path:
+          </span>
 
-        <button
-          type="button"
-          onClick={() => handleDecision('yes')}
-          className="flex items-center gap-2 py-2.5 px-6 rounded-full bg-brand-deep-green hover:bg-brand-deep-green-dark text-brand-ivory text-xs font-semibold shadow-sm active:scale-95 transition-all cursor-pointer"
-        >
-          <IconHeart size={15} filled accent="#C66E45" />
-          <span>Yes, fits me</span>
-        </button>
-      </div>
-
-      {/* 4. Secondary Visible Choices: Bring from AI + Speak + Skip */}
-      <div className="pt-2 border-t border-brand-warm-stone/65 space-y-2.5">
-        <div className="grid grid-cols-2 gap-2">
           <Link
             href="/import?returnTo=vault"
-            className="py-2.5 px-3 rounded-2xl bg-[#FCFBF8] hover:bg-[#EFE9DE] border border-brand-warm-stone/85 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 transition-colors"
+            className="flex-1 py-2 px-2.5 rounded-xl bg-[#FCFBF8] hover:bg-white border border-brand-warm-stone/75 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
           >
-            <IconSparkNote size={14} className="text-brand-deep-green shrink-0" />
+            <IconSparkNote size={13.5} className="text-brand-deep-green shrink-0" />
             <span>Bring from AI</span>
           </Link>
 
           <button
             type="button"
             onClick={() => setIsVoiceOpen(true)}
-            className="py-2.5 px-3 rounded-2xl bg-[#FCFBF8] hover:bg-[#EFE9DE] border border-brand-warm-stone/85 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="flex-1 py-2 px-2.5 rounded-xl bg-[#FCFBF8] hover:bg-white border border-brand-warm-stone/75 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
           >
-            <IconMicrophone size={14} className="text-brand-deep-green shrink-0" />
-            <span>Speak Instead</span>
-          </button>
-        </div>
-
-        <div className="text-center">
-          <button
-            type="button"
-            onClick={onSkip}
-            className="text-[11px] font-medium text-brand-ink-light hover:text-brand-ink underline underline-offset-2 cursor-pointer"
-          >
-            Skip for now and browse generic {cityName} feed
+            <IconMicrophone size={13.5} className="text-brand-deep-green shrink-0" />
+            <span>Speak</span>
           </button>
         </div>
       </div>
@@ -357,7 +352,7 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
                 </button>
                 <p className="text-xs text-brand-ink-light leading-relaxed">
                   {isRecording
-                    ? 'Listening… speak naturally about what evenings, mornings, and boundaries fit you.'
+                    ? 'Listening… describe the kinds of evenings, weekends, and food you enjoy.'
                     : 'Tap the mic or type a couple of sentences below.'}
                 </p>
               </div>
@@ -366,7 +361,7 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
                 rows={4}
                 value={voiceText}
                 onChange={(e) => setVoiceText(e.target.value)}
-                placeholder="e.g., I love small acoustic concerts and Saturday morning walks in Cubbon Park, strictly vegetarian, and no loud late-night clubs…"
+                placeholder={`e.g., In ${cityName} I love vinyl bars or small chamber concerts, open to all food, and weekend morning walks…`}
                 className="w-full rounded-2xl bg-[#FCFBF8] border border-brand-warm-stone p-3 text-xs text-brand-ink leading-relaxed focus:outline-none focus:border-brand-deep-green"
               />
 

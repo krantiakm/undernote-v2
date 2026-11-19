@@ -10,7 +10,6 @@ import { getSwipeTasteCards } from '@/data/onboardingData';
 import { scoreEventsAgainstContext } from '@/lib/contextScoring';
 import { useApp } from '@/context/AppContext';
 
-// Feature toggle so the Context Mirror step can be switched off cleanly if needed in future tests
 const ENABLE_CONTEXT_MIRROR_STEP = true;
 
 function OnboardingFlowContent() {
@@ -65,35 +64,51 @@ function OnboardingFlowContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-brand-ivory min-h-screen">
-      {/* Minimal Onboarding Top Bar */}
-      <header className="px-5 pt-4 pb-2 flex items-center justify-between">
+    <div
+      className={`w-full flex flex-col bg-brand-ivory ${
+        step === 'swipe' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen'
+      }`}
+    >
+      {/* Compact Single-Row Top Bar */}
+      <header className="px-4 pt-3 pb-1.5 flex items-center justify-between shrink-0">
         <Logo size="sm" variant="dark" clickable={false} />
 
-        {/* Subtle City Pill so Bangalore / Singapore testers can confirm their city */}
-        <div className="inline-flex p-0.5 rounded-full bg-[#EFE9DE] border border-brand-warm-stone/80">
-          <button
-            type="button"
-            onClick={() => setGeography('india-blr')}
-            className={`px-2.5 py-1 rounded-full text-[10.5px] transition-all cursor-pointer ${
-              geography === 'india-blr'
-                ? 'bg-brand-deep-green text-brand-ivory font-semibold'
-                : 'text-brand-ink-light font-medium'
-            }`}
-          >
-            BLR
-          </button>
-          <button
-            type="button"
-            onClick={() => setGeography('singapore-sin')}
-            className={`px-2.5 py-1 rounded-full text-[10.5px] transition-all cursor-pointer ${
-              geography === 'singapore-sin'
-                ? 'bg-brand-deep-green text-brand-ivory font-semibold'
-                : 'text-brand-ink-light font-medium'
-            }`}
-          >
-            SGP
-          </button>
+        <div className="flex items-center gap-2.5">
+          {/* City Anchor Pill */}
+          <div className="inline-flex p-0.5 rounded-full bg-[#EFE9DE] border border-brand-warm-stone/80">
+            <button
+              type="button"
+              onClick={() => setGeography('india-blr')}
+              className={`px-2 py-0.5 rounded-full text-[10px] transition-all cursor-pointer ${
+                geography === 'india-blr'
+                  ? 'bg-brand-deep-green text-brand-ivory font-semibold'
+                  : 'text-brand-ink-light font-medium'
+              }`}
+            >
+              BLR
+            </button>
+            <button
+              type="button"
+              onClick={() => setGeography('singapore-sin')}
+              className={`px-2 py-0.5 rounded-full text-[10px] transition-all cursor-pointer ${
+                geography === 'singapore-sin'
+                  ? 'bg-brand-deep-green text-brand-ivory font-semibold'
+                  : 'text-brand-ink-light font-medium'
+              }`}
+            >
+              SGP
+            </button>
+          </div>
+
+          {step === 'swipe' && (
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="text-xs font-medium text-brand-ink-light hover:text-brand-ink transition-colors cursor-pointer"
+            >
+              Skip →
+            </button>
+          )}
         </div>
       </header>
 
@@ -103,7 +118,6 @@ function OnboardingFlowContent() {
           cityName={cityName}
           onComplete={handleDeckComplete}
           onVoiceSubmit={handleVoiceComplete}
-          onSkip={handleSkip}
         />
       ) : (
         <ContextVaultReveal
