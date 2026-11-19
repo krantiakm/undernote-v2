@@ -31,12 +31,12 @@ const SAMPLE_CULTURAL_DOSSIER = `1. Home City & Weekly Rhythm:
 - Food: Strictly 100% vegetarian for any supper club, tasting table, or pre-show café.
 - Atmosphere: Skip loud bars, standing DJ clubs, stadium crowds, and events finishing after 9:45 PM on weeknights.`;
 
-const EXTRACTION_PROMPT = `Based on everything you know about me from our conversations and saved memory, write a concise, honest portrait of how I like to spend my cultural and personal time outside work:
+const EXTRACTION_PROMPT = `Based on everything you know about me from our conversations and saved memory, write a concise, honest portrait of my taste, habits, and boundaries outside work:
 
-1. My home city, neighborhood radius, and weekly energy rhythm (mornings vs. evenings).
-2. What kinds of live music, theatre, talks, walks, exhibitions, films, workshops, or suppers genuinely draw me in—and why.
-3. Who I usually step out with (solo, partner, children, close friends).
-4. My non-negotiable boundaries (dietary rules, crowd size, noise levels, latest finish time, budget comfort).`;
+1. My home city, neighborhood radius, and weekly energy rhythm (early mornings vs. late nights).
+2. What kinds of live music, nightlife, theatre, talks, walks, exhibitions, films, or hands-on workshops genuinely draw me in.
+3. My taste across dining, travel stays & routes, books & ideas, and everyday objects/shopping.
+4. Who I usually step out or travel with, plus my non-negotiable boundaries (dietary rules, crowd energy, latest weeknight finish, budget comfort).`;
 
 type ProviderId = 'chatgpt' | 'gemini' | 'claude';
 
@@ -44,7 +44,7 @@ function ImportContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialProvider = (searchParams.get('provider') as ProviderId) || 'chatgpt';
-  const returnToVault = searchParams.get('returnTo') === 'vault';
+  const returnTo = searchParams.get('returnTo');
 
   const {
     geography,
@@ -111,7 +111,13 @@ function ImportContent() {
     }
 
     await runIngestionPipeline({ text: payload, source: mode });
-    router.push(returnToVault ? '/onboarding?step=vault' : '/radar');
+    router.push(
+      returnTo === 'vault'
+        ? '/onboarding?step=vault'
+        : returnTo === 'me'
+        ? '/me'
+        : '/radar'
+    );
   };
 
   const handleToggleVoice = () => {
@@ -146,7 +152,7 @@ function ImportContent() {
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-brand-ivory/95 backdrop-blur-md border-b border-brand-warm-stone/55 px-5 py-3.5 flex items-center justify-between">
         <Link
-          href="/radar"
+          href={returnTo === 'me' ? '/me' : returnTo === 'vault' ? '/onboarding' : '/radar'}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-ink hover:text-brand-deep-green transition-colors"
         >
           <IconArrowLeft size={16} />

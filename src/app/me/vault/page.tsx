@@ -21,6 +21,7 @@ export default function PersonalVaultPage() {
   const {
     persona,
     geography,
+    setGeography,
     contextItems,
     addContextItem,
     updateContextItem,
@@ -218,6 +219,43 @@ export default function PersonalVaultPage() {
                 <pre>{JSON.stringify(contextItems, null, 2)}</pre>
               </div>
             )}
+
+            {/* Home City Switcher (Applies to Live Events Feed) */}
+            <div className="pt-2.5 border-t border-brand-warm-stone/60 flex items-center justify-between gap-3">
+              <div>
+                <span className="text-xs font-semibold text-brand-ink block">
+                  Home City for Events
+                </span>
+                <span className="text-[10.5px] text-brand-ink-light">
+                  Switches local calendar & currency
+                </span>
+              </div>
+
+              <div className="inline-flex p-0.5 rounded-full bg-[#EFE9DE] border border-brand-warm-stone/80 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setGeography('india-blr')}
+                  className={`px-3 py-1 rounded-full text-[11px] transition-all cursor-pointer ${
+                    geography === 'india-blr'
+                      ? 'bg-brand-deep-green text-brand-ivory font-semibold'
+                      : 'text-brand-ink-light font-medium'
+                  }`}
+                >
+                  Bangalore
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGeography('singapore-sin')}
+                  className={`px-3 py-1 rounded-full text-[11px] transition-all cursor-pointer ${
+                    geography === 'singapore-sin'
+                      ? 'bg-brand-deep-green text-brand-ivory font-semibold'
+                      : 'text-brand-ink-light font-medium'
+                  }`}
+                >
+                  Singapore
+                </button>
+              </div>
+            </div>
           </section>
 
           {/* ================================================================

@@ -32,6 +32,7 @@ import {
 } from '@/data/eventsData';
 import { broaderCityEventsCards } from '@/data/onboardingData';
 import { BASE_PATH } from '@/lib/assets';
+import { buildShortTitleFromFreeText, inferSlicesAndDomain } from '@/lib/portraitEngine';
 
 const ALL_MARKET_CARDS: CardData[] = [...curatedEventsCards, ...broaderCityEventsCards];
 
@@ -688,20 +689,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const lines = inputContent
         .split(/[\n.;]+/)
         .map((s) => s.replace(/^[-*•\d.)\s]+/, '').trim())
-        .filter((s) => s.length >= 16 && s.length <= 160)
-        .slice(0, 6);
+        .filter((s) => s.length >= 16 && s.length <= 180)
+        .slice(0, 8);
 
       if (lines.length > 0) {
         const now = new Date().toISOString();
         setContextItems(
           lines.map((line, idx) => {
-            const isConstraint = /no |never|avoid|skip|strictly|under |before /i.test(line);
+            const isConstraint = /\b(no|never|avoid|skip|strictly|under|before)\b/i.test(line);
+            const { primaryDomain } = inferSlicesAndDomain(line);
+            const colonSplit = line.includes(':') ? line.split(':') : null;
+            const smartKey =
+              colonSplit && colonSplit[0].trim().length <= 28
+                ? colonSplit[0].trim()
+                : buildShortTitleFromFreeText(line);
+            const smartVal =
+              colonSplit && colonSplit[1]?.trim().length >= 8
+                ? colonSplit.slice(1).join(':').trim()
+                : line;
+
             return {
               id: `ctx-import-${Date.now()}-${idx}`,
-              domain: isConstraint ? 'what-matters' : 'events',
+              domain: primaryDomain,
               type: isConstraint ? 'constraint' : 'preference',
-              key: isConstraint ? `Boundary ${idx + 1}` : `Personal Signal ${idx + 1}`,
-              value: line,
+              key: smartKey,
+              value: smartVal,
               durability: 'durable',
               horizon: 'persistent_long_term',
               confidence: 0.96,
