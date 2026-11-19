@@ -8,7 +8,10 @@ import { TopHeader } from '@/components/shell/TopHeader';
 import { EventFilterStrip } from '@/components/events/EventFilterStrip';
 import { FeaturedEventCard } from '@/components/events/FeaturedEventCard';
 import { EditorialEventRowCard } from '@/components/events/EditorialEventRowCard';
-import { TopographicPattern } from '@/components/ui/TopographicPattern';
+import {
+  SignatureContourFooter,
+  TopographicPattern,
+} from '@/components/ui/TopographicPattern';
 import { scoreEventsAgainstContext } from '@/lib/contextScoring';
 import {
   IconArrowRight,
@@ -77,16 +80,20 @@ export default function ForYouEventsPage() {
         {/* 1. Sticky Top Header */}
         <TopHeader />
 
-        {/* 2. Proof-of-Context Header OR Explicit Skipped Generic Notice */}
-        <section className="relative px-5 pt-5 pb-3.5 overflow-hidden">
-          <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.42} />
+        {/* 2. Concise Proof-of-Context Header OR Explicit Skipped Generic Notice */}
+        <section className="relative px-5 pt-4 pb-3 overflow-hidden">
+          <TopographicPattern
+            variant="horizon"
+            className="absolute inset-0 w-full h-full"
+            opacity={0.52}
+          />
 
-          <div className="relative z-10 space-y-2">
+          <div className="relative z-10 space-y-1.5">
             {isTuned ? (
               <>
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-brand-terracotta">
-                    Personal Context at Work · {cityName}
+                    For You · {cityName}
                   </p>
                   <Link
                     href="/me"
@@ -97,11 +104,11 @@ export default function ForYouEventsPage() {
                   </Link>
                 </div>
 
-                <h1 className="font-serif text-[23px] leading-[1.22] font-medium tracking-[-0.01em] text-brand-ink">
-                  Out of 200+ happenings this week, {topMatches.length} cleared your bar.
+                <h1 className="font-serif text-[22px] leading-[1.2] font-medium tracking-[-0.01em] text-brand-ink">
+                  {topMatches.length} of 200+ happenings fit you this week.
                 </h1>
-                <p className="text-[12.5px] text-brand-ink-light leading-relaxed">
-                  Events is one example of your Personal Context filtering out the noise—ranked by how closely each gathering fits your life.
+                <p className="text-xs text-brand-ink-light">
+                  Events, filtered by your context.
                 </p>
                 <div className="pt-0.5">
                   <span className="brand-rule" />
@@ -185,17 +192,22 @@ export default function ForYouEventsPage() {
                   4. INTENTIONAL "SEE MORE" EXPANSION + DEFERRED FILTERS
                  ============================================================ */}
               {moreMatches.length > 0 && (
-                <section className="pt-4 space-y-4">
-                  <div className="rounded-[22px] bg-[#F2ECE1] border border-brand-warm-stone/90 p-4 space-y-2.5 text-center">
-                    <p className="text-xs font-semibold text-brand-ink">
+                <section className="pt-3 space-y-4">
+                  <div className="relative overflow-hidden rounded-[22px] bg-[#F2ECE1] border border-brand-warm-stone/90 p-4 space-y-2.5 text-center">
+                    <TopographicPattern
+                      variant="drift"
+                      className="absolute inset-0 w-full h-full"
+                      opacity={0.45}
+                    />
+                    <p className="relative z-10 text-xs font-semibold text-brand-ink">
                       {isTuned
-                        ? `${moreMatches.length} more gatherings in ${cityName} scored lower against your context`
-                        : `${moreMatches.length} more gatherings in ${cityName}`}
+                        ? `${moreMatches.length} lower-match happenings in ${cityName}`
+                        : `${moreMatches.length} more happenings in ${cityName}`}
                     </p>
-                    <p className="text-[11.5px] text-brand-ink-light leading-relaxed max-w-[300px] mx-auto">
+                    <p className="relative z-10 text-[11.5px] text-brand-ink-light leading-snug max-w-[280px] mx-auto">
                       {isTuned
-                        ? 'These may fall outside your usual atmosphere, finish times, or dietary boundaries—open them only if you want to browse wider.'
-                        : 'Expand to browse the rest of this week’s city listings with date and format filters.'}
+                        ? 'Outside your usual timing, crowd size, or menu rules.'
+                        : 'Expand to browse with date and format filters.'}
                     </p>
 
                     <button
@@ -208,11 +220,11 @@ export default function ForYouEventsPage() {
                           setCategoryFilter('all');
                         }
                       }}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FCFBF8] hover:bg-brand-deep-green hover:text-brand-ivory border border-brand-warm-stone text-xs font-semibold text-brand-ink transition-all cursor-pointer shadow-2xs"
+                      className="relative z-10 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FCFBF8] hover:bg-brand-deep-green hover:text-brand-ivory border border-brand-warm-stone text-xs font-semibold text-brand-ink transition-all cursor-pointer shadow-2xs"
                     >
                       <span>
                         {showMoreOpen
-                          ? 'Hide Lower-Relevance Gatherings'
+                          ? 'Hide Lower Matches'
                           : `See More (${moreMatches.length})`}
                       </span>
                       <IconChevronDown
@@ -265,6 +277,8 @@ export default function ForYouEventsPage() {
             </>
           )}
         </div>
+
+        <SignatureContourFooter />
       </div>
     </AppShell>
   );

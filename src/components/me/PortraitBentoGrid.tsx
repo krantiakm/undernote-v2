@@ -354,6 +354,7 @@ export const PortraitBentoGrid: React.FC<PortraitBentoGridProps> = ({
                 } ${spanClass}`}
               >
                 <TopographicPattern
+                  variant="archipelago"
                   className="absolute inset-0 w-full h-full pointer-events-none"
                   opacity={isDark ? 0.14 : 0.45}
                 />
@@ -471,7 +472,11 @@ export const PortraitBentoGrid: React.FC<PortraitBentoGridProps> = ({
             isAddTileWide ? 'col-span-2 row-span-1' : 'col-span-1 row-span-1'
           }`}
         >
-          <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.55} />
+          <TopographicPattern
+            variant="drift"
+            className="absolute inset-0 w-full h-full"
+            opacity={0.55}
+          />
 
           <div className="relative z-10 flex items-center justify-between">
             <div className="w-10 h-10 rounded-full bg-brand-deep-green group-hover:bg-brand-terracotta text-brand-ivory flex items-center justify-center shadow-sm transition-colors">

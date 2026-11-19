@@ -64,11 +64,7 @@ function OnboardingFlowContent() {
   };
 
   return (
-    <div
-      className={`w-full flex flex-col bg-brand-ivory ${
-        step === 'swipe' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-screen'
-      }`}
-    >
+    <div className="w-full h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col bg-brand-ivory">
       {/* Compact Single-Row Top Bar */}
       <header className="px-4 pt-3 pb-1.5 flex items-center justify-between shrink-0">
         <Logo size="sm" variant="dark" clickable={false} />

@@ -15,8 +15,8 @@ interface LogoProps {
 
 /**
  * Official Undernote Brand Mark & Geometric Wordmark
- * Crafted directly to match the Undernote Brand Book (undernote.png & undernotebrand.png):
- * - Lowercase geometric Satoshi lettering with terracotta bar anchored cleanly beneath the 'o'
+ * Matches the Undernote Brand Book (undernote.png & undernotebrand.png):
+ * - Lowercase geometric Satoshi lettering with terracotta bar locked strictly beneath the 'o'
  * - Rounded-square 'u' monogram mark with terracotta underline
  * - Minimal dual-bar '=' emblem (Ink/Green top bar + Terracotta bottom bar)
  */
@@ -66,14 +66,38 @@ export const Logo: React.FC<LogoProps> = ({
   const dims = (() => {
     switch (size) {
       case 'sm':
-        return { wordWidth: 112, wordHeight: 25, markPx: 28, taglineClass: 'text-[10px]' };
+        return {
+          fontPx: 20,
+          barHeight: 2.3,
+          barBottom: -4.5,
+          markPx: 28,
+          taglineClass: 'text-[10px]',
+        };
       case 'lg':
-        return { wordWidth: 168, wordHeight: 37, markPx: 44, taglineClass: 'text-xs' };
+        return {
+          fontPx: 32,
+          barHeight: 3.2,
+          barBottom: -6.5,
+          markPx: 44,
+          taglineClass: 'text-xs',
+        };
       case 'xl':
-        return { wordWidth: 206, wordHeight: 46, markPx: 52, taglineClass: 'text-sm' };
+        return {
+          fontPx: 40,
+          barHeight: 3.8,
+          barBottom: -8,
+          markPx: 52,
+          taglineClass: 'text-sm',
+        };
       case 'md':
       default:
-        return { wordWidth: 136, wordHeight: 30, markPx: 34, taglineClass: 'text-[11px]' };
+        return {
+          fontPx: 24,
+          barHeight: 2.7,
+          barBottom: -5.5,
+          markPx: 34,
+          taglineClass: 'text-[11px]',
+        };
     }
   })();
 
@@ -123,31 +147,30 @@ export const Logo: React.FC<LogoProps> = ({
   );
 
   const renderWordmark = () => (
-    <svg
-      width={dims.wordWidth}
-      height={dims.wordHeight}
-      viewBox="0 0 228 50"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    <span
       role="img"
       aria-label="undernote"
-      className="block"
+      className="inline-flex items-baseline font-sans font-medium tracking-[-0.025em] leading-none select-none pb-1.5"
+      style={{ color: palette.wordmark, fontSize: `${dims.fontPx}px` }}
     >
-      {/* Precision geometric wordmark with exact 'o' placement for the terracotta bar */}
-      <text
-        x="0"
-        y="33"
-        fill={palette.wordmark}
-        fontFamily="var(--font-satoshi), Satoshi, sans-serif"
-        fontSize="36"
-        fontWeight="500"
-        letterSpacing="-0.02em"
-      >
-        undernote
-      </text>
-      {/* Signature Terracotta bar cleanly aligned beneath the 'o' */}
-      <rect x="132" y="40.5" width="22" height="3.2" rx="1.6" fill={palette.accent} />
-    </svg>
+      <span>undern</span>
+      <span className="relative inline-block">
+        <span>o</span>
+        {/* Signature Terracotta bar locked strictly beneath the 'o' glyph */}
+        <span
+          aria-hidden="true"
+          className="absolute pointer-events-none rounded-[1px]"
+          style={{
+            backgroundColor: palette.accent,
+            left: '2%',
+            right: '2%',
+            bottom: `${dims.barBottom}px`,
+            height: `${dims.barHeight}px`,
+          }}
+        />
+      </span>
+      <span>te</span>
+    </span>
   );
 
   const content = (
@@ -163,7 +186,7 @@ export const Logo: React.FC<LogoProps> = ({
             {renderWordmark()}
             {withTagline && (
               <span
-                className={`font-sans tracking-[0.02em] leading-none mt-0.5 ${dims.taglineClass}`}
+                className={`font-sans tracking-[0.02em] leading-none mt-1 ${dims.taglineClass}`}
                 style={{ color: palette.tagline }}
               >
                 A world in tune with you.
@@ -176,7 +199,7 @@ export const Logo: React.FC<LogoProps> = ({
           {renderWordmark()}
           {withTagline && (
             <span
-              className={`font-sans tracking-[0.02em] leading-none mt-1 ${dims.taglineClass}`}
+              className={`font-sans tracking-[0.02em] leading-none mt-1.5 ${dims.taglineClass}`}
               style={{ color: palette.tagline }}
             >
               A world in tune with you.

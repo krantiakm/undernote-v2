@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppShell } from '@/components/shell/AppShell';
 import { TopHeader } from '@/components/shell/TopHeader';
-import { TopographicPattern } from '@/components/ui/TopographicPattern';
+import {
+  SignatureContourFooter,
+  TopographicPattern,
+} from '@/components/ui/TopographicPattern';
 import { Logo } from '@/components/ui/Logo';
 import { useApp } from '@/context/AppContext';
 import { downloadEventIcs, resolveAssetUrl } from '@/lib/assets';
@@ -101,7 +104,11 @@ export default function WatchingPage() {
 
         {/* 1. Editorial Header */}
         <section className="relative px-5 pt-5 pb-4 overflow-hidden">
-          <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.4} />
+          <TopographicPattern
+            variant="ridge"
+            className="absolute inset-0 w-full h-full"
+            opacity={0.5}
+          />
           <div className="relative z-10 space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-brand-terracotta">
               Watching · {cityName}
@@ -332,6 +339,8 @@ export default function WatchingPage() {
             </div>
           </section>
         </div>
+
+        <SignatureContourFooter />
 
         {/* Add Watch Bottom Sheet */}
         <AnimatePresence>

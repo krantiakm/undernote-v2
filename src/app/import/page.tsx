@@ -165,7 +165,11 @@ function ImportContent() {
 
       {/* Hero Intro */}
       <section className="relative px-5 pt-5 pb-4 overflow-hidden">
-        <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.42} />
+        <TopographicPattern
+          variant="drift"
+          className="absolute inset-0 w-full h-full"
+          opacity={0.48}
+        />
         <div className="relative z-10 space-y-2">
           <h1 className="font-serif text-[24px] leading-[1.2] font-medium text-brand-ink">
             Bring what your AI already knows.

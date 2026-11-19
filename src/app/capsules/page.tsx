@@ -5,7 +5,10 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppShell } from '@/components/shell/AppShell';
 import { TopHeader } from '@/components/shell/TopHeader';
-import { TopographicPattern } from '@/components/ui/TopographicPattern';
+import {
+  SignatureContourFooter,
+  TopographicPattern,
+} from '@/components/ui/TopographicPattern';
 import { useApp } from '@/context/AppContext';
 import { BASE_PATH, resolveAssetUrl } from '@/lib/assets';
 import {
@@ -167,7 +170,11 @@ export default function TogetherPage() {
 
         {/* 1. Editorial Header */}
         <section className="relative px-5 pt-5 pb-4 overflow-hidden">
-          <TopographicPattern className="absolute inset-0 w-full h-full" opacity={0.4} />
+          <TopographicPattern
+            variant="basin"
+            className="absolute inset-0 w-full h-full"
+            opacity={0.5}
+          />
           <div className="relative z-10 space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.09em] text-brand-terracotta">
               Together · {cityName}
@@ -422,6 +429,8 @@ export default function TogetherPage() {
             </div>
           )}
         </div>
+
+        <SignatureContourFooter />
 
         {/* Create Shared Plan Sheet */}
         <AnimatePresence>

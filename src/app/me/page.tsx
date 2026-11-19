@@ -5,6 +5,10 @@ import Link from 'next/link';
 import { AppShell } from '@/components/shell/AppShell';
 import { TopHeader } from '@/components/shell/TopHeader';
 import { PortraitBentoGrid } from '@/components/me/PortraitBentoGrid';
+import {
+  SignatureContourFooter,
+  TopographicPattern,
+} from '@/components/ui/TopographicPattern';
 import { deriveVisualPortrait, PortraitBentoItem } from '@/lib/portraitEngine';
 import { RadarDomain } from '@/types';
 import { resolveAssetUrl } from '@/lib/assets';
@@ -88,11 +92,14 @@ export default function MeVisualPortraitPage() {
       <div className="flex-1 flex flex-col bg-brand-ivory">
         <TopHeader />
 
-        <div className="px-5 pt-4 pb-9 space-y-4 flex-1">
-          {/* ================================================================
-              1. CLEAN IDENTITY BAR (NAME + SHARE BUTTON ONLY)
-             ================================================================ */}
-          <div className="flex items-center justify-between gap-3">
+        {/* Subtle Signature Contour Header Zone */}
+        <section className="relative px-5 pt-4 pb-2 overflow-hidden">
+          <TopographicPattern
+            variant="ridge"
+            className="absolute inset-0 w-full h-full"
+            opacity={0.46}
+          />
+          <div className="relative z-10 flex items-center justify-between gap-3">
             <h1 className="font-serif text-[26px] leading-[1.15] font-medium text-brand-ink truncate">
               {persona.userName || 'Kranti'}
             </h1>
@@ -108,6 +115,9 @@ export default function MeVisualPortraitPage() {
               <IconShare size={15} />
             </button>
           </div>
+        </section>
+
+        <div className="px-5 pt-1 pb-4 space-y-4 flex-1">
 
           {/* ================================================================
               2. FILTERABLE LIVING BENTO PORTRAIT
@@ -193,6 +203,8 @@ export default function MeVisualPortraitPage() {
             </Link>
           </div>
         </div>
+
+        <SignatureContourFooter />
       </div>
     </AppShell>
   );
