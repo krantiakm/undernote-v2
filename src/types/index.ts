@@ -26,6 +26,33 @@ export type EventAvailabilityState =
   | 'rsvp'
   | 'waitlist';
 
+export type OnboardingStatus = 'unseen' | 'tuned' | 'skipped';
+
+export interface SwipeTasteCardData {
+  id: string;
+  stepLabel: string; // e.g. "Atmosphere" or "Boundary"
+  kind: 'vibe' | 'boundary';
+  title: string;
+  subtitle: string;
+  image: string;
+  yesStamp: string;
+  noStamp: string;
+  onYesRule?: {
+    key: string;
+    value: string;
+    type: 'preference' | 'constraint' | 'goal';
+    boostTags: string[];
+    vetoTags?: string[];
+  };
+  onNoRule?: {
+    key: string;
+    value: string;
+    type: 'preference' | 'constraint';
+    boostTags?: string[];
+    vetoTags?: string[];
+  };
+}
+
 export interface EventScheduleMeta {
   category: EventCategory;
   categoryLabel: string;
@@ -44,6 +71,7 @@ export interface EventScheduleMeta {
   availabilityLabel?: string; // e.g. "14 seats left" or "RSVP Open"
   personalFitLine: string; // Calm 1-line "Why this fits your world"
   featured?: boolean;
+  contextTags?: string[];  // Semantic & boundary tags for live context scoring
 }
 
 export type ContextHorizon = 'persistent_long_term' | 'active_short_term';

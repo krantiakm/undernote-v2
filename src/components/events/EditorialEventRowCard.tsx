@@ -6,24 +6,21 @@ import { motion } from 'framer-motion';
 import { CardData } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { resolveAssetUrl } from '@/lib/assets';
+import { MatchScoreBadge } from './MatchScoreBadge';
 import { IconBookmark } from '@/components/ui/BrandIcons';
 
 interface EditorialEventRowCardProps {
   card: CardData;
   index: number;
+  matchPercent?: number;
+  showMatchScore?: boolean;
 }
 
-/**
- * Horizontal Editorial Discovery Card
- * Modeled directly on Section 6 ("CARDS") of the Undernote Brand Book (undernotebrand.png):
- * - Tactile rounded thumbnail on left
- * - Uppercase Terracotta eyebrow ("SAT, 14 NOV · JP NAGAR")
- * - Clean Satoshi title + venue/time/price metadata + personal fit line
- * - Signature short Terracotta rule on bottom-left, minimal bookmark icon on bottom-right
- */
 export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
   card,
   index,
+  matchPercent,
+  showMatchScore = false,
 }) => {
   const { saveCard } = useApp();
   const isSaved = card.status === 'saved';
@@ -43,7 +40,7 @@ export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
       {/* Left Thumbnail */}
       <Link
         href={`/radar/${card.id}`}
-        className="relative w-[108px] min-h-[126px] rounded-[16px] overflow-hidden bg-[#EFE9DE] shrink-0"
+        className="relative w-[108px] min-h-[128px] rounded-[16px] overflow-hidden bg-[#17201E] shrink-0"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -52,7 +49,7 @@ export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
         />
         {meta?.availabilityLabel && meta.availabilityState === 'few-left' && (
-          <span className="absolute bottom-2 left-2 right-2 text-center py-0.5 px-1.5 rounded-md bg-brand-ink/80 backdrop-blur-xs text-[9.5px] font-medium text-brand-ivory truncate">
+          <span className="absolute bottom-2 left-2 right-2 text-center py-0.5 px-1.5 rounded-md bg-[#121917]/88 border border-white/20 text-[9.5px] font-semibold text-white truncate shadow-xs">
             {meta.availabilityLabel}
           </span>
         )}
@@ -65,10 +62,14 @@ export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
             <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-brand-terracotta truncate">
               {eyebrow}
             </span>
-            {meta?.priceLabel && (
-              <span className="text-[11px] font-semibold text-brand-deep-green shrink-0">
-                {meta.priceLabel}
-              </span>
+            {showMatchScore && typeof matchPercent === 'number' ? (
+              <MatchScoreBadge percent={matchPercent} variant="compact" />
+            ) : (
+              meta?.priceLabel && (
+                <span className="text-[11px] font-semibold text-brand-deep-green shrink-0">
+                  {meta.priceLabel}
+                </span>
+              )
             )}
           </div>
 
@@ -79,10 +80,12 @@ export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
           </Link>
 
           <p className="text-[11.5px] text-brand-ink-light truncate">
-            {meta ? `${meta.venue} · ${meta.timeLabel}` : card.subtitle}
+            {meta
+              ? `${meta.venue} · ${meta.priceLabel ? `${meta.priceLabel} · ` : ''}${meta.timeLabel}`
+              : card.subtitle}
           </p>
 
-          <p className="font-serif text-[12px] text-brand-ink/75 leading-[1.5] line-clamp-2 pt-0.5">
+          <p className="font-serif text-[12px] text-brand-ink/78 leading-[1.48] line-clamp-2 pt-0.5">
             {meta?.personalFitLine || card.summary}
           </p>
         </div>
@@ -109,7 +112,7 @@ export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
             className={`p-1.5 -mr-1 rounded-full transition-colors cursor-pointer ${
               isSaved
                 ? 'text-brand-terracotta'
-                : 'text-brand-ink/50 hover:text-brand-ink'
+                : 'text-brand-ink/55 hover:text-brand-ink'
             }`}
           >
             <IconBookmark size={16} filled={isSaved} />

@@ -10,12 +10,13 @@ import { useApp } from '@/context/AppContext';
 import { LookbookTile } from '@/types';
 import { resolveAssetUrl } from '@/lib/assets';
 import {
-  IconArrowRight,
   IconCheck,
   IconClose,
+  IconDownload,
   IconEdit,
   IconPlus,
   IconShieldPrivacy,
+  IconSliders,
   IconSparkNote,
   IconTrash,
   IconVenuePin,
@@ -31,9 +32,12 @@ export default function MePage() {
     addContextItem,
     updateContextItem,
     deleteContextItem,
+    deleteAllPersonalContext,
+    showToast,
   } = useApp();
 
-  const [activeTab, setActiveTab] = useState<'lookbook' | 'preferences'>('lookbook');
+  // Default to Personal Context Vault so Part 1 of Undernote is front and center
+  const [activeTab, setActiveTab] = useState<'context' | 'lookbook'>('context');
   const [selectedTile, setSelectedTile] = useState<LookbookTile | null>(null);
 
   // Edit summary state
@@ -66,11 +70,34 @@ export default function MePage() {
     setIsEditingBio(false);
   };
 
+  const handleExportVaultJson = () => {
+    const payload = {
+      schema: 'undernote.personal-context.v1',
+      exportedAt: new Date().toISOString(),
+      homeCity: geography === 'singapore-sin' ? 'Singapore' : 'Bangalore',
+      persona: {
+        userName: persona.userName,
+        title: persona.title,
+        summary: persona.lifeNarrative.openingSummary,
+      },
+      contextItems,
+    };
+    const dataStr =
+      'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
+    const anchor = document.createElement('a');
+    anchor.setAttribute('href', dataStr);
+    anchor.setAttribute('download', `undernote_personal_context_${Date.now()}.json`);
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    showToast('Portable Personal Context JSON exported');
+  };
+
   const handleCreateRule = (e: React.FormEvent) => {
     e.preventDefault();
     if (!ruleKey.trim() || !ruleValue.trim()) return;
     addContextItem({
-      domain: 'events',
+      domain: ruleKind === 'constraint' ? 'what-matters' : 'events',
       type: ruleKind,
       key: ruleKey.trim(),
       value: ruleValue.trim(),
@@ -83,7 +110,7 @@ export default function MePage() {
       sensitivity: 'normal',
       lastConfirmedAt: new Date().toISOString(),
       provenance: {
-        provider: ruleKind === 'constraint' ? 'Quiet Boundary' : 'Personal Taste',
+        provider: ruleKind === 'constraint' ? 'Hard Boundary' : 'Personal Taste',
       },
     });
     setRuleKey('');
@@ -98,7 +125,7 @@ export default function MePage() {
 
         <div className="px-5 pt-5 pb-8 space-y-6 flex-1">
           {/* ================================================================
-              1. CULTURAL PORTRAIT CARD
+              1. PERSONAL PORTRAIT & STORAGE VAULT HEADER
              ================================================================ */}
           <section className="relative overflow-hidden rounded-[26px] bg-brand-deep-green text-brand-ivory p-5 shadow-card space-y-4">
             <TopographicPattern
@@ -107,11 +134,11 @@ export default function MePage() {
               opacity={0.18}
             />
 
-            <div className="relative z-10 space-y-3.5">
+            <div className="relative z-10 space-y-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                   <span className="text-[10.5px] font-semibold uppercase tracking-[0.1em] text-brand-sage-light block">
-                    {persona.locationAnchor}
+                    Personal Context Vault · {persona.locationAnchor}
                   </span>
                   <h1 className="font-serif text-[23px] leading-[1.2] font-medium text-brand-ivory">
                     {persona.userName || 'Kranti'}
@@ -128,7 +155,7 @@ export default function MePage() {
                     setIsEditingBio(!isEditingBio);
                   }}
                   aria-label="Edit personal summary"
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-brand-ivory flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-8 h-8 rounded-full bg-white/12 hover:bg-white/22 text-brand-ivory flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <IconEdit size={14} accent="#F7F3EC" />
                 </button>
@@ -153,7 +180,7 @@ export default function MePage() {
                     <button
                       type="button"
                       onClick={handleSaveBio}
-                      className="px-4 py-1.5 rounded-full bg-brand-terracotta text-brand-ivory text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                      className="px-4 py-1.5 rounded-full bg-brand-terracotta text-white text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
                     >
                       <IconCheck size={13} />
                       <span>Save</span>
@@ -161,18 +188,26 @@ export default function MePage() {
                   </div>
                 </div>
               ) : (
-                <p className="font-serif text-[13px] text-brand-ivory/88 leading-[1.62]">
+                <p className="font-serif text-[13px] text-brand-ivory/88 leading-[1.6]">
                   {persona.lifeNarrative.openingSummary}
                 </p>
               )}
 
-              <div className="pt-1 flex items-center justify-between gap-3 border-t border-white/12">
-                <span className="brand-rule-sm" />
+              {/* Quick Tune Shortcuts */}
+              <div className="pt-2 border-t border-white/12 flex flex-wrap items-center gap-2">
                 <Link
-                  href="/import"
+                  href="/onboarding"
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-brand-ivory text-brand-deep-green text-[11.5px] font-semibold hover:bg-white transition-colors"
                 >
-                  <IconSparkNote size={13} />
+                  <IconSliders size={13} />
+                  <span>Swipe Taste Cards</span>
+                </Link>
+
+                <Link
+                  href="/import"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/14 hover:bg-white/22 text-brand-ivory text-[11.5px] font-semibold border border-white/15 transition-colors"
+                >
+                  <IconSparkNote size={13} accent="#E68860" />
                   <span>Import from AI</span>
                 </Link>
               </div>
@@ -180,9 +215,121 @@ export default function MePage() {
           </section>
 
           {/* ================================================================
-              2. SEGMENTED SWITCHER: TASTE LOOKBOOK vs PREFERENCES
+              2. WHERE YOUR PERSONAL CONTEXT LIVES (STORAGE & OWNERSHIP CARD)
+             ================================================================ */}
+          <section className="editorial-surface rounded-[22px] p-4 space-y-3.5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <IconShieldPrivacy size={16} className="text-brand-deep-green shrink-0" />
+                <span className="text-xs font-semibold text-brand-ink">
+                  Where Your Context Lives
+                </span>
+              </div>
+              <span className="text-[10.5px] font-semibold text-brand-deep-green bg-[#E7EFEA] px-2.5 py-0.5 rounded-full">
+                Yours to control
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              {/* Active Storage Option */}
+              <div className="rounded-2xl bg-[#F2ECE1] border border-brand-deep-green/35 p-3 flex items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+                    <span className="text-xs font-semibold text-brand-ink">
+                      Undernote Secure Cloud
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-brand-ink-light mt-0.5">
+                    Encrypted, never sold or shared for ads, deletable anytime.
+                  </p>
+                </div>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-deep-green shrink-0">
+                  Active
+                </span>
+              </div>
+
+              {/* Upcoming Portable & User-Owned Storage Connectors */}
+              <div className="grid grid-cols-1 gap-1.5 pt-0.5">
+                {[
+                  {
+                    title: 'On This Device Only',
+                    desc: 'Zero cloud sync — stored strictly inside your phone.',
+                  },
+                  {
+                    title: 'Your Personal Cloud (Google Drive / iCloud)',
+                    desc: 'Store your context file directly inside a drive you own.',
+                  },
+                  {
+                    title: 'Use Across Other Apps (Context Protocol)',
+                    desc: 'Carry your preferences into travel, books, dining & partner apps.',
+                  },
+                ].map((opt) => (
+                  <div
+                    key={opt.title}
+                    className="rounded-2xl bg-brand-ivory/75 border border-brand-warm-stone/70 px-3 py-2.5 flex items-center justify-between gap-2 opacity-80"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-[11.5px] font-semibold text-brand-ink truncate">
+                        {opt.title}
+                      </p>
+                      <p className="text-[10.5px] text-brand-ink-light truncate">
+                        {opt.desc}
+                      </p>
+                    </div>
+                    <span className="text-[9.5px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#EFE9DE] text-brand-ink-light shrink-0">
+                      Coming Soon
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Direct Ownership Controls: Export & Delete */}
+            <div className="pt-2 border-t border-brand-warm-stone/55 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={handleExportVaultJson}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-deep-green hover:text-brand-terracotta transition-colors cursor-pointer"
+              >
+                <IconDownload size={14} />
+                <span>Export `.json`</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      'Permanently delete your Personal Context? All stored preferences and boundaries will be wiped immediately.'
+                    )
+                  ) {
+                    deleteAllPersonalContext();
+                  }
+                }}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-ink-light hover:text-rose-700 transition-colors cursor-pointer"
+              >
+                <IconTrash size={13.5} />
+                <span>Delete My Context</span>
+              </button>
+            </div>
+          </section>
+
+          {/* ================================================================
+              3. SEGMENTED SWITCHER: PERSONAL CONTEXT vs TASTE LOOKBOOK
              ================================================================ */}
           <div className="p-1 rounded-full bg-[#EFE9DE] border border-brand-warm-stone/70 grid grid-cols-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('context')}
+              className={`py-2 rounded-full text-xs transition-all cursor-pointer ${
+                activeTab === 'context'
+                  ? 'bg-brand-deep-green text-brand-ivory font-semibold shadow-xs'
+                  : 'text-brand-ink/70 font-medium hover:text-brand-ink'
+              }`}
+            >
+              Personal Context ({contextItems.length})
+            </button>
             <button
               type="button"
               onClick={() => setActiveTab('lookbook')}
@@ -194,22 +341,159 @@ export default function MePage() {
             >
               Taste Lookbook
             </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('preferences')}
-              className={`py-2 rounded-full text-xs transition-all cursor-pointer ${
-                activeTab === 'preferences'
-                  ? 'bg-brand-deep-green text-brand-ivory font-semibold shadow-xs'
-                  : 'text-brand-ink/70 font-medium hover:text-brand-ink'
-              }`}
-            >
-              Preferences ({contextItems.length})
-            </button>
           </div>
 
-          {activeTab === 'lookbook' ? (
+          {activeTab === 'context' ? (
+            /* ================================================================
+               PLAIN-ENGLISH PREFERENCES & HARD BOUNDARIES
+               ================================================================ */
             <div className="space-y-6">
-              {/* 2-Column Editorial Lookbook Mosaic */}
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-brand-ink-light">
+                  Edit or add signals anytime—your feed updates immediately.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setIsAddRuleOpen(true)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-deep-green text-brand-ivory text-[11px] font-semibold shrink-0 cursor-pointer"
+                >
+                  <IconPlus size={12} />
+                  <span>Add Rule</span>
+                </button>
+              </div>
+
+              {contextItems.length === 0 ? (
+                <div className="rounded-[22px] border border-dashed border-brand-warm-stone bg-[#FCFBF8]/75 p-6 text-center space-y-2.5">
+                  <p className="text-xs font-semibold text-brand-ink">
+                    Your Personal Context Vault is currently empty.
+                  </p>
+                  <p className="text-[11.5px] text-brand-ink-light leading-relaxed">
+                    Swipe a few visual taste cards or add a preference manually to start filtering your city.
+                  </p>
+                  <Link
+                    href="/onboarding"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-deep-green text-brand-ivory text-xs font-semibold"
+                  >
+                    <span>Start Visual Taste Deck</span>
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {/* Group 1: What Draws You In */}
+                  {affinities.length > 0 && (
+                    <div className="space-y-2.5">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-deep-green block">
+                        What Draws You In
+                      </span>
+                      {affinities.map((item) => (
+                        <div
+                          key={item.id}
+                          className="editorial-surface rounded-[20px] p-4 space-y-2"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-xs font-semibold text-brand-ink">
+                              {item.key}
+                            </span>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingRuleId(item.id);
+                                  setEditRuleValue(item.value);
+                                }}
+                                aria-label="Edit preference"
+                                className="p-1 text-brand-ink-light hover:text-brand-deep-green cursor-pointer"
+                              >
+                                <IconEdit size={13.5} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => deleteContextItem(item.id)}
+                                aria-label="Delete preference"
+                                className="p-1 text-brand-ink-light hover:text-brand-terracotta cursor-pointer"
+                              >
+                                <IconTrash size={13.5} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {editingRuleId === item.id ? (
+                            <div className="space-y-2 pt-1">
+                              <textarea
+                                rows={2}
+                                value={editRuleValue}
+                                onChange={(e) => setEditRuleValue(e.target.value)}
+                                className="w-full text-xs rounded-xl bg-brand-ivory border border-brand-warm-stone p-2.5 text-brand-ink focus:outline-none focus:border-brand-deep-green"
+                              />
+                              <div className="flex justify-end gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingRuleId(null)}
+                                  className="text-[11px] text-brand-ink-light px-2.5 py-1 cursor-pointer"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    updateContextItem(item.id, { value: editRuleValue.trim() });
+                                    setEditingRuleId(null);
+                                  }}
+                                  className="text-[11px] font-semibold bg-brand-deep-green text-brand-ivory px-3 py-1 rounded-full cursor-pointer"
+                                >
+                                  Save
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-brand-ink/80 leading-relaxed">
+                              {item.value}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Group 2: Non-Negotiable Boundaries */}
+                  {boundaries.length > 0 && (
+                    <div className="space-y-2.5">
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-terracotta block">
+                        Non-Negotiable Boundaries
+                      </span>
+                      {boundaries.map((item) => (
+                        <div
+                          key={item.id}
+                          className="rounded-[20px] bg-[#F2ECE1] border border-brand-warm-stone/85 p-4 space-y-1.5"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-xs font-semibold text-brand-ink">
+                              {item.key}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => deleteContextItem(item.id)}
+                              aria-label="Delete boundary"
+                              className="p-1 text-brand-ink-light hover:text-brand-terracotta cursor-pointer"
+                            >
+                              <IconTrash size={13.5} />
+                            </button>
+                          </div>
+                          <p className="text-xs text-brand-ink/80 leading-relaxed">
+                            {item.value}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          ) : (
+            /* ================================================================
+               VISUAL TASTE LOOKBOOK
+               ================================================================ */
+            <div className="space-y-6">
               <div className="grid grid-cols-2 gap-3">
                 {persona.lookbookTiles.map((tile, idx) => (
                   <button
@@ -218,7 +502,7 @@ export default function MePage() {
                     onClick={() => setSelectedTile(tile)}
                     className="editorial-surface rounded-[20px] overflow-hidden text-left group flex flex-col cursor-pointer transition-all hover:shadow-card"
                   >
-                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#EFE9DE]">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#17201E]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={resolveAssetUrl(tile.heroImage)}
@@ -246,7 +530,6 @@ export default function MePage() {
                 ))}
               </div>
 
-              {/* Cultural Rhythm Chapters */}
               {persona.lifeNarrative.chapters.length > 0 && (
                 <div className="space-y-3">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-ink-light block">
@@ -271,135 +554,12 @@ export default function MePage() {
                 </div>
               )}
             </div>
-          ) : (
-            /* ================================================================
-               PLAIN-ENGLISH PREFERENCES & QUIET BOUNDARIES
-               ================================================================ */
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-brand-ink-light">
-                  Everything here is yours to edit or remove at any time.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setIsAddRuleOpen(true)}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-deep-green text-brand-ivory text-[11px] font-semibold shrink-0 cursor-pointer"
-                >
-                  <IconPlus size={12} />
-                  <span>Add</span>
-                </button>
-              </div>
-
-              {/* Group 1: What Draws You In */}
-              <div className="space-y-2.5">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-deep-green block">
-                  What Draws You In
-                </span>
-                {affinities.map((item) => (
-                  <div
-                    key={item.id}
-                    className="editorial-surface rounded-[20px] p-4 space-y-2"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="text-xs font-semibold text-brand-ink">
-                        {item.key}
-                      </span>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingRuleId(item.id);
-                            setEditRuleValue(item.value);
-                          }}
-                          aria-label="Edit preference"
-                          className="p-1 text-brand-ink-light hover:text-brand-deep-green cursor-pointer"
-                        >
-                          <IconEdit size={13.5} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => deleteContextItem(item.id)}
-                          aria-label="Delete preference"
-                          className="p-1 text-brand-ink-light hover:text-brand-terracotta cursor-pointer"
-                        >
-                          <IconTrash size={13.5} />
-                        </button>
-                      </div>
-                    </div>
-
-                    {editingRuleId === item.id ? (
-                      <div className="space-y-2 pt-1">
-                        <textarea
-                          rows={2}
-                          value={editRuleValue}
-                          onChange={(e) => setEditRuleValue(e.target.value)}
-                          className="w-full text-xs rounded-xl bg-brand-ivory border border-brand-warm-stone p-2.5 text-brand-ink focus:outline-none focus:border-brand-deep-green"
-                        />
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setEditingRuleId(null)}
-                            className="text-[11px] text-brand-ink-light px-2.5 py-1 cursor-pointer"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              updateContextItem(item.id, { value: editRuleValue.trim() });
-                              setEditingRuleId(null);
-                            }}
-                            className="text-[11px] font-semibold bg-brand-deep-green text-brand-ivory px-3 py-1 rounded-full cursor-pointer"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-xs text-brand-ink/80 leading-relaxed">
-                        {item.value}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Group 2: Quiet Boundaries (Hard Dealbreakers) */}
-              <div className="space-y-2.5">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-terracotta block">
-                  Non-Negotiable Boundaries
-                </span>
-                {boundaries.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-[20px] bg-[#F2ECE1] border border-brand-warm-stone/85 p-4 space-y-1.5"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="text-xs font-semibold text-brand-ink">
-                        {item.key}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => deleteContextItem(item.id)}
-                        aria-label="Delete boundary"
-                        className="p-1 text-brand-ink-light hover:text-brand-terracotta cursor-pointer"
-                      >
-                        <IconTrash size={13.5} />
-                      </button>
-                    </div>
-                    <p className="text-xs text-brand-ink/80 leading-relaxed">
-                      {item.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
           )}
 
           {/* ================================================================
-              3. QUIET HOME CITY SETTING & DATA OWNERSHIP FOOTER
+              4. HOME CITY SETTING
              ================================================================ */}
-          <section className="pt-2 space-y-3 border-t border-brand-warm-stone/60">
+          <section className="pt-2 border-t border-brand-warm-stone/60">
             <div className="editorial-surface rounded-[20px] p-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <IconVenuePin size={16} className="text-brand-deep-green shrink-0" />
@@ -408,7 +568,7 @@ export default function MePage() {
                     Home City
                   </span>
                   <span className="text-[11px] text-brand-ink-light">
-                    Events & venues scoped to your local calendar
+                    Local events & venues
                   </span>
                 </div>
               </div>
@@ -438,27 +598,6 @@ export default function MePage() {
                 </button>
               </div>
             </div>
-
-            <Link
-              href="/data"
-              className="editorial-surface rounded-[20px] p-4 flex items-center justify-between gap-3 group hover:border-brand-deep-green/40 transition-colors"
-            >
-              <div className="flex items-center gap-2.5">
-                <IconShieldPrivacy size={16} className="text-brand-deep-green shrink-0" />
-                <div>
-                  <span className="text-xs font-semibold text-brand-ink block leading-tight">
-                    Your Private Data & JSON Export
-                  </span>
-                  <span className="text-[11px] text-brand-ink-light">
-                    Zero ad tracking · Export or clear anytime
-                  </span>
-                </div>
-              </div>
-              <IconArrowRight
-                size={15}
-                className="text-brand-ink-light group-hover:text-brand-deep-green transition-colors shrink-0"
-              />
-            </Link>
           </section>
         </div>
 
@@ -480,7 +619,7 @@ export default function MePage() {
                 onClick={(e) => e.stopPropagation()}
                 className="w-full max-w-[430px] bg-brand-ivory rounded-t-[28px] overflow-hidden border-t border-brand-warm-stone shadow-elevated"
               >
-                <div className="relative aspect-[16/9] w-full bg-[#EFE9DE]">
+                <div className="relative aspect-[16/9] w-full bg-[#17201E]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={resolveAssetUrl(selectedTile.heroImage)}
@@ -490,7 +629,7 @@ export default function MePage() {
                   <button
                     type="button"
                     onClick={() => setSelectedTile(null)}
-                    className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-brand-ivory/90 text-brand-ink flex items-center justify-center shadow-xs cursor-pointer"
+                    className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-[#121917]/86 text-white border border-white/25 flex items-center justify-center shadow-md cursor-pointer"
                   >
                     <IconClose size={15} />
                   </button>
@@ -550,7 +689,7 @@ export default function MePage() {
               >
                 <div className="flex items-center justify-between">
                   <h3 className="font-serif text-xl font-medium text-brand-ink">
-                    Add a Preference
+                    Add to Personal Context
                   </h3>
                   <button
                     type="button"
@@ -619,7 +758,7 @@ export default function MePage() {
                     type="submit"
                     className="w-full py-3 rounded-full bg-brand-deep-green hover:bg-brand-deep-green-dark text-brand-ivory text-xs font-semibold shadow-sm cursor-pointer"
                   >
-                    Save to Profile
+                    Save to Vault
                   </button>
                 </form>
               </motion.div>

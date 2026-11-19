@@ -10,6 +10,7 @@ import {
   GeographyAnchor,
   GroupCapsuleData,
   IntentData,
+  OnboardingStatus,
   PersonaArchetype,
   RadarDomain,
   RecommendationOrigin,
@@ -29,7 +30,10 @@ import {
   singaporeContextItems,
   singaporeEventsPersona,
 } from '@/data/eventsData';
+import { broaderCityEventsCards } from '@/data/onboardingData';
 import { BASE_PATH } from '@/lib/assets';
+
+const ALL_MARKET_CARDS: CardData[] = [...curatedEventsCards, ...broaderCityEventsCards];
 
 interface IngestionData {
   text?: string;
@@ -52,7 +56,21 @@ export interface DynamicCalibrationQuestion {
 }
 
 interface AppContextType {
-  // Market Anchor (Bangalore vs Singapore — silently detected, editable in Me)
+  // Hydration & First-Time Onboarding State
+  isHydrated: boolean;
+  onboardingStatus: OnboardingStatus;
+  setOnboardingStatus: (status: OnboardingStatus) => void;
+  applySwipeRulesToVault: (
+    rules: Array<{
+      key: string;
+      value: string;
+      type: 'preference' | 'constraint' | 'goal';
+    }>
+  ) => void;
+  skipOnboarding: () => void;
+  deleteAllPersonalContext: () => void;
+
+  // Market Anchor (Bangalore vs Singapore)
   geography: GeographyAnchor;
   setGeography: (geo: GeographyAnchor) => void;
 
@@ -127,13 +145,13 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'undernote_events_v1';
+const STORAGE_KEY = 'undernote_events_v2';
 
 function getMarketDefaults(geo: GeographyAnchor) {
   const isSin = geo === 'singapore-sin';
   return {
     persona: isSin ? singaporeEventsPersona : bangaloreEventsPersona,
-    cards: curatedEventsCards.filter((c) => c.geography === geo),
+    cards: ALL_MARKET_CARDS.filter((c) => c.geography === geo),
     contextItems: isSin ? singaporeContextItems : bangaloreContextItems,
     watches: curatedEventWatches.filter((w) => w.geography === geo),
     groupPlans: curatedGroupPlans.filter((g) => !g.geography || g.geography === geo),
@@ -141,10 +159,13 @@ function getMarketDefaults(geo: GeographyAnchor) {
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [onboardingStatus, setOnboardingStatusState] = useState<OnboardingStatus>('unseen');
+
   const [geography, setGeographyState] = useState<GeographyAnchor>('india-blr');
   const [persona, setPersona] = useState<PersonaArchetype>(bangaloreEventsPersona);
   const [cards, setCards] = useState<CardData[]>(
-    curatedEventsCards.filter((c) => c.geography === 'india-blr')
+    ALL_MARKET_CARDS.filter((c) => c.geography === 'india-blr')
   );
   const [contextItems, setContextItems] = useState<ContextItemData[]>(bangaloreContextItems);
   const [watches, setWatches] = useState<WatchData[]>(
@@ -190,21 +211,84 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }, 3200);
   };
 
-  // Switch Market (used silently on load or via quiet setting in Me)
+  const setOnboardingStatus = (status: OnboardingStatus) => {
+    setOnboardingStatusState(status);
+    if (status === 'tuned') {
+      setHasPersonalized(true);
+    } else if (status === 'skipped') {
+      setHasPersonalized(false);
+    }
+  };
+
+  const applySwipeRulesToVault = (
+    rules: Array<{
+      key: string;
+      value: string;
+      type: 'preference' | 'constraint' | 'goal';
+    }>
+  ) => {
+    const now = new Date().toISOString();
+    const generated: ContextItemData[] = rules.map((r, idx) => ({
+      id: `ctx-swipe-${Date.now()}-${idx}`,
+      domain: r.type === 'constraint' ? 'what-matters' : 'events',
+      type: r.type,
+      key: r.key,
+      value: r.value,
+      durability: 'durable',
+      horizon: r.type === 'goal' ? 'active_short_term' : 'persistent_long_term',
+      confidence: 1.0,
+      status: 'active',
+      origin: 'user_answer',
+      explicitness: 'explicit',
+      sensitivity: 'normal',
+      lastConfirmedAt: now,
+      createdAt: now,
+      updatedAt: now,
+      provenance: {
+        provider: r.type === 'constraint' ? 'Your Hard Boundary' : 'Taste Deck',
+      },
+    }));
+
+    setContextItems(generated);
+    setHasPersonalized(true);
+    setOnboardingStatusState('tuned');
+  };
+
+  const skipOnboarding = () => {
+    setOnboardingStatusState('skipped');
+    setHasPersonalized(false);
+  };
+
+  const deleteAllPersonalContext = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    const detectedGeo = geography;
+    const defaults = getMarketDefaults(detectedGeo);
+    setContextItems([]);
+    setCards(defaults.cards.map((c) => ({ ...c, status: 'active' })));
+    setHasPersonalized(false);
+    setOnboardingStatusState('skipped');
+    showToast('Your Personal Context has been permanently deleted');
+  };
+
+  // Switch Market
   const setGeography = (geo: GeographyAnchor) => {
     setGeographyState(geo);
     const defaults = getMarketDefaults(geo);
-    setPersona(defaults.persona);
+    setPersona((prev) => ({
+      ...defaults.persona,
+      userName: prev.userName || defaults.persona.userName,
+      monogram: prev.monogram || defaults.persona.monogram,
+    }));
     setCards(defaults.cards);
-    setContextItems(defaults.contextItems);
+    if (!hasPersonalized) {
+      setContextItems(defaults.contextItems);
+    }
     setWatches(defaults.watches);
     setGroupCapsules(defaults.groupPlans);
     setTimeFilter('all');
     setCategoryFilter('all');
     showToast(
-      geo === 'singapore-sin'
-        ? 'Home city set to Singapore'
-        : 'Home city set to Bangalore'
+      geo === 'singapore-sin' ? 'Home city set to Singapore' : 'Home city set to Bangalore'
     );
   };
 
@@ -218,16 +302,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           parsed.geography === 'singapore-sin' ? 'singapore-sin' : 'india-blr';
         setGeographyState(currentGeo);
 
+        if (
+          parsed.onboardingStatus === 'tuned' ||
+          parsed.onboardingStatus === 'skipped' ||
+          parsed.onboardingStatus === 'unseen'
+        ) {
+          setOnboardingStatusState(parsed.onboardingStatus);
+        }
+
         if (typeof parsed.hasPersonalized === 'boolean') {
           setHasPersonalized(parsed.hasPersonalized);
         }
 
         const defaults = getMarketDefaults(currentGeo);
 
-        if (parsed.hasPersonalized && Array.isArray(parsed.cards) && parsed.cards.length > 0) {
-          setCards(parsed.cards);
-        } else if (Array.isArray(parsed.cards) && parsed.cards.length > 0) {
-          // Preserve saved/dismissed states across curated updates
+        if (Array.isArray(parsed.cards) && parsed.cards.length > 0) {
           const statusMap = new Map<string, CardData['status']>(
             parsed.cards.map((c: CardData) => [c.id, c.status])
           );
@@ -242,11 +331,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
 
         setPersona(parsed.persona || defaults.persona);
-        setContextItems(
-          Array.isArray(parsed.contextItems) && parsed.contextItems.length > 0
-            ? parsed.contextItems
-            : defaults.contextItems
-        );
+        if (Array.isArray(parsed.contextItems)) {
+          setContextItems(parsed.contextItems);
+        } else {
+          setContextItems(defaults.contextItems);
+        }
         setWatches(
           Array.isArray(parsed.watches) && parsed.watches.length > 0
             ? parsed.watches
@@ -261,29 +350,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setCalibrationQuestions(parsed.calibrationQuestions);
         }
       } else {
-        // Silent environment detection on first visit
         const detectedGeo = getDefaultGeographyFromEnvironment();
-        if (detectedGeo !== 'india-blr') {
-          setGeographyState(detectedGeo);
-          const defaults = getMarketDefaults(detectedGeo);
-          setPersona(defaults.persona);
-          setCards(defaults.cards);
-          setContextItems(defaults.contextItems);
-          setWatches(defaults.watches);
-          setGroupCapsules(defaults.groupPlans);
-        }
+        setGeographyState(detectedGeo);
+        const defaults = getMarketDefaults(detectedGeo);
+        setPersona(defaults.persona);
+        setCards(defaults.cards);
+        setContextItems(defaults.contextItems);
+        setWatches(defaults.watches);
+        setGroupCapsules(defaults.groupPlans);
       }
     } catch {
-      // Fallback cleanly to defaults
+      // Fallback cleanly
+    } finally {
+      setIsHydrated(true);
     }
   }, []);
 
-  // Persist changes
+  // Persist changes after hydration
   useEffect(() => {
+    if (!isHydrated) return;
     try {
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
+          onboardingStatus,
           geography,
           cards,
           contextItems,
@@ -299,6 +389,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // Ignore quota errors
     }
   }, [
+    isHydrated,
+    onboardingStatus,
     geography,
     cards,
     contextItems,
@@ -410,7 +502,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       provenance: { provider: 'Your Note', evidence: refinedNote.trim() },
     };
     setContextItems((prev) => [newItem, ...prev]);
-    showToast('Preference added to your profile');
+    setHasPersonalized(true);
+    setOnboardingStatusState('tuned');
+    showToast('Added to your Personal Context Vault');
   };
 
   const addContextItem = (item: Omit<ContextItemData, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -421,7 +515,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updatedAt: new Date().toISOString(),
     };
     setContextItems((prev) => [newItem, ...prev]);
-    showToast('Added to your taste profile');
+    setHasPersonalized(true);
+    setOnboardingStatusState('tuned');
+    showToast('Saved to your Personal Context Vault');
   };
 
   const updateContextItem = (id: string, updates: Partial<ContextItemData>) => {
@@ -430,12 +526,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         item.id === id ? { ...item, ...updates, updatedAt: new Date().toISOString() } : item
       )
     );
-    showToast('Preference updated');
+    showToast('Context updated');
   };
 
   const deleteContextItem = (id: string) => {
     setContextItems((prev) => prev.filter((item) => item.id !== id));
-    showToast('Preference removed');
+    showToast('Removed from your Personal Context');
   };
 
   const addWatch = (
@@ -565,27 +661,62 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           if (inferredGeo !== geography) setGeographyState(inferredGeo);
           if (result.persona) setPersona(result.persona);
           if (result.contextItems?.length > 0) setContextItems(result.contextItems);
-          if (result.cards?.length > 0) setCards(result.cards);
+          const defaults = getMarketDefaults(inferredGeo);
+          setCards(defaults.cards);
           if (Array.isArray(result.calibrationQuestions)) {
             setCalibrationQuestions(result.calibrationQuestions);
           }
           setHasPersonalized(true);
+          setOnboardingStatusState('tuned');
           confetti({
             particleCount: 45,
             spread: 60,
             origin: { y: 0.65 },
             colors: ['#24483F', '#C66E45', '#9DB6A9'],
           });
-          showToast('Your cultural calendar is tuned to you');
+          showToast('Personal Context Vault synthesized');
           return;
         }
       }
 
-      // Graceful client-side synthesis fallback when offline or without API key:
-      // Extract user name & customize local market events immediately!
+      // Graceful client-side synthesis fallback
       const defaults = getMarketDefaults(inferredGeo);
       const nameMatch = inputContent.match(/(?:name is|I am|I'm)\s+([A-Z][a-z]{2,15})/);
       const detectedName = nameMatch?.[1] || persona.userName || 'Kranti';
+
+      // Extract clean sentences as context items if user pasted custom text
+      const lines = inputContent
+        .split(/[\n.;]+/)
+        .map((s) => s.replace(/^[-*•\d.)\s]+/, '').trim())
+        .filter((s) => s.length >= 16 && s.length <= 160)
+        .slice(0, 6);
+
+      if (lines.length > 0) {
+        const now = new Date().toISOString();
+        setContextItems(
+          lines.map((line, idx) => {
+            const isConstraint = /no |never|avoid|skip|strictly|under |before /i.test(line);
+            return {
+              id: `ctx-import-${Date.now()}-${idx}`,
+              domain: isConstraint ? 'what-matters' : 'events',
+              type: isConstraint ? 'constraint' : 'preference',
+              key: isConstraint ? `Boundary ${idx + 1}` : `Personal Signal ${idx + 1}`,
+              value: line,
+              durability: 'durable',
+              horizon: 'persistent_long_term',
+              confidence: 0.96,
+              status: 'active',
+              origin: 'imported',
+              explicitness: 'explicit',
+              sensitivity: 'normal',
+              lastConfirmedAt: now,
+              createdAt: now,
+              updatedAt: now,
+              provenance: { provider: 'AI / Voice Import' },
+            };
+          })
+        );
+      }
 
       setGeographyState(inferredGeo);
       setPersona({
@@ -595,15 +726,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
       setCards(defaults.cards);
       setHasPersonalized(true);
-      showToast('Your cultural calendar is tuned to you');
+      setOnboardingStatusState('tuned');
+      showToast('Personal Context Vault synthesized');
     } catch {
-      // Offline / UI-layer mode: tune curated market dataset gracefully
       const defaults = getMarketDefaults(inferredGeo);
       setGeographyState(inferredGeo);
       setPersona(defaults.persona);
       setCards(defaults.cards);
       setHasPersonalized(true);
-      showToast('Your cultural calendar is tuned to you');
+      setOnboardingStatusState('tuned');
+      showToast('Personal Context Vault synthesized');
     } finally {
       setIsIngesting(false);
       setIsMorphing(false);
@@ -621,10 +753,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setWatches(defaults.watches);
     setGroupCapsules(defaults.groupPlans);
     setHasPersonalized(false);
+    setOnboardingStatusState('unseen');
     setCalibrationQuestions(defaultEventCalibrationQuestions);
     setTimeFilter('all');
     setCategoryFilter('all');
-    showToast('Restored baseline cultural calendar');
+    showToast('Reset to first-time onboarding');
   };
 
   const savedCards = cards.filter((c) => c.status === 'saved');
@@ -632,6 +765,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppContext.Provider
       value={{
+        isHydrated,
+        onboardingStatus,
+        setOnboardingStatus,
+        applySwipeRulesToVault,
+        skipOnboarding,
+        deleteAllPersonalContext,
         geography,
         setGeography,
         persona,

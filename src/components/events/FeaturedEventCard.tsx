@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { CardData } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { resolveAssetUrl } from '@/lib/assets';
+import { MatchScoreBadge } from './MatchScoreBadge';
 import {
   IconBookmark,
   IconArrowUpRight,
@@ -15,9 +16,15 @@ import {
 
 interface FeaturedEventCardProps {
   card: CardData;
+  matchPercent?: number;
+  showMatchScore?: boolean;
 }
 
-export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({ card }) => {
+export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({
+  card,
+  matchPercent,
+  showMatchScore = false,
+}) => {
   const { saveCard } = useApp();
   const isSaved = card.status === 'saved';
   const meta = card.eventMeta;
@@ -33,8 +40,8 @@ export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({ card }) =>
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
       className="editorial-surface rounded-[24px] overflow-hidden group transition-all duration-300 hover:shadow-card"
     >
-      {/* Clean Unobscured Editorial Photograph */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EFE9DE]">
+      {/* Editorial Photograph with Protective Top Contrast Scrim */}
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#17201E]">
         <Link href={`/radar/${card.id}`} className="block w-full h-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -44,19 +51,22 @@ export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({ card }) =>
           />
         </Link>
 
-        {/* Subtle Top-Left Format Pill (Sage / Ivory glass) */}
-        <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 pointer-events-none">
-          <span className="px-3 py-1 rounded-full bg-[#FAF7F2]/92 backdrop-blur-md text-brand-deep-green text-[10.5px] font-semibold tracking-[0.02em] shadow-xs border border-brand-warm-stone/60">
-            {meta?.categoryLabel || card.entityType || 'Evening Pick'}
+        {/* Protective dark gradient scrim at top so overlaid pills & icons stay 100% legible over any image */}
+        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 via-black/28 to-transparent pointer-events-none" />
+
+        {/* High-Contrast Category & Match Pills */}
+        <div className="absolute top-3.5 left-3.5 flex flex-wrap items-center gap-1.5 pointer-events-none pr-12">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#121917]/88 backdrop-blur-md text-white text-[10.5px] font-semibold tracking-[0.02em] shadow-md border border-white/25">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E68860] shrink-0" />
+            <span>{meta?.categoryLabel || card.entityType || 'Evening Pick'}</span>
           </span>
-          {card.originType === 'requested' && (
-            <span className="px-2.5 py-1 rounded-full bg-brand-deep-green/92 backdrop-blur-md text-brand-ivory text-[10px] font-medium tracking-wide">
-              From your Watch
-            </span>
+
+          {showMatchScore && typeof matchPercent === 'number' && (
+            <MatchScoreBadge percent={matchPercent} variant="dark-pill" />
           )}
         </div>
 
-        {/* Clean Ivory Glass Bookmark Button */}
+        {/* High-Contrast Bookmark Button */}
         <button
           type="button"
           onClick={(e) => {
@@ -65,13 +75,17 @@ export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({ card }) =>
             saveCard(card.id);
           }}
           aria-label={isSaved ? 'Remove from saved events' : 'Save event'}
-          className={`absolute top-3.5 right-3.5 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md transition-all active:scale-90 cursor-pointer shadow-xs ${
+          className={`absolute top-3.5 right-3.5 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md transition-all active:scale-90 cursor-pointer shadow-md border ${
             isSaved
-              ? 'bg-brand-ivory text-brand-terracotta border border-brand-terracotta/40'
-              : 'bg-[#FAF7F2]/90 hover:bg-brand-ivory text-brand-ink border border-brand-warm-stone/60'
+              ? 'bg-brand-terracotta text-white border-white/40'
+              : 'bg-[#121917]/86 hover:bg-[#121917] text-white border-white/28'
           }`}
         >
-          <IconBookmark size={16} filled={isSaved} />
+          <IconBookmark
+            size={16}
+            filled={isSaved}
+            accent={isSaved ? '#FFFFFF' : '#E68860'}
+          />
         </button>
       </div>
 
@@ -83,7 +97,7 @@ export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({ card }) =>
             {eyebrow}
           </span>
           {meta?.priceLabel && (
-            <span className="text-xs font-semibold text-brand-deep-green bg-brand-sage-subtle px-2.5 py-0.5 rounded-full">
+            <span className="text-xs font-semibold text-brand-deep-green bg-[#E7EFEA] px-2.5 py-0.5 rounded-full">
               {meta.priceLabel}
             </span>
           )}

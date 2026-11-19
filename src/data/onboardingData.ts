@@ -1,0 +1,603 @@
+import { CardData, GeographyAnchor, SwipeTasteCardData } from '@/types';
+
+/**
+ * 8 Visual Swipe Deck Cards — mixing atmospheric Vibes with sharp, high-signal Boundaries
+ * so 25 seconds of swiping produces a genuinely personalized cultural brief.
+ */
+export function getSwipeTasteCards(geography: GeographyAnchor): SwipeTasteCardData[] {
+  const isSin = geography === 'singapore-sin';
+
+  return [
+    {
+      id: 'swipe-acoustic',
+      stepLabel: '01 · Atmosphere',
+      kind: 'vibe',
+      title: 'Intimate Unamplified Rooms',
+      subtitle: isSin
+        ? '245-seat timber hall at Esplanade · Strings & piano · Zero microphones'
+        : '180-seat cedar hall at BIC · Violin & bamboo flute · Zero microphones',
+      image: isSin
+        ? '/v2/images/events/sin_recital_studio.jpg'
+        : '/v2/images/events/blr_chamber_recital.jpg',
+      yesStamp: 'MY KIND OF ROOM',
+      noStamp: 'NOT FOR ME',
+      onYesRule: {
+        key: 'Intimate Unamplified Rooms',
+        value: 'Prefers chamber halls, small theatres, and courtyards under 350 seats where acoustic sound breathes naturally.',
+        type: 'preference',
+        boostTags: ['acoustic', 'intimate', 'music', 'theatre'],
+      },
+    },
+    {
+      id: 'swipe-early-curtain',
+      stepLabel: '02 · Sharp Rhythm',
+      kind: 'boundary',
+      title: 'Home Before 9:30 PM on Weeknights',
+      subtitle: 'Step out on a weeknight only when the evening wraps up cleanly by 9:15 PM',
+      image: '/v2/images/events/blr_theatre_stage.jpg',
+      yesStamp: 'PROTECT EVENINGS',
+      noStamp: 'LATE IS FINE',
+      onYesRule: {
+        key: 'Early Weeknight Finish',
+        value: 'Keep weeknight outings short and punctual—wrapping up by 9:15 to 9:30 PM.',
+        type: 'constraint',
+        boostTags: ['early-finish'],
+        vetoTags: ['late-finish'],
+      },
+      onNoRule: {
+        key: 'Open to Late Evenings',
+        value: 'Comfortable with lively 9:30 PM+ late-evening cultural sets and night sessions.',
+        type: 'preference',
+        boostTags: ['social-night'],
+      },
+    },
+    {
+      id: 'swipe-morning-walks',
+      stepLabel: '03 · Weekend Daylight',
+      kind: 'vibe',
+      title: isSin ? '7:30 AM Heritage Shophouse Walks' : '7:15 AM Under Century Rain Trees',
+      subtitle: isSin
+        ? 'Walking Art Deco streets in Tiong Bahru before tropical midday heat rises'
+        : 'Botanical & birding walks through Cubbon Park mist before traffic wakes up',
+      image: isSin
+        ? '/v2/images/events/sin_shophouse_walk.jpg'
+        : '/v2/images/events/blr_cubbon_walk.jpg',
+      yesStamp: 'YES, EARLY LIGHT',
+      noStamp: 'SLEEP IN',
+      onYesRule: {
+        key: 'Slow Morning Walks',
+        value: 'Loves early-morning botanical, architectural, and neighborhood walks before 9:30 AM.',
+        type: 'preference',
+        boostTags: ['walks', 'morning', 'outdoors'],
+      },
+    },
+    {
+      id: 'swipe-loud-crowds',
+      stepLabel: '04 · Crowd Threshold',
+      kind: 'boundary',
+      title: 'Standing DJ Bars & 500+ Festival Crowds',
+      subtitle: 'High-volume club sound, packed standing bars, and midnight headliners',
+      image: '/v2/images/feed_vinyl_listening.jpg',
+      yesStamp: 'COUNT ME IN',
+      noStamp: 'SKIP THE NOISE',
+      onYesRule: {
+        key: 'Lively Late-Evening Social Rooms',
+        value: 'Enjoys high-energy vinyl bars, standing gigs, and buzzing late-evening social nights.',
+        type: 'preference',
+        boostTags: ['social-night', 'loud-crowd'],
+      },
+      onNoRule: {
+        key: 'No Loud Standing Nightlife',
+        value: 'Skip loud standing nightlife, DJ clubs, and 500+ festival crowds.',
+        type: 'constraint',
+        vetoTags: ['loud-crowd'],
+      },
+    },
+    {
+      id: 'swipe-tactile-craft',
+      stepLabel: '05 · Hands-On Craft',
+      kind: 'vibe',
+      title: 'Slow Studio Benches: Clay, Ink & Paper',
+      subtitle: isSin
+        ? '8 benches by the river carving woodblocks & pulling cotton-rag prints'
+        : 'Three quiet Sunday morning hours shaping raw stoneware tea vessels by hand',
+      image: isSin
+        ? '/v2/images/events/sin_printmaking_stpi.jpg'
+        : '/v2/images/events/blr_pottery_studio.jpg',
+      yesStamp: 'LOVE MAKING',
+      noStamp: 'RATHER WATCH',
+      onYesRule: {
+        key: 'Tactile Craft Workshops',
+        value: 'Drawn to small-bench stoneware, printmaking, paper, and tea workshops under 12 people.',
+        type: 'preference',
+        boostTags: ['workshops', 'craft'],
+      },
+    },
+    {
+      id: 'swipe-vegetarian',
+      stepLabel: '06 · Dietary Standard',
+      kind: 'boundary',
+      title: 'Strictly 100% Vegetarian Tables',
+      subtitle: 'Whenever a supper club, tasting table, or café is involved—pure vegetarian only',
+      image: isSin
+        ? '/v2/images/events/sin_botanical_supper.jpg'
+        : '/v2/images/events/blr_supper_club.jpg',
+      yesStamp: '100% VEGETARIAN',
+      noStamp: 'EAT EVERYTHING',
+      onYesRule: {
+        key: '100% Vegetarian Dining',
+        value: 'Strictly vegetarian for any supper club, tasting table, or pre-show dining recommendation.',
+        type: 'constraint',
+        boostTags: ['vegetarian'],
+        vetoTags: ['non-veg-menu'],
+      },
+    },
+    {
+      id: 'swipe-salons',
+      stepLabel: '07 · Ideas & Spaces',
+      kind: 'vibe',
+      title: 'Small-Circle Book Salons & Twilight Galleries',
+      subtitle: '14 chairs in an indie bookshop or an after-hours curator walkthrough',
+      image: '/v2/images/events/blr_bookstore_salon.jpg',
+      yesStamp: 'MY ELEMENT',
+      noStamp: 'SKIP TALKS',
+      onYesRule: {
+        key: 'Salons, Essays & Curated Walks',
+        value: 'Enjoys independent bookshop reading circles, urbanism salons, and small-group gallery walkthroughs.',
+        type: 'preference',
+        boostTags: ['talks', 'art'],
+      },
+    },
+    {
+      id: 'swipe-family',
+      stepLabel: '08 · Who Joins You',
+      kind: 'boundary',
+      title: 'Weekend Mornings That Welcome a Young Kid',
+      subtitle: 'Highlight Saturday/Sunday walks or open studios where a curious child fits right in',
+      image: '/v2/images/events/sin_tea_ceramics.jpg',
+      yesStamp: 'YES, FAMILY TOO',
+      noStamp: 'ADULTS / SOLO',
+      onYesRule: {
+        key: 'Child-Welcoming Weekend Mornings',
+        value: 'Highlight weekend morning walks and studios that also feel welcoming with a young child.',
+        type: 'goal',
+        boostTags: ['child-friendly', 'morning'],
+      },
+    },
+  ];
+}
+
+export function getVaultQuickAddChips(geography: GeographyAnchor): Array<{
+  key: string;
+  label: string;
+  value: string;
+  type: 'preference' | 'constraint';
+}> {
+  if (geography === 'singapore-sin') {
+    return [
+      {
+        key: 'Near Circle / Downtown MRT',
+        label: '+ Near Circle / Downtown MRT',
+        value: 'Prefer venues within an easy walk of Circle Line or Downtown Line stations (Esplanade, City Hall, Telok Ayer).',
+        type: 'preference',
+      },
+      {
+        key: 'Under S$60 Most Nights',
+        label: '+ Under S$60 most nights',
+        value: 'Keep regular weeknight and weekend tickets under S$60 unless it is a rare craft workshop.',
+        type: 'constraint',
+      },
+      {
+        key: 'Protected Sunday Nights',
+        label: '+ Keep Sunday after 6 PM free',
+        value: 'Protect Sunday evenings after 6:00 PM completely so Monday starts rested.',
+        type: 'constraint',
+      },
+    ];
+  }
+
+  return [
+    {
+      key: 'Indiranagar & Central Radius',
+      label: '+ Indiranagar, Domlur & Central',
+      value: 'Prioritize venues in Indiranagar, Domlur, Kasturba Road, Vasanth Nagar, or Cubbon Park to avoid cross-city traffic.',
+      type: 'preference',
+    },
+    {
+      key: 'Under ₹1,000 Most Nights',
+      label: '+ Under ₹1,000 most nights',
+      value: 'Keep regular recitals, plays, and talks under ₹1,000 unless it is a special craft workshop or tasting table.',
+      type: 'constraint',
+    },
+    {
+      key: 'Protected Sunday Nights',
+      label: '+ Keep Sunday after 6 PM free',
+      value: 'Protect Sunday evenings after 6:00 PM completely so Monday starts rested.',
+      type: 'constraint',
+    },
+  ];
+}
+
+/**
+ * Broader city events (late-night bars, large standing gigs, non-veg seafood pop-ups)
+ * that score lower for quiet/vegetarian/early-evening profiles (landing in "See More"),
+ * while rising to the top if a user swipes YES on lively nightlife / omnivore dining!
+ */
+export const broaderCityEventsCards: CardData[] = [
+  {
+    id: 'blr-evt-9',
+    type: 'event',
+    originType: 'proactive',
+    geography: 'india-blr',
+    domain: 'events',
+    entityType: 'Late-Night Vinyl Bar',
+    title: 'Midnight Japanese Funk & Craft Cocktails on Vinyl',
+    subtitle: 'Record Room · Magrath Road',
+    summary:
+      'High-energy standing vinyl DJ session spinning 1980s Tokyo boogie and funk over horn speakers with craft cocktails until 12:30 AM.',
+    whyNow: 'Guest collector crate night this Friday from 9:30 PM onward',
+    heroImage: '/v2/images/feed_vinyl_listening.jpg',
+    imageAlt: 'Late-night vinyl DJ bar and listening crowd',
+    accentColor: '#17201E',
+    relevanceReason: [
+      'Rare analog Japanese pressings on custom horn speakers',
+      'Note: Lively standing cocktail crowd running past midnight',
+    ],
+    contextIds: [],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.72,
+    freshnessScore: 0.88,
+    confidenceScore: 0.9,
+    actionabilityScore: 0.9,
+    noveltyScore: 0.85,
+    createdAt: '2026-11-11T09:00:00Z',
+    status: 'active',
+    eventMeta: {
+      category: 'music',
+      categoryLabel: 'Music & Acoustic',
+      timeWindow: 'weekend',
+      startIso: '2026-11-13T16:00:00Z',
+      endIso: '2026-11-13T19:00:00Z',
+      dayLabel: 'Fri, 13 Nov',
+      timeLabel: '9:30 PM – 12:30 AM',
+      doorsNote: 'Standing cocktail bar · Peak crowd after 10:30 PM',
+      venue: 'Record Room Listening Bar',
+      neighborhood: 'Magrath Road',
+      cityLabel: 'Bangalore',
+      settingNote: '160 standing · High-volume DJ bar · Late finish',
+      priceLabel: '₹1,200',
+      availabilityState: 'open',
+      availabilityLabel: 'Entry open',
+      personalFitLine: 'Wider city pick — standing DJ bar atmosphere running past midnight.',
+      contextTags: ['loud-crowd', 'late-finish', 'social-night'],
+    },
+    deepDive: {
+      description:
+        'A lively Friday night vinyl selector session on Magrath Road featuring rare Japanese city-pop and funk pressings, standing cocktail tables, and a buzzing late-evening crowd.',
+      keyHighlights: [
+        'All-analog rotary mixer and horn speaker setup',
+        'Starts at 9:30 PM and runs past midnight',
+      ],
+      specsOrDetails: [
+        { label: 'Venue', value: 'Magrath Road, Central Bangalore' },
+        { label: 'Hours', value: '9:30 PM – 12:30 AM' },
+        { label: 'Cover', value: '₹1,200 (redeemable on drinks)' },
+      ],
+      directActionUrl: 'https://theroom.in',
+      directActionLabel: 'Book Entry · ₹1,200',
+    },
+    sourceEvidence: [
+      { title: 'Record Room', url: 'https://theroom.in', retrievedAt: '2026-11-11T09:00:00Z', price: '₹1,200' },
+    ],
+  },
+  {
+    id: 'blr-evt-10',
+    type: 'event',
+    originType: 'proactive',
+    geography: 'india-blr',
+    domain: 'events',
+    entityType: 'Coastal Seafood Pop-Up',
+    title: 'Karwar Catch: Wild Crab & Toddy Supper Pop-Up',
+    subtitle: 'Bungalow Kitchen · Indiranagar',
+    summary:
+      'A bustling 40-seat coastal Konkan seafood feast centered around wild mangrove crab, clam sukka, and fermented palm toddy.',
+    whyNow: 'Weekend guest chef pop-up from Karwar',
+    heroImage: '/v2/images/for_you_bistro.jpg',
+    imageAlt: 'Bustling coastal seafood pop-up dinner',
+    accentColor: '#C66E45',
+    relevanceReason: [
+      'Regional Konkan coastal menu in Indiranagar',
+      'Note: Fixed seafood tasting menu (no vegetarian option)',
+    ],
+    contextIds: [],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.66,
+    freshnessScore: 0.87,
+    confidenceScore: 0.9,
+    actionabilityScore: 0.89,
+    noveltyScore: 0.84,
+    createdAt: '2026-11-11T09:05:00Z',
+    status: 'active',
+    eventMeta: {
+      category: 'supper-cinema',
+      categoryLabel: 'Supper & Cinema',
+      timeWindow: 'weekend',
+      startIso: '2026-11-14T15:00:00Z',
+      endIso: '2026-11-14T17:30:00Z',
+      dayLabel: 'Sat, 14 Nov',
+      timeLabel: '8:30 PM – 11:00 PM',
+      doorsNote: 'Fixed coastal seafood menu only',
+      venue: 'Indiranagar Pop-Up Kitchen',
+      neighborhood: 'Indiranagar',
+      cityLabel: 'Bangalore',
+      settingNote: '40 guests · Shellfish & seafood menu',
+      priceLabel: '₹2,900',
+      availabilityState: 'open',
+      personalFitLine: 'Wider city pick — fixed coastal seafood menu without vegetarian options.',
+      contextTags: ['non-veg-menu', 'late-finish', 'social-night'],
+    },
+    deepDive: {
+      description:
+        'A lively Saturday night coastal Konkan seafood pop-up celebrating estuarine fish, crab curries, and kokum highballs.',
+      keyHighlights: ['Five-course coastal seafood menu', 'Lively 40-seat dining room'],
+      specsOrDetails: [
+        { label: 'Location', value: 'Indiranagar, Bangalore' },
+        { label: 'Menu', value: 'Seafood only (non-vegetarian)' },
+        { label: 'Seat', value: '₹2,900' },
+      ],
+      directActionUrl: 'https://explocity.com',
+      directActionLabel: 'View Menu · ₹2,900',
+    },
+    sourceEvidence: [
+      { title: 'Indiranagar Culinary Pop-Ups', url: 'https://explocity.com', retrievedAt: '2026-11-11T09:05:00Z', price: '₹2,900' },
+    ],
+  },
+  {
+    id: 'blr-evt-11',
+    type: 'event',
+    originType: 'proactive',
+    geography: 'india-blr',
+    domain: 'events',
+    entityType: 'Outdoor Festival Stage',
+    title: 'Amplified Indie Electronica Night (500+ Standing)',
+    subtitle: 'Jayamahal Grounds · North Central',
+    summary:
+      'Four electronic live acts, festival lighting rigs, and a 500-person standing lawn crowd running through 11:30 PM.',
+    whyNow: 'Touring headline showcase this Saturday night',
+    heroImage: '/v2/images/for_you_audiophile.jpg',
+    imageAlt: 'Outdoor electronic stage showcase',
+    accentColor: '#17201E',
+    relevanceReason: [
+      'Touring electronic producers on outdoor festival sound',
+      'Note: Large 500+ standing crowd and 11:30 PM finish',
+    ],
+    contextIds: [],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.62,
+    freshnessScore: 0.86,
+    confidenceScore: 0.89,
+    actionabilityScore: 0.9,
+    noveltyScore: 0.82,
+    createdAt: '2026-11-11T09:10:00Z',
+    status: 'active',
+    eventMeta: {
+      category: 'music',
+      categoryLabel: 'Music & Acoustic',
+      timeWindow: 'weekend',
+      startIso: '2026-11-14T14:30:00Z',
+      endIso: '2026-11-14T18:00:00Z',
+      dayLabel: 'Sat, 14 Nov',
+      timeLabel: '8:00 PM – 11:30 PM',
+      venue: 'Jayamahal Lawn Stage',
+      neighborhood: 'Jayamahal',
+      cityLabel: 'Bangalore',
+      settingNote: '500+ standing crowd · Full festival PA',
+      priceLabel: '₹1,999',
+      availabilityState: 'open',
+      personalFitLine: 'Wider city pick — large standing festival crowd with amplified sound.',
+      contextTags: ['loud-crowd', 'late-finish', 'social-night'],
+    },
+    deepDive: {
+      description:
+        'Large-format outdoor indie electronic showcase with standing lawn access, food trucks, and late-night DJ sets.',
+      keyHighlights: ['Four live electronic sets', '500+ capacity open-air lawn'],
+      specsOrDetails: [
+        { label: 'Venue', value: 'Jayamahal Grounds, Bangalore' },
+        { label: 'Format', value: 'Standing festival lawn' },
+        { label: 'Pass', value: '₹1,999' },
+      ],
+      directActionUrl: 'https://skillboxes.com',
+      directActionLabel: 'Passes · ₹1,999',
+    },
+    sourceEvidence: [
+      { title: 'SkillBox Live', url: 'https://skillboxes.com', retrievedAt: '2026-11-11T09:10:00Z', price: '₹1,999' },
+    ],
+  },
+  {
+    id: 'sin-evt-9',
+    type: 'event',
+    originType: 'proactive',
+    geography: 'singapore-sin',
+    domain: 'events',
+    entityType: 'Late-Night Vinyl Bar',
+    title: 'Keong Saik After-Hours: Disco Dubs & Natural Wine',
+    subtitle: 'Keong Saik Road · Outram',
+    summary:
+      'Packed shophouse standing bar spinning rare disco and house vinyl until 12:30 AM with natural wine pours.',
+    whyNow: 'Guest selector from Tokyo this Friday night',
+    heroImage: '/v2/images/feed_vinyl_listening.jpg',
+    imageAlt: 'Packed late-night vinyl bar on Keong Saik',
+    accentColor: '#17201E',
+    relevanceReason: [
+      'Custom horn sound system on Keong Saik Road',
+      'Note: High-volume standing bar crowd running past midnight',
+    ],
+    contextIds: [],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.7,
+    freshnessScore: 0.88,
+    confidenceScore: 0.9,
+    actionabilityScore: 0.9,
+    noveltyScore: 0.84,
+    createdAt: '2026-11-11T09:12:00Z',
+    status: 'active',
+    eventMeta: {
+      category: 'music',
+      categoryLabel: 'Music & Acoustic',
+      timeWindow: 'weekend',
+      startIso: '2026-11-13T13:30:00Z',
+      endIso: '2026-11-13T16:30:00Z',
+      dayLabel: 'Fri, 13 Nov',
+      timeLabel: '9:30 PM – 12:30 AM',
+      venue: 'Keong Saik Listening Bar',
+      neighborhood: 'Outram Park',
+      cityLabel: 'Singapore',
+      settingNote: '120 standing · Loud nightlife · Midnight finish',
+      priceLabel: 'S$42',
+      availabilityState: 'open',
+      personalFitLine: 'Wider city pick — bustling standing nightlife crowd finishing past midnight.',
+      contextTags: ['loud-crowd', 'late-finish', 'social-night'],
+    },
+    deepDive: {
+      description: 'Late-evening shophouse DJ party on Keong Saik Road with standing room and natural wines.',
+      keyHighlights: ['All-vinyl DJ set until 12:30 AM', 'Standing room shophouse bar'],
+      specsOrDetails: [
+        { label: 'Venue', value: 'Keong Saik Road, Singapore' },
+        { label: 'Hours', value: '9:30 PM – 12:30 AM' },
+        { label: 'Entry', value: 'S$42 (includes 1 pour)' },
+      ],
+      directActionUrl: 'https://catch.sg',
+      directActionLabel: 'Entry · S$42',
+    },
+    sourceEvidence: [
+      { title: 'Catch.sg', url: 'https://catch.sg', retrievedAt: '2026-11-11T09:12:00Z', price: 'S$42' },
+    ],
+  },
+  {
+    id: 'sin-evt-10',
+    type: 'event',
+    originType: 'proactive',
+    geography: 'singapore-sin',
+    domain: 'events',
+    entityType: 'Heritage Seafood Supper',
+    title: 'Straits Tok Panjang: Heirloom Nonya Prawn & Crab Feast',
+    subtitle: 'East Coast Road · Katong',
+    summary:
+      'A lively 36-guest Peranakan long-table feast featuring buah keluak pork, Assam wild prawns, and charcoal-grilled otak.',
+    whyNow: 'Quarterly heritage Tok Panjang seating',
+    heroImage: '/v2/images/for_you_bistro.jpg',
+    imageAlt: 'Bustling Straits seafood long-table supper',
+    accentColor: '#C66E45',
+    relevanceReason: [
+      'Traditional Katong Peranakan culinary lineage',
+      'Note: Fixed meat & shellfish menu (no vegetarian adaptation)',
+    ],
+    contextIds: [],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.65,
+    freshnessScore: 0.87,
+    confidenceScore: 0.9,
+    actionabilityScore: 0.9,
+    noveltyScore: 0.83,
+    createdAt: '2026-11-11T09:15:00Z',
+    status: 'active',
+    eventMeta: {
+      category: 'supper-cinema',
+      categoryLabel: 'Supper & Cinema',
+      timeWindow: 'weekend',
+      startIso: '2026-11-14T12:00:00Z',
+      endIso: '2026-11-14T14:30:00Z',
+      dayLabel: 'Sat, 14 Nov',
+      timeLabel: '8:00 PM – 10:30 PM',
+      venue: 'Katong Heritage Dining Hall',
+      neighborhood: 'Katong',
+      cityLabel: 'Singapore',
+      settingNote: '36 guests · Shellfish & meat menu only',
+      priceLabel: 'S$148',
+      availabilityState: 'open',
+      personalFitLine: 'Wider city pick — traditional shellfish & meat menu without vegetarian options.',
+      contextTags: ['non-veg-menu', 'late-finish', 'social-night'],
+    },
+    deepDive: {
+      description:
+        'Traditional Peranakan celebratory banquet in Katong featuring classic Straits seafood and meat dishes.',
+      keyHighlights: ['Eight shared heritage dishes', 'Fixed non-vegetarian menu'],
+      specsOrDetails: [
+        { label: 'Location', value: 'East Coast Road, Katong' },
+        { label: 'Dietary', value: 'Contains crustacean, shellfish & pork' },
+        { label: 'Seat', value: 'S$148' },
+      ],
+      directActionUrl: 'https://catch.sg',
+      directActionLabel: 'View Menu · S$148',
+    },
+    sourceEvidence: [
+      { title: 'Katong Culinary Heritage', url: 'https://catch.sg', retrievedAt: '2026-11-11T09:15:00Z', price: 'S$148' },
+    ],
+  },
+  {
+    id: 'sin-evt-11',
+    type: 'event',
+    originType: 'proactive',
+    geography: 'singapore-sin',
+    domain: 'events',
+    entityType: 'Open-Air Club Stage',
+    title: 'Bayfront Sunset-to-Midnight Electronic Block Party',
+    subtitle: 'Marina Promontory · Downtown',
+    summary:
+      '600-capacity open-air waterfront DJ festival stage with touring house selectors and standing bar zones until midnight.',
+    whyNow: 'Saturday waterfront showcase',
+    heroImage: '/v2/images/for_you_audiophile.jpg',
+    imageAlt: 'Waterfront electronic block party',
+    accentColor: '#17201E',
+    relevanceReason: [
+      'Open-air Marina Bay skyline backdrop',
+      'Note: Large 600+ crowd and festival-level sound until midnight',
+    ],
+    contextIds: [],
+    intentIds: [],
+    watchIds: [],
+    relevanceScore: 0.61,
+    freshnessScore: 0.86,
+    confidenceScore: 0.89,
+    actionabilityScore: 0.9,
+    noveltyScore: 0.81,
+    createdAt: '2026-11-11T09:18:00Z',
+    status: 'active',
+    eventMeta: {
+      category: 'music',
+      categoryLabel: 'Music & Acoustic',
+      timeWindow: 'weekend',
+      startIso: '2026-11-14T11:00:00Z',
+      endIso: '2026-11-14T16:00:00Z',
+      dayLabel: 'Sat, 14 Nov',
+      timeLabel: '7:00 PM – 12:00 AM',
+      venue: 'Marina Promontory Stage',
+      neighborhood: 'Marina Bay',
+      cityLabel: 'Singapore',
+      settingNote: '600+ standing crowd · Festival sound',
+      priceLabel: 'S$68',
+      availabilityState: 'open',
+      personalFitLine: 'Wider city pick — large festival crowd and late midnight finish.',
+      contextTags: ['loud-crowd', 'late-finish', 'social-night'],
+    },
+    deepDive: {
+      description: 'Large outdoor electronic music block party along the Marina Bay waterfront.',
+      keyHighlights: ['Five international & regional DJs', '600+ standing waterfront arena'],
+      specsOrDetails: [
+        { label: 'Venue', value: 'Marina Promontory, Singapore' },
+        { label: 'Hours', value: '7:00 PM – Midnight' },
+        { label: 'Ticket', value: 'S$68' },
+      ],
+      directActionUrl: 'https://catch.sg',
+      directActionLabel: 'Passes · S$68',
+    },
+    sourceEvidence: [
+      { title: 'Singapore Live Music', url: 'https://catch.sg', retrievedAt: '2026-11-11T09:18:00Z', price: 'S$68' },
+    ],
+  },
+];

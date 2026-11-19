@@ -44,6 +44,7 @@ function ImportContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialProvider = (searchParams.get('provider') as ProviderId) || 'chatgpt';
+  const returnToVault = searchParams.get('returnTo') === 'vault';
 
   const {
     geography,
@@ -110,7 +111,7 @@ function ImportContent() {
     }
 
     await runIngestionPipeline({ text: payload, source: mode });
-    router.push('/radar');
+    router.push(returnToVault ? '/onboarding?step=vault' : '/radar');
   };
 
   const handleToggleVoice = () => {

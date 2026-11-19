@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { AppShell } from '@/components/shell/AppShell';
 import { TopographicPattern } from '@/components/ui/TopographicPattern';
+import { MatchScoreBadge } from '@/components/events/MatchScoreBadge';
+import { scoreEventsAgainstContext } from '@/lib/contextScoring';
 import { downloadEventIcs, resolveAssetUrl } from '@/lib/assets';
 import { startSpeechRecognition } from '@/lib/voice/speechRecognition';
 import {
@@ -34,6 +36,9 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
 
   const {
     cards,
+    contextItems,
+    onboardingStatus,
+    hasPersonalized,
     saveCard,
     dismissCard,
     refineContextForCard,
@@ -43,6 +48,11 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
   } = useApp();
 
   const card = cards.find((c) => c.id === cardId) || cards[0];
+  const isTuned = onboardingStatus === 'tuned' || hasPersonalized;
+  const scoredPool = scoreEventsAgainstContext(cards, contextItems, isTuned);
+  const matchedScoreEntry = [...scoredPool.topMatches, ...scoredPool.moreMatches].find(
+    (s) => s.card.id === card?.id
+  );
 
   const [refinementInput, setRefinementInput] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -159,24 +169,25 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
   return (
     <AppShell showNav={false}>
       <div className="flex-1 flex flex-col bg-brand-ivory pb-28">
-        {/* 1. Gallery Hero Photograph + Frosted Controls */}
-        <div className="relative w-full aspect-[4/3] bg-[#EFE9DE] overflow-hidden">
+        {/* 1. Gallery Hero Photograph + High-Contrast Controls */}
+        <div className="relative w-full aspect-[4/3] bg-[#17201E] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={resolveAssetUrl(card.heroImage)}
             alt={card.imageAlt || card.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/35 to-transparent pointer-events-none" />
+          {/* Deep top protective scrim so Back / Share / Save stay 100% legible over bright photos */}
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/72 via-black/30 to-transparent pointer-events-none" />
 
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
             <button
               type="button"
               onClick={() => router.back()}
               aria-label="Go back"
-              className="w-9 h-9 rounded-full bg-[#FAF7F2]/92 backdrop-blur-md text-brand-ink flex items-center justify-center shadow-sm border border-brand-warm-stone/60 hover:bg-brand-ivory transition-all cursor-pointer"
+              className="w-10 h-10 rounded-full bg-[#121917]/86 hover:bg-[#121917] backdrop-blur-md text-white flex items-center justify-center shadow-md border border-white/28 transition-all cursor-pointer"
             >
-              <IconArrowLeft size={17} />
+              <IconArrowLeft size={18} />
             </button>
 
             <div className="flex items-center gap-2">
@@ -184,22 +195,26 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
                 type="button"
                 onClick={handleShare}
                 aria-label="Share gathering"
-                className="w-9 h-9 rounded-full bg-[#FAF7F2]/92 backdrop-blur-md text-brand-ink flex items-center justify-center shadow-sm border border-brand-warm-stone/60 hover:bg-brand-ivory transition-all cursor-pointer"
+                className="w-10 h-10 rounded-full bg-[#121917]/86 hover:bg-[#121917] backdrop-blur-md text-white flex items-center justify-center shadow-md border border-white/28 transition-all cursor-pointer"
               >
-                <IconShare size={16} />
+                <IconShare size={16} accent="#E68860" />
               </button>
 
               <button
                 type="button"
                 onClick={() => saveCard(card.id)}
                 aria-label={isSaved ? 'Remove from saved' : 'Save gathering'}
-                className={`w-9 h-9 rounded-full backdrop-blur-md flex items-center justify-center shadow-sm border transition-all cursor-pointer ${
+                className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center shadow-md border transition-all cursor-pointer ${
                   isSaved
-                    ? 'bg-brand-ivory text-brand-terracotta border-brand-terracotta/45'
-                    : 'bg-[#FAF7F2]/92 text-brand-ink border-brand-warm-stone/60 hover:bg-brand-ivory'
+                    ? 'bg-brand-terracotta text-white border-white/45'
+                    : 'bg-[#121917]/86 hover:bg-[#121917] text-white border-white/28'
                 }`}
               >
-                <IconBookmark size={16} filled={isSaved} />
+                <IconBookmark
+                  size={16}
+                  filled={isSaved}
+                  accent={isSaved ? '#FFFFFF' : '#E68860'}
+                />
               </button>
             </div>
           </div>
@@ -215,10 +230,8 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
                   ? `${meta.categoryLabel} · ${meta.neighborhood}`
                   : card.entityType || 'Curated Gathering'}
               </span>
-              {card.originType === 'requested' && (
-                <span className="text-[10.5px] font-semibold text-brand-deep-green bg-brand-sage-subtle px-2.5 py-0.5 rounded-full">
-                  Matched Watch
-                </span>
+              {isTuned && matchedScoreEntry && (
+                <MatchScoreBadge percent={matchedScoreEntry.matchPercent} />
               )}
             </div>
 
