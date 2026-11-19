@@ -258,7 +258,7 @@ export default function WatchingPage() {
                       </div>
 
                       {watch.triggerMet && !isPaused ? (
-                        <span className="px-2.5 py-1 rounded-full bg-brand-terracotta/14 text-brand-terracotta text-[10.5px] font-semibold">
+                        <span className="px-2.5 py-1 rounded-full bg-brand-terracotta/15 text-brand-terracotta text-[10.5px] font-semibold">
                           Seats Open
                         </span>
                       ) : (

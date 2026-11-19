@@ -13,9 +13,12 @@ import { SwipeTasteCardData } from '@/types';
 import { resolveAssetUrl } from '@/lib/assets';
 import { startSpeechRecognition } from '@/lib/voice/speechRecognition';
 import {
+  IconArrowLeft,
+  IconArrowRight,
   IconCheck,
   IconClose,
   IconMicrophone,
+  IconReset,
   IconSparkNote,
 } from '@/components/ui/BrandIcons';
 
@@ -34,24 +37,26 @@ interface SwipeTasteDeckProps {
 
 interface PosterSceneCardProps {
   card: SwipeTasteCardData;
-  isFirst: boolean;
+  exitDirection: 'left' | 'right';
   onDecide: (choice: 'yes' | 'no') => void;
 }
 
 const PosterSceneCard: React.FC<PosterSceneCardProps> = ({
   card,
-  isFirst,
+  exitDirection,
   onDecide,
 }) => {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-190, 0, 190], [-7, 0, 7]);
-  const rightStampOpacity = useTransform(x, [25, 95], [0, 1]);
-  const leftStampOpacity = useTransform(x, [-95, -25], [1, 0]);
+  const rotate = useTransform(x, [-200, 0, 200], [-9, 0, 9]);
+  const rightStampOpacity = useTransform(x, [20, 85], [0, 1]);
+  const leftStampOpacity = useTransform(x, [-85, -20], [1, 0]);
+  const rightTintOpacity = useTransform(x, [20, 140], [0, 0.28]);
+  const leftTintOpacity = useTransform(x, [-140, -20], [0.28, 0]);
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (info.offset.x > 80 || info.velocity.x > 420) {
+    if (info.offset.x > 75 || info.velocity.x > 400) {
       onDecide('yes');
-    } else if (info.offset.x < -80 || info.velocity.x < -420) {
+    } else if (info.offset.x < -75 || info.velocity.x < -400) {
       onDecide('no');
     }
   };
@@ -62,13 +67,18 @@ const PosterSceneCard: React.FC<PosterSceneCardProps> = ({
       style={{ x, rotate }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.85}
+      dragElastic={0.9}
       onDragEnd={handleDragEnd}
-      initial={{ opacity: 0, scale: 0.97, y: 10 }}
+      initial={{ opacity: 0, scale: 0.96, y: 8 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.16 } }}
+      exit={{
+        x: exitDirection === 'right' ? 390 : -390,
+        rotate: exitDirection === 'right' ? 14 : -14,
+        opacity: 0,
+        transition: { duration: 0.24, ease: 'easeIn' },
+      }}
       transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute inset-0 rounded-[28px] overflow-hidden shadow-elevated border border-brand-warm-stone/50 select-none cursor-grab active:cursor-grabbing bg-[#141C1A]"
+      className="absolute inset-0 rounded-[28px] overflow-hidden shadow-elevated border border-brand-warm-stone/60 select-none cursor-grab active:cursor-grabbing bg-[#121917]"
     >
       {/* Full-Bleed Poster Photography */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -79,51 +89,73 @@ const PosterSceneCard: React.FC<PosterSceneCardProps> = ({
         className="w-full h-full object-cover pointer-events-none"
       />
 
-      {/* Top & Bottom Editorial Vignettes */}
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/68 via-black/22 to-transparent pointer-events-none" />
-      <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-[#0E1513]/96 via-[#0E1513]/72 to-transparent pointer-events-none" />
+      {/* Directional Drag Color Feedback Wash */}
+      <motion.div
+        style={{ opacity: rightTintOpacity }}
+        className="absolute inset-0 bg-emerald-900 pointer-events-none"
+      />
+      <motion.div
+        style={{ opacity: leftTintOpacity }}
+        className="absolute inset-0 bg-rose-950 pointer-events-none"
+      />
 
-      {/* Top Metadata Bar */}
+      {/* Rock-Solid Inline Linear Gradients (Immune to any Tailwind opacity purge) */}
+      <div
+        className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to bottom, rgba(12, 18, 16, 0.78) 0%, rgba(12, 18, 16, 0.32) 55%, rgba(12, 18, 16, 0) 100%)',
+        }}
+      />
+      <div
+        className="absolute inset-x-0 bottom-0 h-[66%] pointer-events-none"
+        style={{
+          background:
+            'linear-gradient(to top, rgba(10, 15, 14, 0.97) 0%, rgba(10, 15, 14, 0.90) 44%, rgba(10, 15, 14, 0.52) 74%, rgba(10, 15, 14, 0) 100%)',
+        }}
+      />
+
+      {/* Top Category Pill + Remaining Cards Counter */}
       <div className="absolute top-3.5 left-4 right-4 flex items-center justify-between pointer-events-none">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#121917]/86 backdrop-blur-md text-white text-[10.5px] font-semibold uppercase tracking-[0.08em] border border-white/22 shadow-sm">
+        <span
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-white text-[10.5px] font-semibold uppercase tracking-[0.08em] border border-white/25 shadow-md"
+          style={{ backgroundColor: 'rgba(16, 23, 21, 0.88)' }}
+        >
           <span className="w-1.5 h-1.5 rounded-full bg-[#E68860]" />
           <span>{card.stepLabel}</span>
         </span>
-
-        {isFirst && (
-          <span className="px-2.5 py-1 rounded-full bg-[#121917]/76 backdrop-blur-md text-white/85 text-[10px] font-medium border border-white/18">
-            Swipe or tap below
-          </span>
-        )}
       </div>
 
-      {/* Live Drag Stamps */}
+      {/* Live Drag Stamps: Right = COUNT ME IN, Left = NOT FOR ME */}
       <motion.div
         style={{ opacity: rightStampOpacity }}
-        className="absolute top-16 left-4 px-3.5 py-1.5 rounded-xl bg-brand-deep-green/95 text-brand-ivory border border-white/40 text-[11px] font-bold tracking-[0.09em] uppercase -rotate-6 shadow-lg pointer-events-none"
+        className="absolute top-16 left-4 px-3.5 py-1.5 rounded-xl bg-emerald-700 text-white border-2 border-emerald-200 text-xs font-bold tracking-[0.09em] uppercase -rotate-6 shadow-xl pointer-events-none"
       >
-        {card.yesStamp}
+        ✓ {card.yesStamp}
       </motion.div>
 
       <motion.div
         style={{ opacity: leftStampOpacity }}
-        className="absolute top-16 right-4 px-3.5 py-1.5 rounded-xl bg-[#141C1A]/95 text-white border border-white/40 text-[11px] font-bold tracking-[0.09em] uppercase rotate-6 shadow-lg pointer-events-none"
+        className="absolute top-16 right-4 px-3.5 py-1.5 rounded-xl bg-[#B84A32] text-white border-2 border-white/80 text-xs font-bold tracking-[0.09em] uppercase rotate-6 shadow-xl pointer-events-none"
       >
-        {card.noStamp}
+        ✕ {card.noStamp}
       </motion.div>
 
-      {/* Bottom Dock: Poster Typography + Two Unbiased Integrated Choices */}
+      {/* Bottom Dock: Guaranteed High-Contrast Copy + Directional Left/Right Buttons */}
       <div className="absolute inset-x-4 bottom-4 flex flex-col gap-3.5">
         <div className="space-y-1.5 pointer-events-none">
-          <h2 className="font-sans text-[23px] sm:text-[25px] font-semibold leading-[1.16] tracking-[-0.02em] text-white drop-shadow-xs">
+          <h2 className="font-sans text-[22px] sm:text-[24px] font-semibold leading-[1.18] tracking-[-0.02em] text-white">
             {card.title}
           </h2>
-          <p className="font-serif text-[13.5px] text-white/86 leading-[1.48]">
+          <p
+            className="font-serif text-[13.5px] leading-[1.48]"
+            style={{ color: '#EDE7DC' }}
+          >
             {card.subtitle}
           </p>
         </div>
 
-        {/* Two Equal-Dignity Choice Pills (stopPropagation prevents drag conflict on tap) */}
+        {/* Directional Action Buttons Matching Left Swipe vs Right Swipe */}
         <div
           className="grid grid-cols-2 gap-2.5 pt-0.5"
           onPointerDown={(e) => e.stopPropagation()}
@@ -131,24 +163,32 @@ const PosterSceneCard: React.FC<PosterSceneCardProps> = ({
           <button
             type="button"
             onClick={() => onDecide('no')}
-            className="py-3 px-3 rounded-2xl bg-white/14 hover:bg-white/24 active:scale-[0.98] backdrop-blur-md border border-white/28 text-white text-[12px] font-medium leading-tight transition-all cursor-pointer text-center"
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.14)' }}
+            className="py-3 px-3 rounded-2xl hover:bg-white/25 active:scale-[0.98] backdrop-blur-md border border-white/30 text-white text-[11.5px] font-semibold leading-tight transition-all cursor-pointer flex items-center justify-center gap-1.5"
           >
-            {card.noLabel}
+            <IconArrowLeft size={13.5} className="text-[#E68860] shrink-0" />
+            <span className="truncate">{card.noLabel}</span>
           </button>
 
           <button
             type="button"
             onClick={() => onDecide('yes')}
-            className="py-3 px-3 rounded-2xl bg-[#FAF7F2] hover:bg-white active:scale-[0.98] text-brand-ink text-[12px] font-semibold leading-tight shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center"
+            className="py-3 px-3 rounded-2xl bg-[#FAF7F2] hover:bg-white active:scale-[0.98] text-[#17201E] text-[11.5px] font-semibold leading-tight shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-brand-terracotta shrink-0" />
-            <span>{card.yesLabel}</span>
+            <span className="truncate">{card.yesLabel}</span>
+            <IconArrowRight size={13.5} className="text-brand-deep-green shrink-0" />
           </button>
         </div>
       </div>
     </motion.div>
   );
 };
+
+interface DecisionHistoryEntry {
+  cardTitle: string;
+  choice: 'yes' | 'no';
+  addedRule?: { key: string; value: string; type: 'preference' | 'constraint' | 'goal' };
+}
 
 export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
   cards,
@@ -157,9 +197,8 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
   onVoiceSubmit,
 }) => {
   const [index, setIndex] = useState(0);
-  const [collectedRules, setCollectedRules] = useState<
-    Array<{ key: string; value: string; type: 'preference' | 'constraint' | 'goal' }>
-  >([]);
+  const [exitDirection, setExitDirection] = useState<'left' | 'right'>('right');
+  const [history, setHistory] = useState<DecisionHistoryEntry[]>([]);
 
   // Inline Voice Modal State
   const [isVoiceOpen, setIsVoiceOpen] = useState(false);
@@ -169,38 +208,56 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
 
   const activeCard = cards[index];
   const nextCard = cards[index + 1];
+  const lastDecision = history[history.length - 1];
+  const remainingCount = cards.length - index;
 
   const handleDecision = (choice: 'yes' | 'no') => {
     if (!activeCard) return;
 
-    const nextRules = [...collectedRules];
+    setExitDirection(choice === 'yes' ? 'right' : 'left');
+
+    let addedRule: DecisionHistoryEntry['addedRule'];
     if (choice === 'yes' && activeCard.onYesRule) {
-      nextRules.push({
+      addedRule = {
         key: activeCard.onYesRule.key,
         value: activeCard.onYesRule.value,
         type: activeCard.onYesRule.type,
-      });
+      };
     } else if (choice === 'no' && activeCard.onNoRule) {
-      nextRules.push({
+      addedRule = {
         key: activeCard.onNoRule.key,
         value: activeCard.onNoRule.value,
         type: activeCard.onNoRule.type,
-      });
+      };
     }
 
+    const nextHistory: DecisionHistoryEntry[] = [
+      ...history,
+      { cardTitle: activeCard.title, choice, addedRule },
+    ];
+
     if (index >= cards.length - 1) {
-      if (nextRules.length === 0) {
-        nextRules.push({
+      const rules = nextHistory
+        .map((h) => h.addedRule)
+        .filter((r): r is NonNullable<typeof r> => Boolean(r));
+      if (rules.length === 0) {
+        rules.push({
           key: 'Curated Gatherings',
           value: `Surface well-hosted cultural evenings and weekends in ${cityName}.`,
           type: 'preference',
         });
       }
-      onComplete(nextRules);
+      onComplete(rules);
     } else {
-      setCollectedRules(nextRules);
+      setHistory(nextHistory);
       setIndex((prev) => prev + 1);
     }
+  };
+
+  const handleUndo = () => {
+    if (history.length === 0 || index === 0) return;
+    setHistory((prev) => prev.slice(0, -1));
+    setIndex((prev) => prev - 1);
   };
 
   const toggleRecording = () => {
@@ -224,37 +281,54 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
-      {/* 1. Compact Subhead + Segmented Progress (fits tightly at top) */}
-      <div className="px-4 pb-2.5 space-y-2 shrink-0">
-        <div className="flex items-baseline justify-between gap-2">
-          <h1 className="font-serif text-[17.5px] leading-snug font-medium text-brand-ink">
-            Shape a Personal Context that’s yours.
+      {/* 1. Clear Decision Header (NO carousel lines that trick users into swiping left to advance!) */}
+      <div className="px-4 pb-2 space-y-2 shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          <h1 className="font-serif text-[17px] leading-snug font-medium text-brand-ink">
+            What belongs in your Personal Context?
           </h1>
-          <span className="text-[11px] font-semibold tabular-nums text-brand-terracotta shrink-0">
-            {index + 1} / {cards.length}
+          <span className="px-2.5 py-0.5 rounded-full bg-[#EFE9DE] text-[10.5px] font-semibold text-brand-ink-muted shrink-0 tabular-nums">
+            {remainingCount} {remainingCount === 1 ? 'card left' : 'cards left'}
           </span>
         </div>
 
-        {/* Full-Width Segmented Progress Strip */}
-        <div className="grid grid-cols-8 gap-1">
-          {cards.map((c, i) => (
-            <span
-              key={c.id}
-              className={`h-[3px] rounded-full transition-colors duration-200 ${
-                i === index
-                  ? 'bg-brand-terracotta'
-                  : i < index
-                  ? 'bg-brand-deep-green'
-                  : 'bg-brand-warm-stone/80'
-              }`}
-            />
-          ))}
-        </div>
+        {/* Explicit Left vs Right Legend OR Live Last-Decision Confirmation + Undo */}
+        {lastDecision ? (
+          <div className="flex items-center justify-between gap-2 px-3 py-1.5 rounded-full bg-[#EFE9DE] border border-brand-warm-stone text-[11px]">
+            <span className="truncate font-medium text-brand-ink">
+              {lastDecision.choice === 'yes' ? (
+                <span className="text-brand-deep-green font-semibold">✓ Counted in: </span>
+              ) : (
+                <span className="text-brand-terracotta font-semibold">✕ Passed: </span>
+              )}
+              {lastDecision.cardTitle}
+            </span>
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="inline-flex items-center gap-1 font-semibold text-brand-deep-green hover:text-brand-terracotta shrink-0 cursor-pointer"
+            >
+              <IconReset size={12} />
+              <span>Undo</span>
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between px-3 py-1.5 rounded-full bg-[#EFE9DE]/90 border border-brand-warm-stone/80 text-[11px] font-semibold">
+            <span className="inline-flex items-center gap-1 text-brand-terracotta">
+              <IconArrowLeft size={12.5} />
+              <span>Swipe left: Not for me</span>
+            </span>
+            <span className="w-px h-3 bg-brand-warm-stone" />
+            <span className="inline-flex items-center gap-1 text-brand-deep-green">
+              <span>Swipe right: Count me in</span>
+              <IconArrowRight size={12.5} />
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* 2. Expansive Poster Card Stack (Fills ~76% of the mobile viewport!) */}
+      {/* 2. Expansive Poster Card Stack */}
       <div className="flex-1 min-h-0 relative mx-3">
-        {/* Next card peeking subtly behind */}
         {nextCard && (
           <div
             key={`peek-${nextCard.id}`}
@@ -269,12 +343,12 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
           </div>
         )}
 
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence custom={exitDirection}>
           {activeCard && (
             <PosterSceneCard
               key={activeCard.id}
               card={activeCard}
-              isFirst={index === 0}
+              exitDirection={exitDirection}
               onDecide={handleDecision}
             />
           )}
@@ -283,14 +357,14 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
 
       {/* 3. Always-Above-the-Fold Secondary Bar: Bring from AI + Speak */}
       <div className="px-3 pt-2.5 pb-[max(12px,env(safe-area-inset-bottom))] shrink-0">
-        <div className="rounded-2xl bg-[#EFE9DE]/90 border border-brand-warm-stone/80 p-1.5 flex items-center gap-1.5">
+        <div className="rounded-2xl bg-[#EFE9DE] border border-brand-warm-stone p-1.5 flex items-center gap-1.5">
           <span className="text-[10.5px] font-medium text-brand-ink-light pl-2.5 pr-1 shrink-0">
-            Faster path:
+            Or skip cards:
           </span>
 
           <Link
             href="/import?returnTo=vault"
-            className="flex-1 py-2 px-2.5 rounded-xl bg-[#FCFBF8] hover:bg-white border border-brand-warm-stone/75 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
+            className="flex-1 py-2 px-2.5 rounded-xl bg-[#FCFBF8] hover:bg-white border border-brand-warm-stone/80 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 shadow-xs transition-colors"
           >
             <IconSparkNote size={13.5} className="text-brand-deep-green shrink-0" />
             <span>Bring from AI</span>
@@ -299,7 +373,7 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
           <button
             type="button"
             onClick={() => setIsVoiceOpen(true)}
-            className="flex-1 py-2 px-2.5 rounded-xl bg-[#FCFBF8] hover:bg-white border border-brand-warm-stone/75 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+            className="flex-1 py-2 px-2.5 rounded-xl bg-[#FCFBF8] hover:bg-white border border-brand-warm-stone/80 text-[11.5px] font-semibold text-brand-ink flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
           >
             <IconMicrophone size={13.5} className="text-brand-deep-green shrink-0" />
             <span>Speak</span>
@@ -314,7 +388,7 @@ export const SwipeTasteDeck: React.FC<SwipeTasteDeckProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-end justify-center"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end justify-center"
             onClick={() => setIsVoiceOpen(false)}
           >
             <motion.div

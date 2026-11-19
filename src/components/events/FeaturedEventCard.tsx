@@ -52,11 +52,20 @@ export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({
         </Link>
 
         {/* Protective dark gradient scrim at top so overlaid pills & icons stay 100% legible over any image */}
-        <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 via-black/28 to-transparent pointer-events-none" />
+        <div
+          className="absolute inset-x-0 top-0 h-24 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(12, 18, 16, 0.76) 0%, rgba(12, 18, 16, 0.30) 55%, rgba(12, 18, 16, 0) 100%)',
+          }}
+        />
 
         {/* High-Contrast Category & Match Pills */}
         <div className="absolute top-3.5 left-3.5 flex flex-wrap items-center gap-1.5 pointer-events-none pr-12">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#121917]/88 backdrop-blur-md text-white text-[10.5px] font-semibold tracking-[0.02em] shadow-md border border-white/25">
+          <span
+            style={{ backgroundColor: 'rgba(16, 23, 21, 0.90)' }}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full backdrop-blur-md text-white text-[10.5px] font-semibold tracking-[0.02em] shadow-md border border-white/25"
+          >
             <span className="w-1.5 h-1.5 rounded-full bg-[#E68860] shrink-0" />
             <span>{meta?.categoryLabel || card.entityType || 'Evening Pick'}</span>
           </span>
@@ -75,10 +84,11 @@ export const FeaturedEventCard: React.FC<FeaturedEventCardProps> = ({
             saveCard(card.id);
           }}
           aria-label={isSaved ? 'Remove from saved events' : 'Save event'}
+          style={!isSaved ? { backgroundColor: 'rgba(16, 23, 21, 0.88)' } : undefined}
           className={`absolute top-3.5 right-3.5 w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md transition-all active:scale-90 cursor-pointer shadow-md border ${
             isSaved
               ? 'bg-brand-terracotta text-white border-white/40'
-              : 'bg-[#121917]/86 hover:bg-[#121917] text-white border-white/28'
+              : 'hover:bg-[#121917] text-white border-white/30'
           }`}
         >
           <IconBookmark

@@ -155,7 +155,7 @@ export default function MePage() {
                     setIsEditingBio(!isEditingBio);
                   }}
                   aria-label="Edit personal summary"
-                  className="w-8 h-8 rounded-full bg-white/12 hover:bg-white/22 text-brand-ivory flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-8 h-8 rounded-full bg-white/15 hover:bg-white/20 text-brand-ivory flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <IconEdit size={14} accent="#F7F3EC" />
                 </button>
@@ -188,13 +188,13 @@ export default function MePage() {
                   </div>
                 </div>
               ) : (
-                <p className="font-serif text-[13px] text-brand-ivory/88 leading-[1.6]">
+                <p className="font-serif text-[13px] text-brand-ivory/90 leading-[1.6]">
                   {persona.lifeNarrative.openingSummary}
                 </p>
               )}
 
               {/* Quick Tune Shortcuts */}
-              <div className="pt-2 border-t border-white/12 flex flex-wrap items-center gap-2">
+              <div className="pt-2 border-t border-white/15 flex flex-wrap items-center gap-2">
                 <Link
                   href="/onboarding"
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-brand-ivory text-brand-deep-green text-[11.5px] font-semibold hover:bg-white transition-colors"
@@ -205,7 +205,7 @@ export default function MePage() {
 
                 <Link
                   href="/import"
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/14 hover:bg-white/22 text-brand-ivory text-[11.5px] font-semibold border border-white/15 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/20 text-brand-ivory text-[11.5px] font-semibold border border-white/15 transition-colors"
                 >
                   <IconSparkNote size={13} accent="#E68860" />
                   <span>Import from AI</span>
@@ -629,7 +629,7 @@ export default function MePage() {
                   <button
                     type="button"
                     onClick={() => setSelectedTile(null)}
-                    className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-[#121917]/86 text-white border border-white/25 flex items-center justify-center shadow-md cursor-pointer"
+                    className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-[#121917]/85 text-white border border-white/25 flex items-center justify-center shadow-md cursor-pointer"
                   >
                     <IconClose size={15} />
                   </button>

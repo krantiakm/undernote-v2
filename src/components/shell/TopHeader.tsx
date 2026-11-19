@@ -11,7 +11,7 @@ export const TopHeader: React.FC = () => {
   const cityLabel = geography === 'singapore-sin' ? 'Singapore' : 'Bangalore';
 
   return (
-    <header className="sticky top-0 z-30 bg-brand-ivory/92 backdrop-blur-md border-b border-brand-warm-stone/55 px-5 pt-3.5 pb-3">
+    <header className="sticky top-0 z-30 bg-brand-ivory/95 backdrop-blur-md border-b border-brand-warm-stone/55 px-5 pt-3.5 pb-3">
       <div className="flex items-center justify-between">
         {/* Official Undernote Wordmark */}
         <Logo size="sm" variant="dark" href="/radar" />

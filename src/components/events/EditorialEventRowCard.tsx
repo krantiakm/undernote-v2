@@ -49,7 +49,7 @@ export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
         />
         {meta?.availabilityLabel && meta.availabilityState === 'few-left' && (
-          <span className="absolute bottom-2 left-2 right-2 text-center py-0.5 px-1.5 rounded-md bg-[#121917]/88 border border-white/20 text-[9.5px] font-semibold text-white truncate shadow-xs">
+          <span className="absolute bottom-2 left-2 right-2 text-center py-0.5 px-1.5 rounded-md bg-[#121917]/90 border border-white/20 text-[9.5px] font-semibold text-white truncate shadow-xs">
             {meta.availabilityLabel}
           </span>
         )}
@@ -85,7 +85,7 @@ export const EditorialEventRowCard: React.FC<EditorialEventRowCardProps> = ({
               : card.subtitle}
           </p>
 
-          <p className="font-serif text-[12px] text-brand-ink/78 leading-[1.48] line-clamp-2 pt-0.5">
+          <p className="font-serif text-[12px] text-brand-ink/80 leading-[1.48] line-clamp-2 pt-0.5">
             {meta?.personalFitLine || card.summary}
           </p>
         </div>

@@ -106,7 +106,7 @@ export const ContextVaultReveal: React.FC<ContextVaultRevealProps> = ({
               <IconShieldPrivacy size={14} accent="#C66E45" />
               <span>Your Personal Context Vault</span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/12 text-[10px] font-semibold text-brand-ivory">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-[10px] font-semibold text-brand-ivory">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>Yours to control</span>
             </span>
@@ -116,13 +116,13 @@ export const ContextVaultReveal: React.FC<ContextVaultRevealProps> = ({
             <h1 className="font-serif text-[22px] leading-[1.2] font-medium text-brand-ivory">
               Your context is ready—and it belongs to you.
             </h1>
-            <p className="text-xs text-brand-ivory/82 leading-relaxed">
+            <p className="text-xs text-brand-ivory/85 leading-relaxed">
               Undernote stores your preferences for you—never for ad networks—so you can carry them across experiences. You can edit, export, or delete this vault anytime in <strong>Me</strong>.
             </p>
           </div>
 
           {/* Storage Architecture Strip (Active Cloud + Upcoming Connectors) */}
-          <div className="rounded-2xl bg-black/22 border border-white/12 p-3 space-y-2">
+          <div className="rounded-2xl bg-black/20 border border-white/15 p-3 space-y-2">
             <div className="flex items-center justify-between text-[11px]">
               <span className="font-semibold text-brand-ivory flex items-center gap-1.5">
                 <IconCheck size={13} className="text-emerald-400" />
@@ -141,7 +141,7 @@ export const ContextVaultReveal: React.FC<ContextVaultRevealProps> = ({
               ].map((pill) => (
                 <span
                   key={pill}
-                  className="text-[9.5px] px-2 py-0.5 rounded-full bg-white/8 text-brand-ivory/65 border border-white/10"
+                  className="text-[9.5px] px-2 py-0.5 rounded-full bg-white/10 text-brand-ivory/65 border border-white/10"
                 >
                   {pill}
                 </span>

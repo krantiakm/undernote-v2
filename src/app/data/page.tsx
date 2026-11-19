@@ -41,7 +41,7 @@ export default function DataPage() {
   return (
     <AppShell>
       <div className="flex-1 flex flex-col bg-brand-ivory pb-10">
-        <header className="sticky top-0 z-30 bg-brand-ivory/92 backdrop-blur-md border-b border-brand-warm-stone/55 px-5 py-3.5 flex items-center justify-between">
+        <header className="sticky top-0 z-30 bg-brand-ivory/95 backdrop-blur-md border-b border-brand-warm-stone/55 px-5 py-3.5 flex items-center justify-between">
           <Link
             href="/me"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-ink hover:text-brand-deep-green transition-colors"

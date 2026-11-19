@@ -196,7 +196,7 @@ export default function TogetherPage() {
                 <h2 className="font-sans text-[14px] font-semibold leading-snug text-brand-ivory">
                   Invite friends, plan together
                 </h2>
-                <p className="text-[11px] text-brand-ivory/78 leading-relaxed">
+                <p className="text-[11px] text-brand-ivory/80 leading-relaxed">
                   Bring friends in so their context is ready whenever you step out.
                 </p>
               </div>

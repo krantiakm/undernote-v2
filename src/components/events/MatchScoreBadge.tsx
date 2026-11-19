@@ -26,7 +26,10 @@ export const MatchScoreBadge: React.FC<MatchScoreBadgeProps> = ({
   if (variant === 'dark-pill') {
     const stroke = isHigh ? '#7CE3B3' : isMid ? '#F09A73' : '#DDD6CB';
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#121917]/88 backdrop-blur-md text-white text-[10.5px] font-semibold border border-white/25 shadow-md tabular-nums">
+      <span
+        style={{ backgroundColor: 'rgba(16, 23, 21, 0.90)' }}
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full backdrop-blur-md text-white text-[10.5px] font-semibold border border-white/25 shadow-md tabular-nums"
+      >
         <svg width="15" height="15" viewBox="0 0 18 18" className="-rotate-90 shrink-0">
           <circle
             cx="9"

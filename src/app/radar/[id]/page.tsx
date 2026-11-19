@@ -178,14 +178,21 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
             className="w-full h-full object-cover"
           />
           {/* Deep top protective scrim so Back / Share / Save stay 100% legible over bright photos */}
-          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/72 via-black/30 to-transparent pointer-events-none" />
+          <div
+            className="absolute inset-x-0 top-0 h-28 pointer-events-none"
+            style={{
+              background:
+                'linear-gradient(to bottom, rgba(12, 18, 16, 0.78) 0%, rgba(12, 18, 16, 0.34) 55%, rgba(12, 18, 16, 0) 100%)',
+            }}
+          />
 
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
             <button
               type="button"
               onClick={() => router.back()}
               aria-label="Go back"
-              className="w-10 h-10 rounded-full bg-[#121917]/86 hover:bg-[#121917] backdrop-blur-md text-white flex items-center justify-center shadow-md border border-white/28 transition-all cursor-pointer"
+              style={{ backgroundColor: 'rgba(16, 23, 21, 0.88)' }}
+              className="w-10 h-10 rounded-full hover:bg-[#121917] backdrop-blur-md text-white flex items-center justify-center shadow-md border border-white/30 transition-all cursor-pointer"
             >
               <IconArrowLeft size={18} />
             </button>
@@ -195,7 +202,8 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
                 type="button"
                 onClick={handleShare}
                 aria-label="Share gathering"
-                className="w-10 h-10 rounded-full bg-[#121917]/86 hover:bg-[#121917] backdrop-blur-md text-white flex items-center justify-center shadow-md border border-white/28 transition-all cursor-pointer"
+                style={{ backgroundColor: 'rgba(16, 23, 21, 0.88)' }}
+                className="w-10 h-10 rounded-full hover:bg-[#121917] backdrop-blur-md text-white flex items-center justify-center shadow-md border border-white/30 transition-all cursor-pointer"
               >
                 <IconShare size={16} accent="#E68860" />
               </button>
@@ -204,10 +212,11 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
                 type="button"
                 onClick={() => saveCard(card.id)}
                 aria-label={isSaved ? 'Remove from saved' : 'Save gathering'}
+                style={!isSaved ? { backgroundColor: 'rgba(16, 23, 21, 0.88)' } : undefined}
                 className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center shadow-md border transition-all cursor-pointer ${
                   isSaved
                     ? 'bg-brand-terracotta text-white border-white/45'
-                    : 'bg-[#121917]/86 hover:bg-[#121917] text-white border-white/28'
+                    : 'hover:bg-[#121917] text-white border-white/30'
                 }`}
               >
                 <IconBookmark
@@ -339,7 +348,7 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
                     key={idx}
                     className="flex items-start gap-2.5 text-[12.5px] text-brand-ink/85 leading-relaxed"
                   >
-                    <span className="w-4 h-4 rounded-full bg-brand-deep-green/12 text-brand-deep-green flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-4 h-4 rounded-full bg-brand-deep-green/15 text-brand-deep-green flex items-center justify-center shrink-0 mt-0.5">
                       <IconCheck size={11} />
                     </span>
                     <span>{reason}</span>
@@ -445,7 +454,7 @@ export default function EventDossierPage({ params }: EventDossierPageProps) {
         </div>
 
         {/* 8. Sticky Bottom Primary Booking Bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-40 max-w-[430px] mx-auto bg-[#FAF7F2]/96 backdrop-blur-md border-t border-brand-warm-stone/70 px-5 py-3.5 flex items-center justify-between gap-4">
+        <div className="fixed bottom-0 left-0 right-0 z-40 max-w-[430px] mx-auto bg-[#FAF7F2]/95 backdrop-blur-md border-t border-brand-warm-stone/70 px-5 py-3.5 flex items-center justify-between gap-4">
           <div className="min-w-0">
             <span className="text-sm font-semibold text-brand-ink block leading-tight">
               {priceText}
